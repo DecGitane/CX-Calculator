@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cx Pocket Calculator</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cx Calc">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0f1418">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+  :root{
+    --bg:#0f1418; --panel:#182027; --line:#26323c; --text:#e8eef2; --muted:#8a9aa6;
+    --accent:#f2a93b; --ok:#4cc38a; --warn:#f2a93b; --bad:#ef5a5a; --field:#0b1014;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+  main{max-width:520px;margin:0 auto;padding:0 calc(14px + env(safe-area-inset-right)) 110px calc(14px + env(safe-area-inset-left))}
+  header{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;align-items:center;gap:10px;
+    justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 2px 10px;margin-bottom:4px}
+  h1{font-size:18px;margin:0;white-space:nowrap}
+  h1 span{color:var(--accent)}
+  .hdrTag{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:right}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:0 0 10px;font-weight:600}
+  .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:0 0 auto;border:1px solid var(--line);background:var(--field);color:var(--text);
+    padding:8px 12px;border-radius:999px;font-size:14px;cursor:pointer}
+  .chip.on{background:var(--accent);color:#1a1205;border-color:var(--accent);font-weight:600}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .mt{margin-top:10px}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+  input,select,textarea{width:100%;background:var(--field);color:var(--text);border:1px solid var(--line);
+    border-radius:10px;padding:11px 10px;font-size:16px;font-variant-numeric:tabular-nums;outline:none;font-family:inherit}
+  textarea{min-height:70px;resize:vertical;font-size:14px}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .toggle{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;user-select:none}
+  .toggle input{width:20px;height:20px;accent-color:var(--accent)}
+  .big{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+  .unit{font-size:15px;color:var(--muted);font-weight:500;margin-left:4px}
+  .conv input{font-size:20px;font-weight:600;padding:12px 10px}
+  .bar{position:relative;height:14px;background:var(--field);border:1px solid var(--line);border-radius:7px;overflow:hidden;margin:14px 0 6px}
+  .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);transition:width .15s}
+  .ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  input[type=range]{padding:0;height:34px;background:transparent;border:0;accent-color:var(--accent)}
+  .badge{display:inline-block;font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;letter-spacing:.4px}
+  .ok{background:rgba(76,195,138,.15);color:var(--ok)}
+  .warn{background:rgba(242,169,59,.15);color:var(--warn)}
+  .bad{background:rgba(239,90,90,.15);color:var(--bad)}
+  .meta{font-size:13px;color:var(--muted);margin-top:8px;font-variant-numeric:tabular-nums}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+  th,td{padding:8px 6px;text-align:right;border-bottom:1px solid var(--line)}
+  th{font-size:11px;color:var(--muted);letter-spacing:.8px;font-weight:600}
+  td:first-child,th:first-child{text-align:left}
+  tr:last-child td{border-bottom:0}
+  tr.click{cursor:pointer}
+  tr.click:active{background:var(--field)}
+  .btn{background:var(--field);border:1px solid var(--line);color:var(--text);border-radius:10px;
+    padding:10px 12px;font-size:14px;cursor:pointer;font-family:inherit}
+  .btn:active{border-color:var(--accent)}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#1a1205;font-weight:700}
+  .btn.danger{color:var(--bad)}
+  .btn.sm{padding:7px 10px;font-size:13px}
+  .note{font-size:12px;color:var(--muted);line-height:1.5}
+  .warnbox{display:none;margin-top:10px;padding:10px 12px;border-radius:10px;background:rgba(239,90,90,.12);
+    color:#ffb3b3;font-size:13px;line-height:1.45;border:1px solid rgba(239,90,90,.35)}
+  details{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
+  summary{cursor:pointer;font-size:14px;color:var(--text);list-style:none;display:flex;justify-content:space-between}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:'+';color:var(--muted);font-size:18px;line-height:1}
+  details[open] summary::after{content:'−'}
+  .hidden{display:none!important}
+  /* loop check */
+  .pt{display:grid;grid-template-columns:1.05fr 1fr 1fr;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
+  .pt:last-child{border-bottom:0}
+  .pt .lbl{font-variant-numeric:tabular-nums}
+  .pt .lbl b{font-size:16px}
+  .pt .lbl div{font-size:12px;color:var(--muted)}
+  .pt input{padding:9px 8px;font-size:16px}
+  .err{font-size:12px;margin-top:3px;font-variant-numeric:tabular-nums;min-height:16px}
+  .err.ok,.err.bad{background:none}
+  .colhdr{display:grid;grid-template-columns:1.05fr 1fr 1fr;gap:8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+  .sum{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  /* instruments */
+  .inst{padding:12px 0;border-bottom:1px solid var(--line)}
+  .inst:last-child{border-bottom:0}
+  .inst .t{font-weight:700}
+  .inst .d{font-size:13px;color:var(--muted)}
+  .inst .a{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center}
+  /* nav */
+  nav{position:fixed;left:0;right:0;bottom:0;z-index:10;background:#121a20;border-top:1px solid var(--line);
+    display:grid;grid-template-columns:repeat(5,1fr);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  nav a{color:var(--muted);text-decoration:none;text-align:center;font-size:12px;padding:6px 2px;border-radius:10px}
+  nav a b{display:block;font-size:19px;line-height:1.1;margin-bottom:2px;font-weight:400}
+  nav a.on{color:var(--accent);background:rgba(242,169,59,.08)}
+  .view{display:none}
+  .view.on{display:block}
+  /* copy fallback */
+  #copyBox{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:20;display:none;align-items:center;justify-content:center;padding:16px}
+  #copyBox .card{width:100%;max-width:520px}
+  #copyBox textarea{min-height:240px;font-family:ui-monospace,Menlo,monospace;font-size:12px}
+  .toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#24303a;color:var(--text);
+    padding:9px 14px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
+  .toast.on{opacity:1}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Cx <span>Pocket</span></h1>
+    <span class="hdrTag" id="hdrTag"></span>
+    <button class="btn sm" id="hdrSave" type="button">Save</button>
+  </header>
+
+  <!-- ================= SCALE ================= -->
+  <div class="view" id="v-scale">
+    <section class="card">
+      <h2>Instrument</h2>
+      <div class="grid">
+        <div><label for="tag">Tag</label><input id="tag" data-k="tag" type="text" autocapitalize="characters" placeholder="e.g. LIT0014"></div>
+        <div><label for="desc">Description</label><input id="desc" data-k="desc" type="text" placeholder="optional"></div>
+      </div>
+      <div class="chips mt" id="chips"></div>
+    </section>
+
+    <section class="card">
+      <h2>Range</h2>
+      <div class="grid3">
+        <div><label for="lrv">LRV (0%)</label><input id="lrv" data-k="lrv" inputmode="decimal" type="text"></div>
+        <div><label for="urv">URV (100%)</label><input id="urv" data-k="urv" inputmode="decimal" type="text"></div>
+        <div><label for="unit">Units</label><input id="unit" data-k="unit" type="text" autocapitalize="off"></div>
+      </div>
+      <div class="row">
+        <label class="toggle"><input type="checkbox" id="sqrt"> √ extraction (DP flow)</label>
+        <button class="btn sm" id="swap" type="button">⇅ Reverse</button>
+      </div>
+      <div class="grid mt">
+        <div><label for="sig">Signal</label><select id="sig" data-k="sig"></select></div>
+        <div><label for="raw">PLC raw counts</label><select id="raw" data-k="raw"></select></div>
+      </div>
+      <div class="grid mt" id="rawCustom">
+        <div><label for="rawMin">Raw at 0%</label><input id="rawMin" data-k="rawMin" inputmode="decimal" type="text"></div>
+        <div><label for="rawMax">Raw at 100%</label><input id="rawMax" data-k="rawMax" inputmode="decimal" type="text"></div>
+      </div>
+      <div class="warnbox" id="warn"></div>
+
+      <details id="dLim">
+        <summary>Transmitter limits</summary>
+        <div class="grid3 mt">
+          <div><label for="lrl">Sensor min</label><input id="lrl" data-k="lrl" inputmode="decimal" type="text" placeholder="LRL"></div>
+          <div><label for="url">Sensor max</label><input id="url" data-k="url" inputmode="decimal" type="text" placeholder="URL"></div>
+          <div><label for="minSpan">Min span</label><input id="minSpan" data-k="minSpan" inputmode="decimal" type="text" placeholder="—"></div>
+        </div>
+        <div class="note mt">Same units as the range. From the datasheet, e.g. ifm PI2897: −50 / 1000 / 250 mbar. Warns if the range is outside the sensor or narrower than it accepts.</div>
+      </details>
+
+      <details id="dLvl">
+        <summary>Level → pressure range</summary>
+        <div class="grid mt">
+          <div><label for="hMin">Level at 0% (m)</label><input id="hMin" data-k="hMin" inputmode="decimal" type="text"></div>
+          <div><label for="hMax">Level at 100% (m)</label><input id="hMax" data-k="hMax" inputmode="decimal" type="text"></div>
+          <div><label for="hOff">Sensor below level zero (m)</label><input id="hOff" data-k="hOff" inputmode="decimal" type="text"></div>
+          <div><label for="hSg">Liquid SG</label><input id="hSg" data-k="hSg" inputmode="decimal" type="text"></div>
+        </div>
+        <table class="mt"><tbody id="lvlOut"></tbody></table>
+        <div class="row">
+          <button class="btn sm" type="button" data-apply="mbar">Use mbar range</button>
+          <button class="btn sm" type="button" data-apply="kPa">Use kPa range</button>
+        </div>
+        <div class="note mt">Gauge pressure at the sensor = (level + offset) × SG × 98.0665 mbar/m. A negative offset means the sensor sits above level zero.</div>
+      </details>
+    </section>
+
+    <section class="card conv">
+      <h2>Convert</h2>
+      <div class="grid" id="convGrid">
+        <div><label for="cSig">Signal (<span id="sigU">mA</span>)</label><input id="cSig" inputmode="decimal" type="text"></div>
+        <div><label for="cPv">Value (<span id="pvU"></span>)</label><input id="cPv" inputmode="decimal" type="text"></div>
+        <div id="cRawWrap"><label for="cRaw">PLC raw</label><input id="cRaw" inputmode="decimal" type="text"></div>
+      </div>
+      <input type="range" id="slider" min="-250" max="1250" step="1" aria-label="Signal slider">
+      <div class="row" style="margin-top:2px">
+        <div><span class="big" id="pct">50.0</span><span class="unit">% span</span></div>
+        <span class="badge ok" id="status">OK</span>
+      </div>
+      <div class="bar"><i id="fill"></i></div>
+      <div class="ticks" id="ticks"></div>
+      <div class="meta" id="meta"></div>
+    </section>
+
+    <section class="card">
+      <h2>Check points</h2>
+      <table>
+        <thead id="tblHead"></thead>
+        <tbody id="tbl"></tbody>
+      </table>
+      <div class="row">
+        <span class="note">Tap a row to load it.</span>
+        <button class="btn sm" id="copyTbl" type="button">Copy table</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <details style="margin:0;border:0;padding:0">
+        <summary>Formulas &amp; NAMUR NE43</summary>
+        <div class="note mt">
+          Linear: PV = LRV + (S − Smin)/(Smax − Smin) × (URV − LRV).<br>
+          √ extraction: PV = LRV + √(fraction) × (URV − LRV).<br>
+          Raw = Raw0 + fraction × (Raw100 − Raw0).<br>
+          4–20 mA status per NE43: 3.8–20.5 mA measuring range (outside 4–20 = saturated); ≤ 3.6 or ≥ 21.0 mA = fault.
+          Reverse ranges (LRV &gt; URV) are fine.
+        </div>
+      </details>
+    </section>
+  </div>
+
+  <!-- ================= LOOP CHECK ================= -->
+  <div class="view" id="v-loop">
+    <section class="card">
+      <h2>Loop check</h2>
+      <div id="loopSum" style="font-weight:600"></div>
+      <div class="note" id="loopSub"></div>
+      <div class="grid3 mt">
+        <div><label for="readIn">Reading in</label><select id="readIn" data-k="readIn"></select></div>
+        <div><label for="tol">Tol ± % span</label><input id="tol" data-k="tol" inputmode="decimal" type="text"></div>
+        <div><label for="ptSet">Points</label><select id="ptSet">
+          <option value="5">5-point</option><option value="3">3-point</option>
+          <option value="9">5 up / down</option><option value="11">11-point</option></select></div>
+      </div>
+      <div class="note mt">Enter what you read at each point: e.g. the HMI/PLC value while injecting mA, or the mA you measure while applying the process value. Error is % of span.</div>
+    </section>
+
+    <section class="card">
+      <div class="colhdr"><span>Point / expected</span><span>As found</span><span>As left</span></div>
+      <div id="pts"></div>
+      <div class="row">
+        <div class="sum" id="loopRes"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Record</h2>
+      <div class="grid">
+        <div><label for="tech">Tested by</label><input id="tech" data-k="tech" type="text"></div>
+        <div><label for="tdate">Date</label><input id="tdate" data-k="tdate" type="date"></div>
+      </div>
+      <label class="mt" for="notes">Notes</label>
+      <textarea id="notes" data-k="notes" placeholder="Calibrator, as-found issues, adjustments made…"></textarea>
+      <div class="row">
+        <button class="btn danger sm" id="clrLoop" type="button">Clear readings</button>
+        <button class="btn pri" id="copyLoop" type="button">Copy report</button>
+      </div>
+      <div class="note mt">Report is tab-separated, so it pastes straight into Excel or an ITR table.</div>
+    </section>
+  </div>
+
+  <!-- ================= MOTOR ================= -->
+  <div class="view" id="v-motor">
+    <section class="card">
+      <h2>Motor nameplate</h2>
+      <div class="grid3">
+        <div><label for="mP">Power</label><input id="mP" data-m="P" inputmode="decimal" type="text" placeholder="7.5"></div>
+        <div><label for="mPu">Unit</label><select id="mPu" data-m="Pu"><option>kW</option><option>hp</option></select></div>
+        <div><label for="mPh">Phases</label><select id="mPh" data-m="ph"><option value="3">3-ph</option><option value="1">1-ph</option></select></div>
+        <div><label for="mV">Voltage (V)</label><input id="mV" data-m="V" inputmode="decimal" type="text" placeholder="400"></div>
+        <div><label for="mI">Current (A)</label><input id="mI" data-m="I" inputmode="decimal" type="text" placeholder="14.2"></div>
+        <div><label for="mF">Freq (Hz)</label><input id="mF" data-m="f" inputmode="decimal" type="text" placeholder="50"></div>
+        <div><label for="mN">Speed (rpm)</label><input id="mN" data-m="n" inputmode="decimal" type="text" placeholder="1460"></div>
+        <div><label for="mPf">Power factor</label><input id="mPf" data-m="pf" inputmode="decimal" type="text" placeholder="0.84"></div>
+        <div><label for="mEff">Efficiency %</label><input id="mEff" data-m="eff" inputmode="decimal" type="text" placeholder="91"></div>
+        <div><label for="mConn">Connection</label><select id="mConn" data-m="conn"><option value="">—</option><option>Δ</option><option>Y</option></select></div>
+        <div><label for="mSf">Service factor</label><input id="mSf" data-m="sf" inputmode="decimal" type="text" placeholder="1.0"></div>
+        <div><label for="mIns">Ins. class</label><input id="mIns" data-m="ins" type="text" placeholder="F"></div>
+      </div>
+      <details id="dPhoto">
+        <summary>Nameplate photo</summary>
+        <div class="note mt">Keep a photo with the motor for reference while you enter the values. It's stored on this phone only.</div>
+        <div class="row">
+          <label class="btn sm" style="margin:0;color:var(--text)">📷 Take / choose photo<input id="mPhoto" type="file" accept="image/*" capture="environment" class="hidden"></label>
+          <button class="btn sm danger" id="mPhotoDel" type="button">Remove</button>
+        </div>
+        <img id="mImg" alt="Motor nameplate" style="width:100%;border-radius:10px;margin-top:10px;display:none">
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>Calculated</h2>
+      <table><tbody id="mCalc"></tbody></table>
+      <div class="warnbox" id="mWarn"></div>
+    </section>
+
+    <section class="card">
+      <h2>VFD operating point</h2>
+      <div class="grid">
+        <div><label for="mFop">Output frequency (Hz)</label><input id="mFop" inputmode="decimal" type="text"></div>
+        <div><label for="mNop">≈ Shaft speed (rpm)</label><input id="mNop" inputmode="decimal" type="text"></div>
+      </div>
+      <table class="mt"><tbody id="mOp"></tbody></table>
+      <div class="note mt">Assumes standard V/Hz: constant torque up to base frequency, then constant power (field weakening). Speed uses rated slip. Self-cooled motors lose cooling at low speed, so check the motor's derating curve before running at low frequency for long periods.</div>
+    </section>
+
+    <section class="card">
+      <h2>VFD setup</h2>
+      <div class="grid">
+        <div><label for="vMin">Min freq (Hz)</label><input id="vMin" data-m="vMin" inputmode="decimal" type="text" placeholder="25"></div>
+        <div><label for="vMax">Max freq (Hz)</label><input id="vMax" data-m="vMax" inputmode="decimal" type="text" placeholder="50"></div>
+        <div><label for="vAcc">Accel (s)</label><input id="vAcc" data-m="vAcc" inputmode="decimal" type="text" placeholder="10"></div>
+        <div><label for="vDec">Decel (s)</label><input id="vDec" data-m="vDec" inputmode="decimal" type="text" placeholder="10"></div>
+        <div><label for="vCtl">Control mode</label><select id="vCtl" data-m="vCtl"><option value="">—</option><option>V/Hz (scalar)</option><option>Sensorless vector</option><option>Closed-loop vector</option></select></div>
+        <div><label for="vLoad">Load type</label><select id="vLoad" data-m="vLoad"><option value="">—</option><option>Variable torque (pump/fan)</option><option>Constant torque (conveyor/PD pump)</option></select></div>
+      </div>
+      <table class="mt"><tbody id="vPar"></tbody></table>
+      <div class="row">
+        <button class="btn sm" id="vToScale" type="button">Scale speed ref on Scale tab</button>
+      </div>
+      <div class="note mt" id="vRef"></div>
+    </section>
+
+    <section class="card">
+      <h2>Commissioning checklist</h2>
+      <div id="vChk"></div>
+      <div class="row">
+        <button class="btn danger sm" id="vChkClr" type="button">Untick all</button>
+        <button class="btn pri" id="vCopy" type="button">Copy motor sheet</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Power · torque · speed</h2>
+      <div class="grid3">
+        <div><label for="tP">Power (kW)</label><input id="tP" inputmode="decimal" type="text"></div>
+        <div><label for="tT">Torque (N·m)</label><input id="tT" inputmode="decimal" type="text"></div>
+        <div><label for="tN">Speed (rpm)</label><input id="tN" inputmode="decimal" type="text"></div>
+      </div>
+      <div class="row"><label for="tSolve" style="margin:0">Solve for</label>
+        <select id="tSolve" style="width:auto"><option value="T">Torque</option><option value="P">Power</option><option value="N">Speed</option></select></div>
+      <div class="meta" id="tOut"></div>
+      <div class="note mt">P (kW) = T (N·m) × n (rpm) / 9549.3</div>
+    </section>
+  </div>
+
+  <!-- ================= UNITS ================= -->
+  <div class="view" id="v-units">
+    <div class="chips" id="tChips" style="margin-bottom:12px"></div>
+
+    <div id="t-elec">
+      <section class="card">
+        <h2>Power &amp; current</h2>
+        <div class="grid">
+          <div><label for="ePh">Phases</label><select id="ePh"><option value="3">3-phase</option><option value="1">1-phase</option></select></div>
+          <div><label for="eSolve">Solve for</label><select id="eSolve"><option value="I">Current</option><option value="kW">kW</option></select></div>
+          <div><label for="eV">Voltage (V, L-L)</label><input id="eV" inputmode="decimal" type="text" value="400"></div>
+          <div><label for="ePf">Power factor</label><input id="ePf" inputmode="decimal" type="text" value="0.85"></div>
+          <div><label for="eKw">Power (kW)</label><input id="eKw" inputmode="decimal" type="text"></div>
+          <div><label for="eI">Current (A)</label><input id="eI" inputmode="decimal" type="text"></div>
+        </div>
+        <div class="meta" id="eOut"></div>
+      </section>
+      <section class="card">
+        <h2>Voltage drop</h2>
+        <div class="grid">
+          <div><label for="dVc">Vc (mV/A·m)</label><input id="dVc" inputmode="decimal" type="text" placeholder="from tables"></div>
+          <div><label for="dI">Current (A)</label><input id="dI" inputmode="decimal" type="text"></div>
+          <div><label for="dL">Route length (m)</label><input id="dL" inputmode="decimal" type="text"></div>
+          <div><label for="dV">Supply (V)</label><input id="dV" inputmode="decimal" type="text" value="400"></div>
+          <div><label for="dLimit">Limit (%)</label><input id="dLimit" inputmode="decimal" type="text" value="5"></div>
+        </div>
+        <div class="meta" id="dOut"></div>
+        <div class="note mt">ΔV = Vc × I × L / 1000. Use the 3-phase or 1-phase Vc for the cable from the AS/NZS 3008.1 voltage-drop tables or the cable maker's data.</div>
+      </section>
+      <section class="card">
+        <h2>Insulation resistance</h2>
+        <div class="grid3">
+          <div><label for="ir30">30 s (MΩ)</label><input id="ir30" inputmode="decimal" type="text"></div>
+          <div><label for="ir1">1 min (MΩ)</label><input id="ir1" inputmode="decimal" type="text"></div>
+          <div><label for="ir10">10 min (MΩ)</label><input id="ir10" inputmode="decimal" type="text"></div>
+        </div>
+        <div class="meta" id="irOut"></div>
+        <div class="note mt">IEEE 43 recommends PI ≥ 2.0 for class B, F and H windings. PI isn't meaningful when the 1-min reading is above about 5000 MΩ. Disconnect VFDs and electronics before testing.</div>
+      </section>
+    </div>
+
+    <div id="t-pump">
+      <section class="card">
+        <h2>Affinity laws</h2>
+        <div class="grid">
+          <div><label for="pN1">Speed 1 (rpm or Hz)</label><input id="pN1" inputmode="decimal" type="text" value="50"></div>
+          <div><label for="pN2">Speed 2</label><input id="pN2" inputmode="decimal" type="text" value="40"></div>
+          <div><label for="pQ1">Flow 1</label><input id="pQ1" inputmode="decimal" type="text"></div>
+          <div><label for="pH1">Head 1</label><input id="pH1" inputmode="decimal" type="text"></div>
+          <div><label for="pP1">Power 1</label><input id="pP1" inputmode="decimal" type="text"></div>
+        </div>
+        <table class="mt"><tbody id="pAff"></tbody></table>
+        <div class="note mt">Q ∝ n, H ∝ n², P ∝ n³. These hold on the system curve with no static head. With high static head, flow drops off much faster than the speed ratio.</div>
+      </section>
+      <section class="card">
+        <h2>Pump power</h2>
+        <div class="grid">
+          <div><label for="hQ">Flow (L/s)</label><input id="hQ" inputmode="decimal" type="text"></div>
+          <div><label for="hH">Total head (m)</label><input id="hH" inputmode="decimal" type="text"></div>
+          <div><label for="hSg">SG</label><input id="hSg" inputmode="decimal" type="text" value="1.0"></div>
+          <div><label for="hEff">Pump η (%)</label><input id="hEff" inputmode="decimal" type="text" value="70"></div>
+          <div><label for="hMe">Motor + VFD η (%)</label><input id="hMe" inputmode="decimal" type="text" value="90"></div>
+        </div>
+        <table class="mt"><tbody id="hOut"></tbody></table>
+      </section>
+    </div>
+
+    <div id="t-flow">
+      <section class="card">
+        <h2>Wet-well drawdown test</h2>
+        <div class="grid">
+          <div><label for="fShape">Well shape</label><select id="fShape"><option value="rect">Rectangular</option><option value="circ">Circular</option></select></div>
+          <div></div>
+          <div><label for="fL" id="fLlbl">Length (m)</label><input id="fL" inputmode="decimal" type="text"></div>
+          <div id="fWWrap"><label for="fW">Width (m)</label><input id="fW" inputmode="decimal" type="text"></div>
+          <div><label for="fDh">Level drop (m)</label><input id="fDh" inputmode="decimal" type="text"></div>
+          <div><label for="fT">Time (s)</label><input id="fT" inputmode="decimal" type="text"></div>
+          <div><label for="fIn">Inflow (L/s)</label><input id="fIn" inputmode="decimal" type="text" placeholder="0"></div>
+          <div><label for="fMeter">Flowmeter avg (L/s)</label><input id="fMeter" inputmode="decimal" type="text" placeholder="optional"></div>
+        </div>
+        <table class="mt"><tbody id="fOut"></tbody></table>
+        <details>
+          <summary>Measure inflow (rise test)</summary>
+          <div class="grid mt">
+            <div><label for="fRdh">Level rise (m)</label><input id="fRdh" inputmode="decimal" type="text"></div>
+            <div><label for="fRt">Time (s)</label><input id="fRt" inputmode="decimal" type="text"></div>
+          </div>
+          <div class="row"><span class="meta" id="fRout" style="margin:0"></span><button class="btn sm" id="fUseIn" type="button">Use as inflow</button></div>
+        </details>
+        <div class="note mt">Pump flow = area × drop / time + inflow. Use a level band with straight walls (no benching) and time at least 60 s for accuracy.</div>
+      </section>
+      <section class="card">
+        <h2>Pipe velocity</h2>
+        <div class="grid">
+          <div><label for="vQ">Flow (L/s)</label><input id="vQ" inputmode="decimal" type="text"></div>
+          <div><label for="vD">Internal dia (mm)</label><input id="vD" inputmode="decimal" type="text"></div>
+        </div>
+        <div class="meta" id="vOut"></div>
+        <div class="note mt">Rising mains for sewage are typically designed for about 0.75 m/s minimum (self-cleansing) and around 2.5–3 m/s maximum. Check the project spec.</div>
+      </section>
+    </div>
+
+    <div id="t-rtd">
+      <section class="card">
+        <h2>RTD (IEC 60751)</h2>
+        <div class="grid3">
+          <div><label for="rR0">Type</label><select id="rR0"><option value="100">Pt100</option><option value="1000">Pt1000</option></select></div>
+          <div><label for="rT">Temp (°C)</label><input id="rT" inputmode="decimal" type="text" value="20"></div>
+          <div><label for="rR">Resistance (Ω)</label><input id="rR" inputmode="decimal" type="text"></div>
+        </div>
+        <table class="mt" id="rTbl"></table>
+        <div class="note mt">Callendar–Van Dusen, α = 0.00385. Add lead resistance for 2-wire connections.</div>
+      </section>
+    </div>
+
+    <section class="card" id="t-units">
+      <h2>Unit converter</h2>
+      <div class="chips" id="uChips"></div>
+      <div class="grid mt">
+        <div><label for="uIn">Value</label><input id="uIn" inputmode="decimal" type="text" value="100"></div>
+        <div><label for="uFrom">From</label><select id="uFrom"></select></div>
+      </div>
+      <table class="mt"><tbody id="uTbl"></tbody></table>
+      <div id="uHeadWrap" class="grid mt" style="align-items:end">
+        <div><label for="uSg">Liquid SG (for head)</label><input id="uSg" inputmode="decimal" type="text" value="1.0"></div>
+        <div class="meta" style="margin:0 0 12px" id="uHead"></div>
+      </div>
+      <div class="note mt" id="uNote"></div>
+    </section>
+  </div>
+
+  <!-- ================= INSTRUMENTS ================= -->
+  <div class="view" id="v-inst">
+    <section class="card">
+      <h2>Current</h2>
+      <div id="curInfo" class="note"></div>
+      <div class="row">
+        <button class="btn" id="newInst" type="button">+ New instrument</button>
+        <button class="btn pri" id="saveInst" type="button">Save</button>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Saved instruments <span id="instCount"></span></h2>
+      <input id="instFilter" type="text" placeholder="Filter by tag or description" autocapitalize="off">
+      <div id="instList" class="mt"></div>
+      <div class="row">
+        <button class="btn sm" id="copyReg" type="button">Copy register</button>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Backup</h2>
+      <div class="note">Saved instruments live in this browser on this phone only. Copy a backup now and then, and paste it here to restore or move to another device.</div>
+      <div class="row">
+        <button class="btn sm" id="copyBak" type="button">Copy backup</button>
+      </div>
+      <textarea id="impTxt" class="mt" placeholder="Paste a backup here to import"></textarea>
+      <div class="row"><span class="note" id="impMsg"></span><button class="btn sm" id="impBtn" type="button">Import</button></div>
+    </section>
+  </div>
+</main>
+
+<nav>
+  <a href="#scale" data-v="scale"><b>⚖︎</b>Scale</a>
+  <a href="#loop" data-v="loop"><b>✓</b>Loop</a>
+  <a href="#motor" data-v="motor"><b>⚙︎</b>Motor</a>
+  <a href="#tools" data-v="units"><b>⇄</b>Tools</a>
+  <a href="#instruments" data-v="inst"><b>☰</b>Instruments</a>
+</nav>
+
+<div id="copyBox"><div class="card">
+  <h2>Copy this text</h2>
+  <textarea id="copyTxt" readonly></textarea>
+  <div class="row"><span class="note">Copy was blocked. Select all and copy manually.</span><button class="btn" id="copyClose" type="button">Close</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const num = v => { if(v===null||v===undefined) return NaN; const x = parseFloat(String(v).replace(',', '.')); return isFinite(x)?x:NaN; };
+  const fmt = (x, d) => {
+    if(!isFinite(x)) return '—';
+    if(d===undefined){ const a=Math.abs(x); d = a>=1000?1: a>=100?2: a>=1?3: 4; }
+    return (+x.toFixed(d)).toString();
+  };
+  const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  const PRESETS = [
+    {k:'level', n:'Level',       lrv:0, urv:5,   u:'m'},
+    {k:'press', n:'Pressure',    lrv:0, urv:10,  u:'bar'},
+    {k:'temp',  n:'Temperature', lrv:0, urv:100, u:'°C'},
+    {k:'flow',  n:'Flow',        lrv:0, urv:250, u:'L/s'},
+    {k:'dp',    n:'DP flow',     lrv:0, urv:250, u:'L/s', sqrt:true},
+    {k:'do',    n:'DO',          lrv:0, urv:20,  u:'mg/L'},
+    {k:'ph',    n:'pH',          lrv:0, urv:14,  u:'pH'},
+    {k:'speed', n:'Speed',       lrv:0, urv:50,  u:'Hz'},
+    {k:'pos',   n:'Valve pos',   lrv:0, urv:100, u:'%'},
+    {k:'custom',n:'Custom',      lrv:0, urv:100, u:'%'}
+  ];
+  const SIGS = {
+    '4-20':{n:'4–20 mA',min:4,max:20,u:'mA',d:3},
+    '0-20':{n:'0–20 mA',min:0,max:20,u:'mA',d:3},
+    '1-5': {n:'1–5 V',  min:1,max:5, u:'V', d:3},
+    '0-10':{n:'0–10 V', min:0,max:10,u:'V', d:3}
+  };
+  const RAWS = {
+    none:{n:'None'},
+    s7:{n:'Siemens 0–27648',min:0,max:27648},
+    i15:{n:'0–32767',min:0,max:32767},
+    b12:{n:'12-bit 0–4095',min:0,max:4095},
+    u16:{n:'0–65535',min:0,max:65535},
+    custom:{n:'Custom…'}
+  };
+  const PTS = {'5':[0,25,50,75,100],'3':[0,50,100],'9':[0,25,50,75,100,75,50,25,0],'11':[0,10,20,30,40,50,60,70,80,90,100]};
+  const today = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+  const DEF = () => ({tag:'',desc:'',preset:'level',lrv:'0',urv:'5',unit:'m',sqrt:false,sig:'4-20',raw:'none',
+    rawMin:'0',rawMax:'27648',lrl:'',url:'',minSpan:'',hMin:'0',hMax:'5',hOff:'0',hSg:'1.0',
+    tol:'0.5',readIn:'pv',ptSet:'5',af:[],al:[],tech:'',tdate:today(),notes:''});
+
+  let cur = DEF(), lib = {}, F = 0.5;
+  try{
+    const s = JSON.parse(localStorage.getItem('cx-tool')||'null');
+    if(s){ cur = Object.assign(DEF(), s.cur||{}); lib = s.lib||{}; if(isFinite(s.F)) F = s.F; }
+  }catch(e){}
+  function store(){ try{ localStorage.setItem('cx-tool', JSON.stringify({cur,lib,F})); }catch(e){} }
+
+  // ---------- helpers ----------
+  const L = () => num(cur.lrv), U = () => num(cur.urv), SP = () => U()-L();
+  const sig = () => SIGS[cur.sig] || SIGS['4-20'];
+  function rawR(){
+    if(cur.raw==='none') return null;
+    if(cur.raw==='custom'){ const a=num(cur.rawMin), b=num(cur.rawMax); return (isFinite(a)&&isFinite(b)&&a!==b)?{min:a,max:b}:null; }
+    return RAWS[cur.raw];
+  }
+  const rangeOk = () => isFinite(L()) && isFinite(U()) && L()!==U();
+  function f2pv(f){ const g = cur.sqrt ? (f<=0?0:Math.sqrt(f)) : f; return L() + g*SP(); }
+  function pv2f(pv){ const g=(pv-L())/SP(); return cur.sqrt ? (g<=0?0:g*g) : g; }
+  function f2s(f){ const s=sig(); return s.min + f*(s.max-s.min); }
+  function s2f(v){ const s=sig(); return (v-s.min)/(s.max-s.min); }
+  function f2r(f){ const r=rawR(); return r ? r.min + f*(r.max-r.min) : NaN; }
+  function r2f(v){ const r=rawR(); return (v-r.min)/(r.max-r.min); }
+  function status(f){
+    if(cur.sig==='4-20'){
+      const ma=f2s(f);
+      if(ma<=3.6+1e-9) return ['FAULT LOW','bad'];
+      if(ma>=21-1e-9)  return ['FAULT HIGH','bad'];
+      if(ma<4-1e-9)    return ['UNDER RANGE','warn'];
+      if(ma>20+1e-9)   return ['OVER RANGE','warn'];
+      return ['OK','ok'];
+    }
+    if(f<-1e-9) return ['UNDER RANGE','warn'];
+    if(f>1+1e-9) return ['OVER RANGE','warn'];
+    return ['OK','ok'];
+  }
+  const presetName = () => (PRESETS.find(p=>p.k===cur.preset)||PRESETS[0]).n;
+  const rangeTxt = () => cur.lrv+' to '+cur.urv+' '+cur.unit+' · '+sig().n+(cur.sqrt?' · √':'')+(rawR()?' · raw '+rawR().min+'–'+rawR().max:'');
+  const snapshot = o => { const c=Object.assign({},o); return JSON.stringify(c); };
+  const isSaved = () => cur.tag && lib[cur.tag] && snapshot(lib[cur.tag])===snapshot(cur);
+
+  function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('on'),1600); }
+  async function copyText(t, okMsg){
+    try{ await navigator.clipboard.writeText(t); toast(okMsg||'Copied'); }
+    catch(e){ $('copyTxt').value=t; $('copyBox').style.display='flex'; setTimeout(()=>{$('copyTxt').focus();$('copyTxt').select();},50); }
+  }
+  $('copyClose').onclick = ()=>{ $('copyBox').style.display='none'; };
+  function twoTap(btn, fn){
+    if(btn.dataset.arm){ delete btn.dataset.arm; btn.textContent=btn.dataset.lbl; fn(); return; }
+    btn.dataset.lbl = btn.textContent; btn.dataset.arm='1'; btn.textContent='Tap again to confirm';
+    setTimeout(()=>{ if(btn.dataset.arm){ delete btn.dataset.arm; btn.textContent=btn.dataset.lbl; } }, 3000);
+  }
+
+  // ---------- header ----------
+  function refreshHeader(){
+    $('hdrTag').textContent = cur.tag ? cur.tag+(cur.desc?' · '+cur.desc:'') : 'Untitled instrument';
+    const saved = isSaved();
+    [$('hdrSave'),$('saveInst')].forEach(b=>{ b.textContent = saved ? 'Saved ✓' : 'Save'; });
+    store();
+  }
+  function saveCurrent(){
+    const t = (cur.tag||'').trim();
+    if(!t){ toast('Enter a tag first'); location.hash='#scale'; setTimeout(()=>$('tag').focus(),100); return; }
+    cur.tag = t; lib[t] = JSON.parse(snapshot(cur));
+    refreshHeader(); renderLib(); toast('Saved '+t);
+  }
+  $('hdrSave').onclick = saveCurrent; $('saveInst').onclick = saveCurrent;
+
+  // ---------- selects / chips ----------
+  Object.entries(SIGS).forEach(([k,s])=>{ const o=document.createElement('option'); o.value=k; o.textContent=s.n; $('sig').appendChild(o); });
+  Object.entries(RAWS).forEach(([k,s])=>{ const o=document.createElement('option'); o.value=k; o.textContent=s.n; $('raw').appendChild(o); });
+  function renderChips(){
+    $('chips').innerHTML='';
+    PRESETS.forEach(p=>{
+      const b=document.createElement('button'); b.type='button'; b.className='chip'+(p.k===cur.preset?' on':''); b.textContent=p.n;
+      b.onclick=()=>{ Object.assign(cur,{preset:p.k,lrv:String(p.lrv),urv:String(p.urv),unit:p.u,sqrt:!!p.sqrt}); loadInputs(); renderAll(); };
+      $('chips').appendChild(b);
+    });
+  }
+
+  // ---------- bind data-k inputs ----------
+  function loadInputs(){
+    document.querySelectorAll('[data-k]').forEach(el=>{ const v=cur[el.dataset.k]; el.value = (v===undefined||v===null)?'':v; });
+    $('sqrt').checked = !!cur.sqrt; $('ptSet').value = cur.ptSet;
+  }
+  document.querySelectorAll('[data-k]').forEach(el=>{
+    const ev = (el.tagName==='SELECT') ? 'change' : 'input';
+    el.addEventListener(ev, ()=>{
+      const k = el.dataset.k; cur[k] = el.value;
+      if(k==='tag'||k==='desc'||k==='tech'||k==='tdate'||k==='notes'){ refreshHeader(); if(k==='tag'||k==='desc') renderLoopHead(); return; }
+      if(k==='tol'||k==='readIn'){ renderLoop(); refreshHeader(); return; }
+      if(k==='hMin'||k==='hMax'||k==='hOff'||k==='hSg'){ renderLevel(); refreshHeader(); return; }
+      renderAll();
+    });
+  });
+  $('sqrt').addEventListener('change', ()=>{ cur.sqrt=$('sqrt').checked; renderAll(); });
+  $('swap').addEventListener('click', ()=>{ const a=cur.lrv; cur.lrv=cur.urv; cur.urv=a; loadInputs(); renderAll(); });
+
+  // ---------- warnings ----------
+  function renderWarn(){
+    const w=[];
+    if(!rangeOk()) w.push('LRV and URV must be numbers and not equal.');
+    else {
+      const lo=Math.min(L(),U()), hi=Math.max(L(),U()), lrl=num(cur.lrl), url=num(cur.url), ms=num(cur.minSpan);
+      if(isFinite(lrl) && lo<lrl-1e-12) w.push('Range starts at '+fmt(lo)+' '+cur.unit+', below the sensor minimum ('+fmt(lrl)+').');
+      if(isFinite(url) && hi>url+1e-12) w.push('Range goes to '+fmt(hi)+' '+cur.unit+', above the sensor maximum ('+fmt(url)+').');
+      if(isFinite(ms) && Math.abs(SP())<ms-1e-12) w.push('Span '+fmt(Math.abs(SP()))+' '+cur.unit+' is narrower than the sensor minimum span ('+fmt(ms)+'). The transmitter will reject it. Range the transmitter at the minimum span and scale in the PLC.');
+    }
+    if(cur.raw==='custom' && !rawR()) w.push('Custom raw counts need two different numbers.');
+    $('warn').innerHTML = w.map(esc).join('<br>'); $('warn').style.display = w.length?'block':'none';
+  }
+
+  // ---------- level helper ----------
+  let lvlRes = null;
+  function renderLevel(){
+    const a=num(cur.hMin), b=num(cur.hMax), off=num(cur.hOff)||0, sg=num(cur.hSg);
+    const out=$('lvlOut'); out.innerHTML='';
+    if(!(isFinite(a)&&isFinite(b)&&sg>0&&a!==b)){ lvlRes=null; out.innerHTML='<tr><td class="note">Enter both levels and SG.</td></tr>'; return; }
+    const p0=(a+off)*sg*98.0665, p1=(b+off)*sg*98.0665;
+    lvlRes={p0,p1};
+    const rows=[['','0%','100%'],['mbar',fmt(p0),fmt(p1)],['kPa',fmt(p0/10),fmt(p1/10)],['mm H₂O',fmt(p0/0.0980665,1),fmt(p1/0.0980665,1)]];
+    rows.forEach((r,i)=>{ const tr=document.createElement('tr'); tr.innerHTML=r.map(c=>i===0?'<th>'+c+'</th>':'<td>'+c+'</td>').join(''); out.appendChild(tr); });
+    if(p0<0){ const tr=document.createElement('tr'); tr.innerHTML='<td colspan="3" class="note" style="color:var(--warn)">0% is below atmospheric: the sensor sits above that level.</td>'; out.appendChild(tr); }
+  }
+  document.querySelectorAll('[data-apply]').forEach(b=>b.addEventListener('click',()=>{
+    if(!lvlRes){ toast('Enter levels first'); return; }
+    const k=b.dataset.apply, d=k==='kPa'?10:1;
+    cur.lrv=fmt(lvlRes.p0/d); cur.urv=fmt(lvlRes.p1/d); cur.unit=k;
+    loadInputs(); renderAll(); toast('Range set to '+cur.lrv+'–'+cur.urv+' '+k);
+  }));
+
+  // ---------- convert ----------
+  function renderConv(src){
+    const s=sig(), r=rawR();
+    $('sigU').textContent=s.u; $('pvU').textContent=cur.unit||'PV';
+    $('cRawWrap').classList.toggle('hidden', !r);
+    $('rawCustom').classList.toggle('hidden', cur.raw!=='custom');
+    $('convGrid').className = r ? 'grid3' : 'grid';
+    // ticks
+    $('ticks').innerHTML = [0,.25,.5,.75,1].map((f,i)=>'<span>'+fmt(f2s(f),2)+(i===4?' '+s.u:'')+'</span>').join('');
+    const ok=rangeOk();
+    if(src!=='sig') $('cSig').value = fmt(f2s(F), s.d);
+    if(src!=='pv')  $('cPv').value  = ok ? fmt(f2pv(F)) : '';
+    if(src!=='raw' && r) $('cRaw').value = fmt(f2r(F),0);
+    if(src!=='slider') $('slider').value = Math.round(Math.max(-.25,Math.min(1.25,F))*1000);
+    $('pct').textContent = fmt(F*100,1);
+    $('fill').style.width = Math.max(0,Math.min(100,F*100))+'%';
+    const [t,c]=status(F); $('status').textContent=t; $('status').className='badge '+c;
+    const bits=[];
+    if(ok){
+      bits.push('Span '+fmt(Math.abs(SP()))+' '+cur.unit);
+      if(!cur.sqrt) bits.push(fmt((s.max-s.min)/SP(),4)+' '+s.u+' per '+(cur.unit||'unit'));
+      else bits.push('flow '+fmt((F<=0?0:Math.sqrt(F))*100,1)+'% of max');
+    }
+    if(s.u==='mA') bits.push(fmt(f2s(F)*0.25,3)+' V @250 Ω');
+    $('meta').textContent = bits.join(' · ');
+    store();
+  }
+  $('cSig').addEventListener('input',()=>{ const v=num($('cSig').value); if(isFinite(v)){ F=s2f(v); renderConv('sig'); } });
+  $('cPv').addEventListener('input',()=>{ const v=num($('cPv').value); if(isFinite(v)&&rangeOk()){ F=pv2f(v); renderConv('pv'); } });
+  $('cRaw').addEventListener('input',()=>{ const v=num($('cRaw').value); if(isFinite(v)&&rawR()){ F=r2f(v); renderConv('raw'); } });
+  $('slider').addEventListener('input',()=>{ F=$('slider').value/1000; renderConv('slider'); });
+  ['cSig','cPv','cRaw'].forEach(id=>$(id).addEventListener('blur',()=>renderConv(null)));
+
+  // ---------- check table ----------
+  const TBL=[0,10,25,50,75,90,100];
+  function renderTable(){
+    const s=sig(), r=rawR();
+    $('tblHead').innerHTML='<tr><th>%</th><th>'+s.u+'</th><th>'+esc(cur.unit||'PV')+'</th>'+(r?'<th>Raw</th>':'')+'</tr>';
+    const tb=$('tbl'); tb.innerHTML='';
+    if(!rangeOk()) return;
+    TBL.forEach(p=>{
+      const f=p/100, tr=document.createElement('tr'); tr.className='click';
+      tr.innerHTML='<td>'+p+'</td><td>'+fmt(f2s(f),s.d)+'</td><td>'+fmt(f2pv(f))+'</td>'+(r?'<td>'+fmt(f2r(f),0)+'</td>':'');
+      tr.onclick=()=>{ F=f; renderConv(null); window.scrollTo({top:0,behavior:'smooth'}); };
+      tb.appendChild(tr);
+    });
+  }
+  $('copyTbl').onclick=()=>{
+    const s=sig(), r=rawR();
+    const lines=[(cur.tag||'Untitled')+(cur.desc?' – '+cur.desc:''), 'Range: '+rangeTxt(),
+      ['%',s.u,'PV ('+cur.unit+')'].concat(r?['Raw']:[]).join('\t')];
+    TBL.forEach(p=>{ const f=p/100; lines.push([p,fmt(f2s(f),s.d),fmt(f2pv(f))].concat(r?[fmt(f2r(f),0)]:[]).join('\t')); });
+    copyText(lines.join('\n'),'Table copied');
+  };
+
+  // ---------- loop check ----------
+  function readDef(){
+    const s=sig(), r=rawR();
+    if(cur.readIn==='sig') return {u:s.u, exp:f=>f2s(f), den:Math.abs(s.max-s.min), d:s.d};
+    if(cur.readIn==='raw' && r) return {u:'raw', exp:f=>f2r(f), den:Math.abs(r.max-r.min), d:0};
+    return {u:cur.unit||'PV', exp:f=>f2pv(f), den:Math.abs(SP()), d:undefined};
+  }
+  function renderLoopHead(){
+    $('loopSum').textContent = (cur.tag||'Untitled instrument')+(cur.desc?' · '+cur.desc:'');
+    $('loopSub').textContent = presetName()+' · '+rangeTxt();
+  }
+  function renderLoop(){
+    renderLoopHead();
+    const ri=$('readIn'); const r=rawR(); const s=sig();
+    const opts=[['pv','Value ('+(cur.unit||'PV')+')'],['sig','Signal ('+s.u+')']].concat(r?[['raw','PLC raw']]:[]);
+    if(cur.readIn==='raw' && !r) cur.readIn='pv';
+    ri.innerHTML=opts.map(o=>'<option value="'+o[0]+'"'+(o[0]===cur.readIn?' selected':'')+'>'+esc(o[1])+'</option>').join('');
+    const box=$('pts'); box.innerHTML='';
+    if(!rangeOk()){ box.innerHTML='<div class="note" style="padding:10px 0">Set a valid range on the Scale tab first.</div>'; $('loopRes').innerHTML=''; return; }
+    const rd=readDef(), pts=PTS[cur.ptSet]||PTS['5'];
+    pts.forEach((p,i)=>{
+      const f=p/100, d=document.createElement('div'); d.className='pt';
+      const dir = cur.ptSet==='9' ? (i<5?' ↑':' ↓') : '';
+      d.innerHTML =
+        '<div class="lbl"><b>'+p+'%'+dir+'</b><div>'+fmt(f2s(f),s.d)+' '+s.u+'</div><div>'+fmt(f2pv(f))+' '+esc(cur.unit)+'</div>'+
+          (rd.u==='raw'?'<div>'+fmt(f2r(f),0)+' raw</div>':'')+'</div>'+
+        '<div><input inputmode="decimal" type="text" data-af="'+i+'" placeholder="'+esc(fmt(rd.exp(f),rd.d))+'" value="'+esc(cur.af[i]??'')+'"><div class="err" id="eaf'+i+'"></div></div>'+
+        '<div><input inputmode="decimal" type="text" data-al="'+i+'" placeholder="'+esc(fmt(rd.exp(f),rd.d))+'" value="'+esc(cur.al[i]??'')+'"><div class="err" id="eal'+i+'"></div></div>';
+      box.appendChild(d);
+    });
+    box.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
+      const isAf = inp.dataset.af!==undefined, i=+(isAf?inp.dataset.af:inp.dataset.al);
+      (isAf?cur.af:cur.al)[i]=inp.value; updLoop(); refreshHeader();
+    }));
+    updLoop();
+  }
+  function evalLoop(){
+    const rd=readDef(), pts=PTS[cur.ptSet]||PTS['5'], tol=Math.abs(num(cur.tol));
+    const res={af:[],al:[],tol,rd,pts};
+    ['af','al'].forEach(k=>{
+      pts.forEach((p,i)=>{
+        const v=num(cur[k][i]);
+        if(!isFinite(v)||!rd.den){ res[k][i]=null; return; }
+        const e=(v-rd.exp(p/100))/rd.den*100;
+        res[k][i]={e, pass: !isFinite(tol) || Math.abs(e)<=tol+1e-9};
+      });
+    });
+    const sum=k=>{ const r=res[k].filter(Boolean); if(!r.length) return null;
+      const mx=r.reduce((m,x)=>Math.abs(x.e)>Math.abs(m)?x.e:m,0);
+      return {n:r.length, of:pts.length, max:mx, pass:r.every(x=>x.pass)}; };
+    res.saf=sum('af'); res.sal=sum('al');
+    return res;
+  }
+  function updLoop(){
+    const R=evalLoop();
+    ['af','al'].forEach(k=>R.pts.forEach((p,i)=>{
+      const el=$('e'+k+i); if(!el) return; const x=R[k][i];
+      if(!x){ el.textContent=''; el.className='err'; return; }
+      el.textContent=(x.e>=0?'+':'')+fmt(x.e,2)+'% '+(x.pass?'✓':'✗'); el.className='err '+(x.pass?'ok':'bad');
+      el.style.color = x.pass?'var(--ok)':'var(--bad)';
+    }));
+    const b=(lbl,s)=> s ? '<span class="badge '+(s.pass?(s.n<s.of?'warn':'ok'):'bad')+'">'+lbl+': '+(s.pass?(s.n<s.of?'INCOMPLETE':'PASS'):'FAIL')+' · max '+(s.max>=0?'+':'')+fmt(s.max,2)+'%</span>'
+                          : '<span class="badge" style="color:var(--muted);border:1px solid var(--line)">'+lbl+': —</span>';
+    $('loopRes').innerHTML = b('As found',R.saf)+b('As left',R.sal);
+  }
+  $('ptSet').addEventListener('change',()=>{
+    const has = cur.af.some(v=>v!==''&&v!=null) || cur.al.some(v=>v!==''&&v!=null);
+    cur.ptSet=$('ptSet').value; if(has){ cur.af=[]; cur.al=[]; toast('Readings cleared for new point set'); }
+    renderLoop(); refreshHeader();
+  });
+  $('clrLoop').onclick=function(){ twoTap(this,()=>{ cur.af=[]; cur.al=[]; renderLoop(); refreshHeader(); toast('Readings cleared'); }); };
+  const resWord = s => s ? (s.pass?(s.n<s.of?'INCOMPLETE':'PASS'):'FAIL')+' (max '+fmt(s.max,2)+'% span, '+s.n+'/'+s.of+' pts)' : 'not done';
+  $('copyLoop').onclick=()=>{
+    if(!rangeOk()){ toast('Set a valid range first'); return; }
+    const R=evalLoop(), rd=R.rd, s=sig();
+    const L1=['LOOP CHECK\t'+(cur.tag||'Untitled'), 'Description\t'+(cur.desc||''), 'Type\t'+presetName(),
+      'Range\t'+rangeTxt(), 'Reading in\t'+rd.u, 'Tolerance\t±'+cur.tol+'% span', '',
+      ['Point %','Expected '+s.u,'Expected '+cur.unit, 'Expected ('+rd.u+')','As found','Err %','As left','Err %'].join('\t')];
+    R.pts.forEach((p,i)=>{ const f=p/100, a=R.af[i], l=R.al[i];
+      L1.push([p, fmt(f2s(f),s.d), fmt(f2pv(f)), fmt(rd.exp(f),rd.d), cur.af[i]||'', a?fmt(a.e,2):'', cur.al[i]||'', l?fmt(l.e,2):''].join('\t')); });
+    L1.push('', 'As found\t'+resWord(R.saf), 'As left\t'+resWord(R.sal), 'Tested by\t'+(cur.tech||''), 'Date\t'+(cur.tdate||''), 'Notes\t'+(cur.notes||'').replace(/\n/g,' '));
+    copyText(L1.join('\n'),'Report copied');
+  };
+
+  // ---------- instruments ----------
+  function renderLib(){
+    const q=($('instFilter').value||'').toLowerCase();
+    const keys=Object.keys(lib).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+    $('instCount').textContent = keys.length?'('+keys.length+')':'';
+    const box=$('instList'); box.innerHTML='';
+    const shown=keys.filter(k=>!q || k.toLowerCase().includes(q) || (lib[k].desc||'').toLowerCase().includes(q));
+    if(!shown.length){ box.innerHTML='<div class="note">'+(keys.length?'No matches.':'Nothing saved yet. Set up an instrument on the Scale tab, give it a tag and tap Save.')+'</div>'; }
+    const saveCur=cur, saveF=F;
+    shown.forEach(k=>{
+      const it=lib[k]; cur=Object.assign(DEF(),it); const R=rangeOk()?evalLoop():{};
+      const rt=rangeTxt(), pn=presetName(); cur=saveCur;
+      const badge=(l,s)=> s ? '<span class="badge '+(s.pass?(s.n<s.of?'warn':'ok'):'bad')+'">'+l+' '+(s.pass?(s.n<s.of?'…':'✓'):'✗')+'</span>' : '';
+      const d=document.createElement('div'); d.className='inst';
+      d.innerHTML='<div class="t">'+esc(k)+(k===cur.tag?' <span class="note">(open)</span>':'')+'</div>'+
+        '<div class="d">'+esc(it.desc||pn)+'</div><div class="d">'+esc(rt)+'</div>'+
+        '<div class="a">'+badge('AF',R.saf)+badge('AL',R.sal)+'<span style="flex:1"></span>'+
+        '<button class="btn sm" data-open="'+esc(k)+'">Open</button><button class="btn sm danger" data-del="'+esc(k)+'">Delete</button></div>';
+      box.appendChild(d);
+    });
+    F=saveF;
+    box.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openInst(b.dataset.open, b));
+    box.querySelectorAll('[data-del]').forEach(b=>b.onclick=function(){ const k=this.dataset.del; twoTap(this,()=>{ delete lib[k]; renderLib(); refreshHeader(); toast('Deleted '+k); }); });
+    $('curInfo').textContent = (cur.tag||'Untitled')+' · '+presetName()+' · '+rangeTxt()+(isSaved()?'':' · not saved');
+  }
+  function openInst(k, btn){
+    const go=()=>{ cur=Object.assign(DEF(), JSON.parse(JSON.stringify(lib[k]))); F=.5; loadInputs(); renderAll(); location.hash='#scale'; toast('Opened '+k); };
+    if(!isSaved() && (cur.tag || cur.af.length || cur.al.length) && cur.tag!==k){ btn.textContent='Unsaved changes!'; twoTap(btn,go); return; }
+    go();
+  }
+  $('instFilter').addEventListener('input',renderLib);
+  $('newInst').onclick=function(){
+    const go=()=>{ cur=DEF(); F=.5; loadInputs(); renderAll(); location.hash='#scale'; setTimeout(()=>$('tag').focus(),150); };
+    if(!isSaved() && cur.tag){ twoTap(this,go); return; } go();
+  };
+  $('copyReg').onclick=()=>{
+    const keys=Object.keys(lib).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+    if(!keys.length){ toast('Nothing saved yet'); return; }
+    const rows=[['Tag','Description','Type','LRV','URV','Units','Signal','Sqrt','PLC raw','As found','As left','Tested by','Date'].join('\t')];
+    const keep=cur;
+    keys.forEach(k=>{ cur=Object.assign(DEF(),lib[k]); const R=rangeOk()?evalLoop():{};
+      const r=rawR(); rows.push([k,cur.desc,presetName(),cur.lrv,cur.urv,cur.unit,sig().n,cur.sqrt?'Y':'',r?r.min+'–'+r.max:'',resWord(R.saf),resWord(R.sal),cur.tech,cur.tdate].join('\t')); });
+    cur=keep; copyText(rows.join('\n'),'Register copied');
+  };
+  $('copyBak').onclick=()=>copyText(JSON.stringify({app:'cx-instrument',v:1,lib}),'Backup copied');
+  $('impBtn').onclick=()=>{
+    try{
+      const o=JSON.parse($('impTxt').value); const src=o.lib||o; let n=0;
+      Object.keys(src).forEach(k=>{ if(src[k]&&typeof src[k]==='object'){ lib[k]=Object.assign(DEF(),src[k],{tag:k}); n++; } });
+      $('impMsg').textContent='Imported '+n+' instrument'+(n===1?'':'s')+'.'; $('impTxt').value='';
+      renderLib(); refreshHeader();
+    }catch(e){ $('impMsg').textContent='That doesn’t look like a backup.'; }
+  };
+
+  // ---------- units ----------
+  const UCAT = {
+    Pressure:{u:[['mbar',100],['mm H₂O',9.80665],['m H₂O',9806.65],['kPa',1000],['bar',100000],['psi',6894.757293],['in H₂O',249.08891],['mm Hg',133.322387],['MPa',1e6],['Pa',1]],
+      note:'Water columns use the conventional 1 mm H₂O = 9.80665 Pa (water at 4 °C).'},
+    Flow:{u:[['L/s',0.001],['m³/h',1/3600],['m³/d',1/86400],['ML/d',1000/86400],['L/min',1/60000],['m³/s',1],['US gpm',0.0000630901964],['UK gpm',0.0000757681667]],
+      note:'Volumetric flow.'},
+    Temperature:{u:[['°C'],['°F'],['K']], note:'Absolute temperatures (not differences).'},
+    Length:{u:[['m',1],['mm',0.001],['cm',0.01],['ft',0.3048],['in',0.0254]], note:''}
+  };
+  let ucat='Pressure';
+  try{ const u=JSON.parse(localStorage.getItem('cx-units')||'null'); if(u){ ucat=u.c||ucat; $('uIn').value=u.v??'100'; $('uSg').value=u.sg??'1.0'; } }catch(e){}
+  function tK(v,u){ return u==='°C'?v+273.15: u==='°F'?(v-32)*5/9+273.15: v; }
+  function fK(k,u){ return u==='°C'?k-273.15: u==='°F'?(k-273.15)*9/5+32: k; }
+  function renderUChips(){
+    $('uChips').innerHTML='';
+    Object.keys(UCAT).forEach(c=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'+(c===ucat?' on':''); b.textContent=c;
+      b.onclick=()=>{ ucat=c; buildUFrom(0); renderUChips(); renderUnits(); }; $('uChips').appendChild(b); });
+  }
+  function buildUFrom(sel){ $('uFrom').innerHTML=UCAT[ucat].u.map((x,i)=>'<option value="'+i+'">'+x[0]+'</option>').join(''); $('uFrom').value=sel||0; }
+  function renderUnits(){
+    const C=UCAT[ucat], v=num($('uIn').value), from=+$('uFrom').value, tb=$('uTbl'); tb.innerHTML='';
+    const isT=ucat==='Temperature';
+    const base = isT ? tK(v,C.u[from][0]) : v*C.u[from][1];
+    C.u.forEach((x,i)=>{ if(i===from) return;
+      const val = isT ? fK(base,x[0]) : base/x[1];
+      const tr=document.createElement('tr'); tr.className='click';
+      tr.innerHTML='<td>'+x[0]+'</td><td>'+(isFinite(val)?(+val.toPrecision(6)).toString():'—')+'</td>';
+      tr.onclick=()=>{ $('uIn').value=(+val.toPrecision(6)).toString(); $('uFrom').value=i; renderUnits(); };
+      tb.appendChild(tr);
+    });
+    $('uHeadWrap').classList.toggle('hidden', ucat!=='Pressure');
+    if(ucat==='Pressure'){ const sg=num($('uSg').value); $('uHead').textContent = (isFinite(base)&&sg>0)?'Head: '+(+(base/9806.65/sg).toPrecision(6))+' m of liquid':'Head: —'; }
+    $('uNote').textContent = C.note + ' Tap a row to make it the input.';
+    try{ localStorage.setItem('cx-units', JSON.stringify({c:ucat,v:$('uIn').value,sg:$('uSg').value})); }catch(e){}
+  }
+  ['uIn','uSg'].forEach(id=>$(id).addEventListener('input',renderUnits));
+  $('uFrom').addEventListener('change',renderUnits);
+
+  // ---------- motor ----------
+  const MDEF=()=>({P:'',Pu:'kW',ph:'3',V:'',I:'',f:'50',n:'',pf:'',eff:'',conn:'',sf:'',ins:'',
+    vMin:'',vMax:'',vAcc:'',vDec:'',vCtl:'',vLoad:'',chk:{},photo:''});
+  const M=()=>{ cur.m=Object.assign(MDEF(), cur.m||{}); if(!cur.m.chk) cur.m.chk={}; return cur.m; };
+  const CHK=[
+    'Isolated and proved dead; LOTO in place',
+    'Motor IR / PI tested (VFD output disconnected first)',
+    'Motor connection (Δ/Y) matches supply / drive voltage',
+    'Cable glands, earthing and EMC screen termination checked',
+    'Nameplate data entered in drive',
+    'Control mode and load type set',
+    'Auto-tune done (static if coupled, rotating only if uncoupled)',
+    'Min/max frequency and accel/decel ramps set',
+    'Speed reference source and scaling checked (e.g. 4–20 mA)',
+    'Start/stop, interlocks, E-stop and fault reset tested',
+    'Analog/digital feedback to PLC checked (speed, current, run, fault)',
+    'Direction of rotation checked with a short bump',
+    'Running current recorded under load, compared with FLA',
+    'Drive parameters backed up / exported'
+  ];
+  function motorCalc(){
+    const m=M(), raw=num(m.P), P = m.Pu==='hp' ? raw*0.7457 : raw;
+    const V=num(m.V), I=num(m.I), f=num(m.f), n=num(m.n), pf=num(m.pf), e=num(m.eff)/100, sf=num(m.sf);
+    const k = m.ph==='1' ? 1 : Math.sqrt(3); const r={P,V,I,f,n,pf,e,k,sf};
+    if(f>0&&n>0&&n<60*f){ const p=2*Math.floor(60*f/n); if(p>=2){ r.poles=p; r.ns=120*f/p; r.slip=r.ns-n; r.slipPct=r.slip/r.ns*100; } }
+    if(P>0&&n>0) r.T=9549.3*P/n;
+    if(P>0&&V>0&&pf>0&&e>0) r.Ic=P*1000/(k*V*pf*e);
+    if(V>0&&I>0){ r.kVA=k*V*I/1000; if(pf>0){ r.kWin=r.kVA*pf; r.kVAr=r.kVA*Math.sqrt(Math.max(0,1-pf*pf)); } }
+    if(P>0&&e>0) r.Pin=P/e;
+    if(V>0&&f>0) r.VHz=V/f;
+    return r;
+  }
+  function trows(el, rows){ el.innerHTML=rows.filter(Boolean).map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join(''); }
+  function renderMotor(){
+    const m=M(), r=motorCalc();
+    document.querySelectorAll('[data-m]').forEach(el=>{ const v=m[el.dataset.m]; if(document.activeElement!==el) el.value=v??''; });
+    trows($('mCalc'),[
+      m.Pu==='hp'&&r.P>0 ? ['Power', fmt(r.P,2)+' kW'] : null,
+      ['Poles', r.poles?r.poles+'-pole':'—'],
+      ['Synchronous speed', r.ns?fmt(r.ns,0)+' rpm':'—'],
+      ['Slip', r.ns?fmt(r.slip,0)+' rpm ('+fmt(r.slipPct,1)+'%)':'—'],
+      ['Rated torque', r.T?fmt(r.T,1)+' N·m':'—'],
+      ['Calculated FLC', r.Ic?fmt(r.Ic,1)+' A'+(r.I>0?' (plate '+fmt(r.I,1)+' A)':''):'— needs P, V, pf, eff'],
+      ['Electrical input', r.Pin?fmt(r.Pin,2)+' kW':'—'],
+      ['Apparent power @ FLA', r.kVA?fmt(r.kVA,2)+' kVA'+(r.kVAr?' · '+fmt(r.kVAr,2)+' kVAr':''):'—'],
+      ['V/Hz ratio', r.VHz?fmt(r.VHz,2)+' V/Hz':'—'],
+      ['Overload setting', r.I>0?fmt(r.I,1)+' A (FLA)'+(r.sf>1?' · max '+fmt(r.I*r.sf,1)+' A with SF':''):'—']
+    ]);
+    const w=[];
+    if(r.f>0&&r.n>0&&r.n>=60*r.f) w.push('Speed is at or above 2-pole synchronous speed for '+fmt(r.f,0)+' Hz. Check speed and frequency.');
+    if(r.slipPct>8) w.push('Slip over 8% is unusual. Check the speed and frequency values.');
+    if(r.Ic&&r.I>0&&Math.abs(r.Ic/r.I-1)>0.15) w.push('Calculated current is '+fmt((r.Ic/r.I-1)*100,0)+'% off the nameplate FLA. Check the pf, efficiency, voltage and kW/hp values.');
+    if(r.pf>1||r.e>1) w.push('Power factor and efficiency must be ≤ 1 (100%).');
+    $('mWarn').innerHTML=w.map(esc).join('<br>'); $('mWarn').style.display=w.length?'block':'none';
+    // photo
+    $('mImg').src=m.photo||''; $('mImg').style.display=m.photo?'block':'none'; $('mPhotoDel').classList.toggle('hidden',!m.photo);
+    renderOp(); renderVfd(); renderChk();
+  }
+  let fop=NaN;
+  function renderOp(src){
+    const r=motorCalc(), out=$('mOp');
+    if(!(r.poles&&r.f>0)){ out.innerHTML='<tr><td class="note">Enter frequency and rated speed above.</td></tr>'; return; }
+    if(!isFinite(fop)) fop=r.f;
+    if(src!=='f') $('mFop').value=fmt(fop,2);
+    const nOp=Math.max(0,120*fop/r.poles - r.slip*(fop>0?1:0));
+    if(src!=='n') $('mNop').value=fmt(nOp,0);
+    const ratio=fop/r.f, below=ratio<=1;
+    const rows=[
+      ['Output voltage', r.V>0?fmt(r.V*Math.min(1,ratio),0)+' V':'—'],
+      ['% of base speed', fmt(ratio*100,1)+'%'],
+      ['Torque available', r.T?fmt(below?r.T:r.T/ratio,1)+' N·m ('+fmt(below?100:100/ratio,0)+'%)':'—'],
+      ['Power available', r.P>0?fmt(r.P*Math.min(1,ratio),2)+' kW':'—']
+    ];
+    if((M().vLoad||'').startsWith('Variable')&&r.P>0) rows.push(['Pump/fan load ≈', fmt(r.P*Math.pow(Math.min(ratio,1.2),3),2)+' kW ('+fmt(Math.pow(ratio,3)*100,0)+'%), if fully loaded at base speed']);
+    if(ratio>1) rows.push(['Region','Field weakening (constant power)']);
+    trows(out,rows);
+  }
+  $('mFop').addEventListener('input',()=>{ const v=num($('mFop').value); if(isFinite(v)){ fop=v; renderOp('f'); } });
+  $('mNop').addEventListener('input',()=>{ const r=motorCalc(), v=num($('mNop').value); if(isFinite(v)&&r.poles){ fop=(v+r.slip)*r.poles/120; renderOp('n'); } });
+  ['mFop','mNop'].forEach(id=>$(id).addEventListener('blur',()=>renderOp()));
+  function renderVfd(){
+    const m=M(), r=motorCalc(), vmin=num(m.vMin), vmax=num(m.vMax), acc=num(m.vAcc), dec=num(m.vDec);
+    const ff=x=>isFinite(x)?x:'—';
+    trows($('vPar'),[
+      ['Motor rated power', r.P>0?fmt(r.P,2)+' kW':'—'],
+      ['Motor rated voltage', r.V>0?fmt(r.V,0)+' V':'—'],
+      ['Motor rated current', r.I>0?fmt(r.I,1)+' A':'—'],
+      ['Motor rated frequency', r.f>0?fmt(r.f,0)+' Hz':'—'],
+      ['Motor rated speed', r.n>0?fmt(r.n,0)+' rpm':'—'],
+      ['Power factor (cos φ)', r.pf>0?fmt(r.pf,2):'—'],
+      ['Poles', r.poles||'—'],
+      ['Motor overload', r.I>0?fmt(r.I,1)+' A':'—'],
+      ['Min / max frequency', ff(vmin)+' / '+ff(vmax)+' Hz'+(r.poles&&isFinite(vmin)&&isFinite(vmax)?' ≈ '+fmt(Math.max(0,120*vmin/r.poles-r.slip),0)+'–'+fmt(120*vmax/r.poles-r.slip,0)+' rpm':'')],
+      ['Accel / decel', ff(acc)+' / '+ff(dec)+' s'+(r.f>0&&acc>0?' (0→'+fmt(r.f,0)+' Hz)':'')],
+      m.vCtl?['Control mode',esc(m.vCtl)]:null
+    ]);
+    const notes=[];
+    if((m.vLoad||'').startsWith('Variable')) notes.push('Pumps/fans: V/Hz with a quadratic (variable-torque) curve, if the drive has one, saves energy. Set the minimum speed from the pump curve: it must still deliver flow against static head.');
+    if((m.vLoad||'').startsWith('Constant')) notes.push('Constant torque: sensorless vector gives better low-speed torque. Check the motor’s cooling at low speed.');
+    if(isFinite(vmax)&&r.f>0&&vmax>r.f) notes.push('Max frequency is above base. Torque falls as base/f, and the pump or fan load rises with speed cubed. Confirm the motor and driven equipment are rated for it.');
+    $('vRef').textContent=notes.join(' ');
+  }
+  $('vToScale').onclick=()=>{
+    const m=M(), r=motorCalc(); const lo=isFinite(num(m.vMin))?num(m.vMin):0, hi=isFinite(num(m.vMax))?num(m.vMax):(r.f>0?r.f:50);
+    Object.assign(cur,{preset:'speed',lrv:String(lo),urv:String(hi),unit:'Hz',sqrt:false});
+    loadInputs(); renderAll(); location.hash='#scale'; toast('Speed ref '+lo+'–'+hi+' Hz');
+  };
+  function renderChk(){
+    const m=M(), box=$('vChk');
+    box.innerHTML=CHK.map((t,i)=>'<label class="toggle" style="padding:7px 0;align-items:flex-start"><input type="checkbox" data-chk="'+i+'"'+(m.chk[i]?' checked':'')+'><span>'+esc(t)+'</span></label>').join('');
+    box.querySelectorAll('[data-chk]').forEach(c=>c.onchange=()=>{ M().chk[c.dataset.chk]=c.checked; refreshHeader(); });
+  }
+  $('vChkClr').onclick=function(){ twoTap(this,()=>{ M().chk={}; renderChk(); refreshHeader(); }); };
+  document.querySelectorAll('[data-m]').forEach(el=>{
+    el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>{ M()[el.dataset.m]=el.value; fop=NaN; renderMotor(); refreshHeader(); });
+  });
+  $('mPhoto').addEventListener('change',e=>{
+    const file=e.target.files&&e.target.files[0]; if(!file) return;
+    const img=new Image(), url=URL.createObjectURL(file);
+    img.onload=()=>{
+      const s=Math.min(1,1100/Math.max(img.width,img.height)), c=document.createElement('canvas');
+      c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
+      let q=.7, d=c.toDataURL('image/jpeg',q); while(d.length>350000&&q>.3){ q-=.1; d=c.toDataURL('image/jpeg',q); }
+      M().photo=d; renderMotor(); refreshHeader(); e.target.value='';
+    };
+    img.onerror=()=>toast('Could not read that image'); img.src=url;
+  });
+  $('mPhotoDel').onclick=function(){ twoTap(this,()=>{ M().photo=''; renderMotor(); refreshHeader(); }); };
+  $('vCopy').onclick=()=>{
+    const m=M(), r=motorCalc(), L=['MOTOR / VFD SHEET\t'+(cur.tag||'Untitled'),'Description\t'+(cur.desc||''),'',
+      'Nameplate','Power\t'+(m.P||'')+' '+m.Pu,'Voltage\t'+(m.V||'')+' V','Current\t'+(m.I||'')+' A','Frequency\t'+(m.f||'')+' Hz',
+      'Speed\t'+(m.n||'')+' rpm','Power factor\t'+(m.pf||''),'Efficiency\t'+(m.eff||'')+' %','Connection\t'+(m.conn||''),
+      'Service factor\t'+(m.sf||''),'Insulation class\t'+(m.ins||''),'','Calculated',
+      'Poles\t'+(r.poles||''),'Sync speed\t'+(r.ns?fmt(r.ns,0):'')+' rpm','Slip\t'+(r.ns?fmt(r.slipPct,1)+' %':''),
+      'Rated torque\t'+(r.T?fmt(r.T,1):'')+' N·m','Calculated FLC\t'+(r.Ic?fmt(r.Ic,1):'')+' A','',
+      'VFD','Min freq\t'+(m.vMin||'')+' Hz','Max freq\t'+(m.vMax||'')+' Hz','Accel\t'+(m.vAcc||'')+' s','Decel\t'+(m.vDec||'')+' s',
+      'Control mode\t'+(m.vCtl||''),'Load type\t'+(m.vLoad||''),'','Checklist'];
+    CHK.forEach((t,i)=>L.push((m.chk[i]?'[x] ':'[ ] ')+t));
+    L.push('','Tested by\t'+(cur.tech||''),'Date\t'+(cur.tdate||''));
+    copyText(L.join('\n'),'Motor sheet copied');
+  };
+  // P-T-n
+  function solvePTN(){
+    const P=num($('tP').value), T=num($('tT').value), N=num($('tN').value), s=$('tSolve').value; let out='';
+    ['tP','tT','tN'].forEach(id=>$(id).disabled=(id==='t'+s));
+    if(s==='T'&&P>0&&N>0){ const v=9549.3*P/N; $('tT').value=fmt(v,2); out='Torque = '+fmt(v,2)+' N·m ('+fmt(v*0.737562,2)+' lbf·ft)'; }
+    else if(s==='P'&&T>0&&N>0){ const v=T*N/9549.3; $('tP').value=fmt(v,3); out='Power = '+fmt(v,3)+' kW ('+fmt(v/0.7457,2)+' hp)'; }
+    else if(s==='N'&&P>0&&T>0){ const v=9549.3*P/T; $('tN').value=fmt(v,0); out='Speed = '+fmt(v,0)+' rpm'; }
+    else out='Enter the other two values.';
+    $('tOut').textContent=out;
+  }
+  ['tP','tT','tN'].forEach(id=>$(id).addEventListener('input',solvePTN)); $('tSolve').addEventListener('change',solvePTN);
+
+  // ---------- engineering tools ----------
+  const TOOLS={Units:'t-units',Electrical:'t-elec',Pump:'t-pump','Flow test':'t-flow',RTD:'t-rtd'};
+  let tsel='Units';
+  try{ tsel=localStorage.getItem('cx-tool-sel')||'Units'; if(!TOOLS[tsel]) tsel='Units'; }catch(e){}
+  function renderTChips(){
+    $('tChips').innerHTML='';
+    Object.keys(TOOLS).forEach(k=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'+(k===tsel?' on':''); b.textContent=k;
+      b.onclick=()=>{ tsel=k; try{localStorage.setItem('cx-tool-sel',k);}catch(e){} renderTChips(); }; $('tChips').appendChild(b); });
+    Object.entries(TOOLS).forEach(([k,id])=>$(id).classList.toggle('hidden',k!==tsel));
+  }
+  const V$=id=>num($(id).value);
+  function calcElec(){
+    const k=$('ePh').value==='1'?1:Math.sqrt(3), V=V$('eV'), pf=V$('ePf'), s=$('eSolve').value;
+    ['eI','eKw'].forEach(id=>$(id).disabled=(id===(s==='I'?'eI':'eKw')));
+    let I=V$('eI'), kW=V$('eKw');
+    if(s==='I'&&V>0&&pf>0&&kW>0){ I=kW*1000/(k*V*pf); $('eI').value=fmt(I,2); }
+    if(s==='kW'&&V>0&&pf>0&&I>0){ kW=k*V*I*pf/1000; $('eKw').value=fmt(kW,3); }
+    const kVA=V>0&&I>0?k*V*I/1000:NaN;
+    $('eOut').textContent = isFinite(kVA)&&pf>0 ? fmt(kVA,2)+' kVA · '+fmt(kVA*pf,2)+' kW · '+fmt(kVA*Math.sqrt(Math.max(0,1-pf*pf)),2)+' kVAr' : 'Enter V, pf and '+(s==='I'?'kW':'current')+'.';
+    const vc=V$('dVc'), dI=V$('dI'), dL=V$('dL'), dV=V$('dV'), lim=V$('dLimit');
+    if(vc>0&&dI>0&&dL>0){ const dv=vc*dI*dL/1000, pc=dV>0?dv/dV*100:NaN;
+      $('dOut').innerHTML='Drop '+fmt(dv,2)+' V'+(isFinite(pc)?' = <b>'+fmt(pc,2)+'%</b>':'')+(isFinite(pc)&&lim>0?' <span class="badge '+(pc<=lim?'ok':'bad')+'">'+(pc<=lim?'OK':'OVER')+' '+lim+'%</span>':'')+
+        (dV>0&&lim>0?' · max length '+fmt(lim/100*dV*1000/(vc*dI),0)+' m':''); }
+    else $('dOut').textContent='Enter Vc, current and length.';
+    const r30=V$('ir30'), r1=V$('ir1'), r10=V$('ir10'), o=[];
+    if(r30>0&&r1>0){ const d=r1/r30; o.push('DAR (1 min/30 s) = <b>'+fmt(d,2)+'</b> '+(d<1?'<span class="badge bad">poor</span>':d<1.25?'<span class="badge warn">questionable</span>':d<1.6?'<span class="badge ok">OK</span>':'<span class="badge ok">good</span>')); }
+    if(r1>0&&r10>0){ const p=r10/r1; o.push('PI (10 min/1 min) = <b>'+fmt(p,2)+'</b> '+(p<1?'<span class="badge bad">poor</span>':p<2?'<span class="badge warn">questionable</span>':p<=4?'<span class="badge ok">good</span>':'<span class="badge ok">very good</span>')); }
+    $('irOut').innerHTML=o.join('<br>')||'Enter readings in MΩ.';
+  }
+  function calcPump(){
+    const q1=V$('pQ1'), h1=V$('pH1'), p1=V$('pP1'), n1=V$('pN1'), n2=V$('pN2');
+    if(n1>0&&n2>0){ const r=n2/n1;
+      trows($('pAff'),[['Speed ratio',fmt(r,3)],['Flow',q1>0?fmt(q1*r,2):'—'],['Head',h1>0?fmt(h1*r*r,2):'—'],['Power',p1>0?fmt(p1*r*r*r,2):'—']]); }
+    else $('pAff').innerHTML='<tr><td class="note">Enter both speeds (rpm or Hz).</td></tr>';
+    const Q=V$('hQ')/1000, H=V$('hH'), sg=V$('hSg')||1, e=V$('hEff')/100, me=V$('hMe')/100;
+    if(Q>0&&H>0){ const ph=1000*sg*9.80665*Q*H/1000;
+      trows($('hOut'),[['Hydraulic power',fmt(ph,2)+' kW'],['Shaft power',e>0?fmt(ph/e,2)+' kW':'— (enter pump η)'],['Electrical input',e>0&&me>0?fmt(ph/e/me,2)+' kW':'—'],
+        ['Specific energy',e>0&&me>0?fmt(ph/e/me/(Q*3.6),3)+' kWh/m³':'—']]); }
+    else $('hOut').innerHTML='<tr><td class="note">Enter flow and head.</td></tr>';
+  }
+  function calcFlow(){
+    const circ=$('fShape').value==='circ'; $('fWWrap').classList.toggle('hidden',circ);
+    $('fLlbl').textContent=circ?'Diameter (m)':'Length (m)';
+    const a=V$('fL'), b=V$('fW'), A=circ?Math.PI*a*a/4:a*b;
+    const dh=V$('fDh'), t=V$('fT'), qin=V$('fIn')||0, qm=V$('fMeter');
+    const rows=[['Wet-well area',A>0?fmt(A,3)+' m²':'—']];
+    if(A>0&&dh&&t>0){ const qd=A*dh/t*1000, qp=qd+qin;
+      rows.push(['Drawdown rate',fmt(qd,2)+' L/s'],['Pump flow (+ inflow)','<b>'+fmt(qp,2)+' L/s</b> · '+fmt(qp*3.6,1)+' m³/h']);
+      if(qm>0) rows.push(['Meter error',(qm>=qp?'+':'')+fmt((qm-qp)/qp*100,1)+'%']); }
+    trows($('fOut'),rows);
+    const rdh=V$('fRdh'), rt=V$('fRt'); $('fRout').textContent = A>0&&rdh>0&&rt>0 ? 'Inflow ≈ '+fmt(A*rdh/rt*1000,2)+' L/s' : '';
+    const Q=V$('vQ'), D=V$('vD'); $('vOut').textContent = Q>0&&D>0 ? 'Velocity '+fmt(Q/1000/(Math.PI*Math.pow(D/1000,2)/4),2)+' m/s' : 'Enter flow and internal diameter.';
+  }
+  $('fUseIn').onclick=()=>{ const A=$('fShape').value==='circ'?Math.PI*Math.pow(V$('fL'),2)/4:V$('fL')*V$('fW'); const v=A*V$('fRdh')/V$('fRt')*1000; if(isFinite(v)&&v>0){ $('fIn').value=fmt(v,2); calcFlow(); } };
+  const CVD={A:3.9083e-3,B:-5.775e-7,C:-4.183e-12};
+  const rtdR=(t,R0)=>R0*(1+CVD.A*t+CVD.B*t*t+(t<0?CVD.C*(t-100)*t*t*t:0));
+  function rtdT(R,R0){ let t=(-CVD.A+Math.sqrt(CVD.A*CVD.A-4*CVD.B*(1-R/R0)))/(2*CVD.B);
+    if(R<R0){ for(let i=0;i<20;i++){ const f=rtdR(t,R0)-R, d=(rtdR(t+.001,R0)-rtdR(t-.001,R0))/.002; t-=f/d; } } return t; }
+  function calcRtd(src){
+    const R0=num($('rR0').value)||100;
+    if(src!=='r'){ const t=V$('rT'); if(isFinite(t)) $('rR').value=fmt(rtdR(t,R0),3); }
+    if(src==='r'){ const R=V$('rR'); if(R>0) $('rT').value=fmt(rtdT(R,R0),2); }
+    const tbl=[-20,0,20,50,100,150,200]; $('rTbl').innerHTML='<tr><th>°C</th><th>Ω</th></tr>'+tbl.map(t=>'<tr><td>'+t+'</td><td>'+fmt(rtdR(t,R0),2)+'</td></tr>').join('');
+  }
+  $('rT').addEventListener('input',()=>calcRtd('t')); $('rR').addEventListener('input',()=>calcRtd('r')); $('rR0').addEventListener('change',()=>calcRtd('t'));
+  document.querySelectorAll('#t-elec input,#t-elec select').forEach(el=>el.addEventListener(el.tagName==='SELECT'?'change':'input',calcElec));
+  document.querySelectorAll('#t-pump input').forEach(el=>el.addEventListener('input',calcPump));
+  document.querySelectorAll('#t-flow input,#t-flow select').forEach(el=>el.addEventListener(el.tagName==='SELECT'?'change':'input',calcFlow));
+
+  // ---------- routing ----------
+  const VIEWS={scale:'scale',loop:'loop',motor:'motor',tools:'units',units:'units',instruments:'inst'};
+  function route(){
+    const h=(location.hash||'#scale').slice(1); const v=VIEWS[h]||'scale';
+    document.querySelectorAll('.view').forEach(el=>el.classList.toggle('on', el.id==='v-'+v));
+    document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v));
+    if(v==='loop') renderLoop(); if(v==='inst') renderLib(); if(v==='motor') renderMotor();
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',route);
+
+  function renderAll(){ renderChips(); renderWarn(); renderLevel(); renderConv(null); renderTable(); renderLoop(); renderMotor(); refreshHeader(); }
+
+  loadInputs(); renderUChips(); buildUFrom(0); renderUnits(); renderAll();
+  renderTChips(); calcElec(); calcPump(); calcFlow(); calcRtd('t'); solvePTN(); route();
+
+  // offline install (works when hosted on your own https site; ignored inside the Claude viewer)
+  try{ if('serviceWorker' in navigator && location.protocol==='https:' && !/claude|anthropic/.test(location.hostname)) navigator.serviceWorker.register('sw.js').catch(()=>{}); }catch(e){}
+})();
+</script>
+</body>
+</html>
