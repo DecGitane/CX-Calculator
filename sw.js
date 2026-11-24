@@ -1,5 +1,5 @@
 // Offline cache for Cx Pocket Calculator. Bump VERSION when you upload a new index.html.
-const VERSION = 'cx-calc-v15';
+const VERSION = 'cx-calc-v17';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)));
