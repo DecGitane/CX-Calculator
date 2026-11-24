@@ -96,8 +96,8 @@
   .inst .a{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center}
   /* nav */
   nav{position:fixed;left:0;right:0;bottom:0;z-index:10;background:#121a20;border-top:1px solid var(--line);
-    display:grid;grid-template-columns:repeat(7,1fr);padding:6px 3px calc(6px + env(safe-area-inset-bottom))}
-  nav a{color:var(--muted);text-decoration:none;text-align:center;font-size:10px;padding:6px 0;border-radius:10px}
+    display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  nav a{color:var(--muted);text-decoration:none;text-align:center;font-size:11px;padding:6px 0;border-radius:10px}
   nav a b{display:block;font-size:19px;line-height:1.1;margin-bottom:2px;font-weight:400}
   nav a.on{color:var(--accent);background:rgba(242,169,59,.08)}
   .view{display:none}
@@ -177,18 +177,29 @@
     #repBar{display:none!important}
     #repBody{overflow:visible!important;padding:0!important}
   }
+  .sigs{margin-top:12px}
+  .sigrow{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;align-items:end;margin-top:8px}
+  .sigbox{border:1px dashed var(--line);border-radius:10px;min-height:64px;display:flex;align-items:center;justify-content:center;background:#fff;cursor:pointer;position:relative;overflow:hidden}
+  .sigbox img{max-width:100%;max-height:62px}
+  .sigbox .ph{color:#666;font-size:13px}
+  .sigmeta{font-size:11px;color:var(--muted);margin-top:3px}
+  #sigpad{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:10px}
+  #sigpad .sp-in{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;width:100%;max-width:640px}
+  #sigpad .sp-t{font-weight:700;margin:0 2px 8px}
+  #spCan{display:block;width:100%;background:#fff;border-radius:10px;touch-action:none;border:1px solid #bbb}
 </style>
 </head>
 <body>
 <main>
   <header>
-    <h1>Cx <span>Pocket</span></h1>
+    <div style="min-width:0"><h1>Cx <span>Pocket</span></h1><div id="hdrProj" style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px"></div></div>
     <span class="hdrTag" id="hdrTag"></span>
     <span class="hdrBtns"><button class="btn sm" id="hdrPunch" type="button" aria-label="Add punch item">⚑</button><button class="btn sm" id="hdrSun" type="button" aria-label="Sunlight mode">☀︎</button><button class="btn sm" id="hdrSave" type="button">Save</button></span>
   </header>
 
   <!-- ================= SCALE ================= -->
   <div class="view" id="v-scale">
+    <div class="seg" style="margin-bottom:12px"><button type="button" class="on">⚖︎ Scale</button><button type="button" onclick="location.hash='#loop'">✓ Loop check</button></div>
     <section class="card">
       <h2>Instrument</h2>
       <div class="grid">
@@ -309,6 +320,7 @@
 
   <!-- ================= LOOP CHECK ================= -->
   <div class="view" id="v-loop">
+    <div class="seg" style="margin-bottom:12px"><button type="button" onclick="location.hash='#scale'">⚖︎ Scale</button><button type="button" class="on">✓ Loop check</button></div>
     <section class="card">
       <h2>Loop check</h2>
       <div id="loopSum" style="font-weight:600"></div>
@@ -337,6 +349,7 @@
         <div><label for="tech">Tested by</label><input id="tech" data-k="tech" type="text"></div>
         <div><label for="tdate">Date</label><input id="tdate" data-k="tdate" type="date"></div>
       </div>
+      <div class="sigs" data-sig="inst"></div>
       <label class="mt" for="notes">Notes</label>
       <textarea id="notes" data-k="notes" placeholder="Calibrator, as-found issues, adjustments made…"></textarea>
       <div class="row">
@@ -438,6 +451,7 @@
         <div><label for="mTech">Tested by</label><input id="mTech" data-m="tech" type="text"></div>
         <div><label for="mDate">Date</label><input id="mDate" data-m="tdate" type="date"></div>
       </div>
+      <div class="sigs" data-sig="motor"></div>
       <div class="row">
         <button class="btn danger sm" id="vChkClr" type="button">Untick all</button>
         <button class="btn pri" id="vCopy" type="button">📤 Export sheet</button>
@@ -570,6 +584,7 @@
         <div><label for="xTech">Tested by</label><input id="xTech" data-x="tech" type="text"></div>
         <div><label for="xDate">Date</label><input id="xDate" data-x="tdate" type="date"></div>
       </div>
+      <div class="sigs" data-sig="valve"></div>
       <label class="mt" for="xNotes">Notes</label>
       <textarea id="xNotes" data-x="notes" placeholder="Settings, adjustments, issues…"></textarea>
       <div class="row">
@@ -583,10 +598,12 @@
   <div class="view" id="v-punch">
     <section class="card">
       <h2 id="pdTitle">New punch item</h2>
-      <div class="grid">
+      <div class="grid" style="grid-template-columns:1fr 2fr">
+        <div><label for="pdNo">No.</label><input id="pdNo" type="text" autocapitalize="characters"></div>
         <div><label for="pdTag">Tag</label><input id="pdTag" list="tagList" type="text" autocapitalize="characters" placeholder="e.g. P-101-M"></div>
-        <div><label for="pdOwner">Action by</label><input id="pdOwner" list="ownerList" type="text" placeholder="e.g. Electrical"></div>
       </div>
+      <label class="mt" for="pdOwner">Action by</label>
+      <input id="pdOwner" list="ownerList" type="text" placeholder="e.g. Electrical contractor">
       <label class="mt" for="pdDesc">Description</label>
       <textarea id="pdDesc" placeholder="What needs fixing…"></textarea>
       <label class="mt">Category</label>
@@ -600,6 +617,7 @@
       <div class="photos" id="ph-punch"></div>
       <div id="pdCloseRow" class="hidden mt">
         <label for="pdCloseNote">Close-out note</label><input id="pdCloseNote" type="text" placeholder="How it was fixed, who verified">
+        <div class="sigs" data-sig="punch"></div>
       </div>
       <div class="row">
         <button class="btn sm" id="pdClear" type="button">Clear</button>
@@ -628,6 +646,7 @@
 
   <!-- ================= PROCESS ================= -->
   <div class="view" id="v-proc">
+    <div class="seg" style="margin-bottom:12px"><button type="button" class="on">⚗︎ Process</button><button type="button" onclick="location.hash='#tools'">⇄ Engineering</button></div>
     <div class="recent" id="rec-proc"></div>
     <div class="chips" id="pChips" style="margin-bottom:12px"></div>
 
@@ -760,6 +779,7 @@
 
   <!-- ================= UNITS ================= -->
   <div class="view" id="v-units">
+    <div class="seg" style="margin-bottom:12px"><button type="button" onclick="location.hash='#process'">⚗︎ Process</button><button type="button" class="on">⇄ Engineering</button></div>
     <div class="recent" id="rec-units"></div>
     <div class="chips" id="tChips" style="margin-bottom:12px"></div>
 
@@ -893,6 +913,33 @@
   <!-- ================= INSTRUMENTS ================= -->
   <div class="view" id="v-inst">
     <section class="card">
+      <h2>Project</h2>
+      <label for="prjSel">Current project</label>
+      <select id="prjSel"></select>
+      <div class="grid mt">
+        <div><label for="prjName">Project name</label><input id="prjName" type="text"></div>
+        <div><label for="prjClient">Client</label><input id="prjClient" type="text"></div>
+        <div><label for="prjJob">Job / contract no.</label><input id="prjJob" type="text" autocapitalize="characters"></div>
+        <div><label for="prjSite">Site</label><input id="prjSite" type="text"></div>
+      </div>
+      <div class="row">
+        <button class="btn sm danger" id="prjDel" type="button">Delete project</button>
+        <button class="btn pri" id="prjNew" type="button">+ New project</button>
+      </div>
+      <div class="note mt" id="prjInfo"></div>
+    </section>
+    <section class="card">
+      <h2>Report header</h2>
+      <label for="coName">Company name</label>
+      <input id="coName" type="text" placeholder="Shown at the top of every report">
+      <div class="row">
+        <label class="btn sm filebtn">🖼 Add logo<input type="file" id="coLogoIn" accept="image/*" class="hidden"></label>
+        <button class="btn sm danger hidden" id="coLogoDel" type="button">Remove logo</button>
+      </div>
+      <img id="coLogo" alt="Logo" style="display:none;max-width:220px;max-height:80px;margin-top:10px;background:#fff;border-radius:6px;padding:4px">
+      <div class="note mt">Reports show the logo and company name, plus the project, client, job no. and site from the Project card above.</div>
+    </section>
+    <section class="card">
       <h2>Display</h2>
       <label>Theme</label>
       <div class="seg" id="dTheme"><button type="button" data-v="dark">Dark</button><button type="button" data-v="light">Light</button><button type="button" data-v="sun">Sunlight</button></div>
@@ -937,7 +984,9 @@
     <section class="card">
       <h2>Backup</h2>
       <div class="note">Everything you save lives on this phone only, so back up now and then. A backup file goes to Files or iCloud Drive and can include photos. Restoring merges it back in: items with the same tag are replaced.</div>
-      <label class="toggle mt"><input type="checkbox" id="bakPh" checked> Include photos</label>
+      <label class="mt">Back up</label>
+      <div class="seg" id="bakScope"><button type="button" data-v="this">This project</button><button type="button" data-v="all">All projects</button></div>
+      <label class="toggle mt"><input type="checkbox" id="bakPh" checked> Include photos and signatures</label>
       <div class="row">
         <button class="btn pri" id="bakFile" type="button">💾 Save backup file</button>
         <label class="btn filebtn">📂 Restore from file<input type="file" id="bakIn" accept=".json,application/json,text/plain" class="hidden"></label>
@@ -964,13 +1013,11 @@
 </main>
 
 <nav>
-  <a href="#scale" data-v="scale"><b>⚖︎</b>Scale</a>
-  <a href="#loop" data-v="loop"><b>✓</b>Loop</a>
-  <a href="#motor" data-v="motor"><b>⚙︎</b>Devices</a>
-  <a href="#punch" data-v="punch"><b>⚑</b>Punch</a>
-  <a href="#process" data-v="proc"><b>⚗︎</b>Process</a>
-  <a href="#tools" data-v="units"><b>⇄</b>Tools</a>
-  <a href="#instruments" data-v="inst"><b>☰</b>More</a>
+  <a href="#scale" data-g="ins"><b>⚖︎</b>Instruments</a>
+  <a href="#motor" data-g="dev"><b>⚙︎</b>Devices</a>
+  <a href="#punch" data-g="pun"><b>⚑</b>Punch</a>
+  <a href="#process" data-g="tls"><b>⇄</b>Tools</a>
+  <a href="#instruments" data-g="mor"><b>☰</b>More</a>
 </nav>
 
 <div id="copyBox"><div class="card">
@@ -983,7 +1030,7 @@
   <div class="sheet">
     <div class="sheetT" id="expTitle">Export</div>
     <button class="expb" type="button" data-ex="copy"><b>📋 Copy as table</b><span>Paste into Outlook, Teams, Word or Excel</span></button>
-    <button class="expb" type="button" data-ex="pdf"><b>🖨 PDF / print</b><span>Formatted report with photos. In the print screen, tap Share to save or send the PDF</span></button>
+    <button class="expb" type="button" data-ex="pdf"><b>📕 PDF</b><span>Formatted report with photos, ready to email, print or save to Files</span></button>
     <button class="expb" type="button" data-ex="html"><b>📄 Share report file</b><span>The formatted report as a file to email or save to Files</span></button>
     <button class="expb" type="button" data-ex="csv"><b>📊 Share as spreadsheet</b><span>CSV file for Excel or Numbers</span></button>
     <button class="expb" type="button" data-ex="text"><b>💬 Share as text</b><span>Plain message for Teams, WhatsApp, SMS or Notes</span></button>
@@ -997,9 +1044,20 @@
     <span style="flex:1"></span>
     <button class="btn sm" type="button" id="repCopy">📋 Copy</button>
     <button class="btn sm" type="button" id="repFile">📄 File</button>
-    <button class="btn sm pri" type="button" id="repPrint">🖨 PDF</button>
+    <button class="btn sm pri" type="button" id="repPrint">📕 PDF</button>
   </div>
   <div id="repBody"></div>
+</div>
+<div id="sigpad">
+  <div class="sp-in">
+    <div class="sp-t" id="spTitle">Sign</div>
+    <canvas id="spCan"></canvas>
+    <div class="note" style="margin:6px 2px 0">Sign with your finger inside the box.</div>
+    <div class="row">
+      <button class="btn" type="button" id="spClear">Clear</button>
+      <span style="display:flex;gap:6px"><button class="btn" type="button" id="spCancel">Cancel</button><button class="btn pri" type="button" id="spSave">Save signature</button></span>
+    </div>
+  </div>
 </div>
 <div id="viewer">
   <div class="vbar">
@@ -1013,7 +1071,7 @@
 
 <script>
 (function(){
-  const APP_VERSION = 'v11', APP_DATE = '2026-11-24';
+  const APP_VERSION = 'v13', APP_DATE = '2026-11-24';
   const $ = id => document.getElementById(id);
   const num = v => { if(v===null||v===undefined) return NaN; const x = parseFloat(String(v).replace(',', '.')); return isFinite(x)?x:NaN; };
   const fmt = (x, d) => {
@@ -1056,6 +1114,7 @@
     tol:'0.5',readIn:'pv',ptSet:'5',af:[],al:[],tech:'',tdate:today(),notes:''});
 
   let cur = DEF(), lib = {}, F = 0.5, curM = null, libM = {}, curV = null, libV = {}, punch = [], punchSeq = 1, pd = null;
+  let proj = {list:{p1:{name:'My project',client:'',job:'',site:''}}, active:'p1', data:{}};
   try{
     const s = JSON.parse(localStorage.getItem('cx-tool')||'null');
     if(s){
@@ -1066,9 +1125,10 @@
       if(!s.curM && hasM(cur.m)) curM = Object.assign({}, cur.m);
       Object.keys(lib).forEach(k=>{ const m=lib[k].m; if(hasM(m) && !libM[k]) libM[k]=Object.assign({},m,{tag:k,desc:lib[k].desc||''}); delete lib[k].m; });
       delete cur.m;
+      if(s.proj && s.proj.list && s.proj.active) proj = Object.assign({data:{}}, s.proj);
     }
   }catch(e){}
-  function store(){ try{ localStorage.setItem('cx-tool', JSON.stringify({cur,lib,F,curM,libM,curV,libV,punch,punchSeq,pd})); }catch(e){} }
+  function store(){ try{ localStorage.setItem('cx-tool', JSON.stringify({cur,lib,F,curM,libM,curV,libV,punch,punchSeq,pd,proj})); }catch(e){} }
 
   // ---------- helpers ----------
   const L = () => num(cur.lrv), U = () => num(cur.urv), SP = () => U()-L();
@@ -1142,7 +1202,7 @@
     const si = isSaved(), sm = isSavedM(), sv = isSavedV();
     $('hdrSave').textContent = (mv?sm:vv?sv:si) ? 'Saved ✓' : 'Save';
     const pv = curView==='punch'; $('hdrSave').classList.toggle('hidden', pv);
-    if(pv){ const n=punch.filter(p=>p.status==='open').length; $('hdrTag').textContent='Punch list · '+n+' open'; }
+    if(pv){ const op=punch.filter(p=>p.status==='open'), od=op.filter(p=>p.due&&p.due<today()).length; $('hdrTag').textContent=op.length+' open'+(od?' · '+od+' overdue':''); }
     [$('saveValve'),$('saveValve2')].forEach(b=>{ b.textContent = sv ? 'Saved ✓' : 'Save valve'; });
     $('saveInst').textContent = si ? 'Saved ✓' : 'Save';
     [$('saveMotor'),$('saveMotor2')].forEach(b=>{ b.textContent = sm ? 'Saved ✓' : 'Save motor'; });
@@ -1501,22 +1561,30 @@
         v.type==='ctl'&&R.mp!==null?fmt(R.mp,2):'',v.type==='ctl'&&R.hy!=null?fmt(R.hy,2):'',n+'/'+N,v.tech,v.tdate].map(x=>x==null?'':x).join('\t')); });
     copyText(rows.join('\n'),'Valve register copied');
   };
-  $('copyBak').onclick=()=>copyText(JSON.stringify({app:'cx-instrument',v:4,lib,libM,libV,punch,punchSeq}),'Backup copied');
+  $('copyBak').onclick=()=>copyText(JSON.stringify({app:'cx-instrument',v:5,projects:backupProjects(),company:company}),'Backup copied');
   $('impBtn').onclick=()=>{ if(importBackup($('impTxt').value)) $('impTxt').value=''; };
   function importBackup(text){
     try{
-      const o=JSON.parse(text); const src=o.lib||((o.libM||o.libV)?{}:o); let n=0, nm=0, nv=0;
-      Object.keys(src).forEach(k=>{ if(src[k]&&typeof src[k]==='object'){ const v=Object.assign(DEF(),src[k],{tag:k}); delete v.m; lib[k]=v; n++; } });
-      Object.keys(o.libM||{}).forEach(k=>{ const v=o.libM[k]; if(v&&typeof v==='object'){ libM[k]=Object.assign({},v,{tag:k}); nm++; } });
-      Object.keys(o.libV||{}).forEach(k=>{ const v=o.libV[k]; if(v&&typeof v==='object'){ libV[k]=Object.assign({},v,{tag:k}); nv++; } });
-      let np=0; (o.punch||[]).forEach(it=>{ if(!it||!it.id) return; const i=punch.findIndex(x=>x.id===it.id); if(i>=0) punch[i]=it; else punch.push(it); np++; });
-      punchSeq=Math.max(punchSeq, o.punchSeq||1, ...punch.map(x=>(x.no||0)+1));
+      const o=JSON.parse(text); let c={i:0,m:0,v:0,p:0}, np=0, newP=0;
+      const add=x=>{ c.i+=x.i; c.m+=x.m; c.v+=x.v; c.p+=x.p; };
+      if(Array.isArray(o.projects)){
+        o.projects.forEach(pr=>{ if(!pr||!pr.data) return; np++;
+          let id=pr.id && proj.list[pr.id] ? pr.id : Object.keys(proj.list).find(k=>(proj.list[k].name||'')===(pr.meta&&pr.meta.name));
+          if(!id){ id=pr.id&&!proj.list[pr.id]?pr.id:'p'+Date.now().toString(36)+np; proj.list[id]=Object.assign({name:'Imported',client:'',job:'',site:''},pr.meta||{}); proj.data[id]={}; newP++; }
+          else { const t=proj.list[id], isDefault=(t.name==='My project'&&!t.client&&!t.job&&!t.site); if(isDefault&&pr.meta) Object.assign(t,pr.meta); }
+          if(id===proj.active){ const t={lib,libM,libV,punch,punchSeq}; add(mergeData(t,pr.data)); punchSeq=t.punchSeq; }
+          else { const d=proj.data[id]=proj.data[id]||{}; d.lib=d.lib||{}; d.libM=d.libM||{}; d.libV=d.libV||{}; d.punch=d.punch||[]; add(mergeData(d,pr.data)); } });
+      } else {
+        const src={lib:o.lib||((o.libM||o.libV||o.punch)?{}:o),libM:o.libM,libV:o.libV,punch:o.punch,punchSeq:o.punchSeq};
+        const t={lib,libM,libV,punch,punchSeq}; add(mergeData(t,src)); punchSeq=t.punchSeq; np=1;
+      }
+      if(o.company && !company.name) Object.assign(company,o.company);
       let nph=0; Object.entries(o.photos||{}).forEach(([id,d])=>{ if(typeof d==='string'&&d.startsWith('data:image')){ pdbPut(id,d); nph++; } });
-      const msg='Imported '+n+' instrument'+(n===1?'':'s')+', '+nm+' motor'+(nm===1?'':'s')+', '+nv+' valve'+(nv===1?'':'s')+', '+np+' punch item'+(np===1?'':'s')+(nph?' and '+nph+' photos':'')+'.';
+      const msg='Imported '+(np>1?np+' projects: ':'')+c.i+' instrument'+(c.i===1?'':'s')+', '+c.m+' motor'+(c.m===1?'':'s')+', '+c.v+' valve'+(c.v===1?'':'s')+', '+c.p+' punch item'+(c.p===1?'':'s')+(nph?' and '+nph+' photos/signatures':'')+(newP?' ('+newP+' new project'+(newP===1?'':'s')+')':'')+'.';
       $('impMsg').textContent=msg; toast(msg);
-      renderLib(); renderMOpen(); renderXOpen(); renderPL(); refreshHeader(); store(); bakCache=null; prepareBackup();
+      store(); refreshAfterSwitch(); renderCompany();
       return true;
-    }catch(e){ $('impMsg').textContent='That doesn’t look like a backup.'; toast('That doesn’t look like a backup file'); return false; }
+    }catch(e){ console.error(e); $('impMsg').textContent='That doesn’t look like a backup.'; toast('That doesn’t look like a backup file'); return false; }
   }
 
   // ---------- units ----------
@@ -1990,10 +2058,12 @@
   const newPd=keep=>({id:null,no:null,tag:keep?keep.tag:'',desc:'',cat:keep?keep.cat:'B',owner:keep?keep.owner:'',due:'',loc:keep?keep.loc:'',
     photos:[],status:'open',raised:today(),closed:'',closeNote:''});
   const PD=()=>{ if(!pd) pd=newPd(); return pd; };
+  const nextNo=()=>Math.max(punchSeq, ...punch.map(x=>typeof x.no==='number'?x.no+1:(/^\d+$/.test(String(x.no))?parseInt(x.no,10)+1:1)));
   let plStat='open', plCatF='all';
   try{ const ps=JSON.parse(localStorage.getItem('cx-plf')||'null'); if(ps){ plStat=ps.s||plStat; plCatF=ps.c||plCatF; } }catch(e){}
   function loadPd(){
     const d=PD(), ed=!!d.id;
+    $('pdNo').value = d.noEdit!=null ? d.noEdit : (ed ? d.no : ''); $('pdNo').placeholder = ed ? String(d.no) : String(nextNo());
     $('pdTag').value=d.tag; $('pdOwner').value=d.owner; $('pdDesc').value=d.desc; $('pdDue').value=d.due; $('pdLoc').value=d.loc; $('pdCloseNote').value=d.closeNote||'';
     document.querySelectorAll('#pdCat button').forEach(b=>b.classList.toggle('on',b.dataset.v===d.cat));
     $('pdCatNote').textContent=CATNOTE[d.cat]+' Use your project’s definitions if they differ.';
@@ -2004,13 +2074,18 @@
     $('pdCloseRow').classList.toggle('hidden',!ed);
     renderPhotos('punch');
   }
+  $('pdNo').addEventListener('input',()=>{ PD().noEdit=$('pdNo').value; store(); });
   [['pdTag','tag'],['pdOwner','owner'],['pdDesc','desc'],['pdDue','due'],['pdLoc','loc'],['pdCloseNote','closeNote']].forEach(([id,k])=>
     $(id).addEventListener('input',()=>{ PD()[k]=$(id).value; store(); }));
   document.querySelectorAll('#pdCat button').forEach(b=>b.onclick=()=>{ PD().cat=b.dataset.v; loadPd(); store(); });
   function commitPd(){
     const d=PD(); d.tag=(d.tag||'').trim().toUpperCase(); d.desc=(d.desc||'').trim();
     if(!d.desc){ toast('Add a description first'); $('pdDesc').focus(); return false; }
-    if(!d.id){ d.id='k'+Date.now().toString(36)+Math.random().toString(36).slice(2,5); d.no=punchSeq++; punch.push(JSON.parse(JSON.stringify(d))); toast('Added #'+d.no); }
+    let no=(d.noEdit!=null?String(d.noEdit).trim():''); if(!no) no = d.id ? d.no : nextNo();
+    if(/^\d+$/.test(String(no))) no=parseInt(no,10);
+    if(punch.some(x=>x.id!==d.id && String(x.no).toLowerCase()===String(no).toLowerCase())){ toast('#'+no+' is already used. Choose another number.'); $('pdNo').focus(); return false; }
+    d.no=no; delete d.noEdit; if(typeof no==='number') punchSeq=Math.max(punchSeq,no+1);
+    if(!d.id){ d.id='k'+Date.now().toString(36)+Math.random().toString(36).slice(2,5); punch.push(JSON.parse(JSON.stringify(d))); toast('Added #'+d.no); }
     else { const i=punch.findIndex(x=>x.id===d.id); if(i>=0) punch[i]=JSON.parse(JSON.stringify(d)); toast('Saved #'+d.no); }
     return true;
   }
@@ -2026,9 +2101,10 @@
     const q=($('plQ').value||'').toLowerCase();
     return punch.filter(p=>(plStat==='all'||p.status===plStat) && (plCatF==='all'||p.cat===plCatF) &&
       (!q||[p.tag,p.desc,p.owner,p.loc,'#'+p.no].some(x=>String(x||'').toLowerCase().includes(q))))
-      .sort((a,b)=> (a.status===b.status?0:a.status==='open'?-1:1) || (a.status==='closed'? String(b.closed).localeCompare(String(a.closed)) : (catRank[a.cat]-catRank[b.cat])) || a.no-b.no);
+      .sort((a,b)=> (a.status===b.status?0:a.status==='open'?-1:1) || (a.status==='closed'? String(b.closed).localeCompare(String(a.closed)) : (catRank[a.cat]-catRank[b.cat])) || String(a.no).localeCompare(String(b.no),undefined,{numeric:true}));
   }
   function renderPL(){
+    refreshHeader();
     document.querySelectorAll('#plStat button').forEach(b=>b.classList.toggle('on',b.dataset.v===plStat));
     $('plCat').innerHTML=['all','A','B','C'].map(c=>'<button type="button" class="chip'+(c===plCatF?' on':'')+'" data-c="'+c+'">'+(c==='all'?'All categories':'Cat '+c)+'</button>').join('');
     $('plCat').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{ plCatF=b.dataset.c; try{localStorage.setItem('cx-plf',JSON.stringify({s:plStat,c:plCatF}));}catch(e){} renderPL(); });
@@ -2067,22 +2143,99 @@
     location.hash='#punch'; setTimeout(()=>{ loadPd(); $('pdDesc').focus(); },120);
   };
 
+  // ---------- projects ----------
+  const snapProj=()=>({cur,lib,curM,libM,curV,libV,punch,punchSeq,pd});
+  function loadProjData(d){ d=d||{}; cur=Object.assign(DEF(),d.cur||{}); lib=d.lib||{}; curM=d.curM||null; libM=d.libM||{}; curV=d.curV||null; libV=d.libV||{};
+    punch=d.punch||[]; punchSeq=d.punchSeq||1; pd=d.pd||null; F=0.5; }
+  const projMeta=()=>proj.list[proj.active]||{name:'Project'};
+  function projCounts(d){ return [Object.keys(d.lib||{}).length,Object.keys(d.libM||{}).length,Object.keys(d.libV||{}).length,(d.punch||[]).filter(p=>p.status==='open').length]; }
+  function refreshAfterSwitch(){ loadInputs(); renderAll(); renderLib(); renderMOpen(); renderXOpen(); renderPunch(); renderProj(); refreshHeader(); bakCache=null; prepareBackup(); }
+  function switchProject(id){
+    if(id===proj.active||!proj.list[id]) return;
+    proj.data[proj.active]=JSON.parse(JSON.stringify(snapProj()));
+    loadProjData(proj.data[id]); delete proj.data[id]; proj.active=id;
+    store(); refreshAfterSwitch(); toast('Switched to '+projMeta().name);
+  }
+  function renderProj(){
+    const ids=Object.keys(proj.list);
+    $('prjSel').innerHTML=ids.map(id=>{ const c=id===proj.active?projCounts(snapProj()):projCounts(proj.data[id]||{});
+      return '<option value="'+id+'">'+esc(proj.list[id].name||'Untitled')+' ('+c[0]+' instr · '+c[1]+' mot · '+c[2]+' valves'+(c[3]?' · '+c[3]+' open punch':'')+')</option>'; }).join('');
+    $('prjSel').value=proj.active;
+    const m=projMeta(); [['prjName','name'],['prjClient','client'],['prjJob','job'],['prjSite','site']].forEach(([id,k])=>{ if(document.activeElement!==$(id)) $(id).value=m[k]||''; });
+    $('prjDel').classList.toggle('hidden', ids.length<2);
+    $('prjInfo').textContent='Each project keeps its own instruments, motors, valves and punch list. Tools, display settings and the company header are shared.';
+    $('hdrProj').textContent=m.name||'';
+  }
+  $('prjSel').addEventListener('change',()=>switchProject($('prjSel').value));
+  [['prjName','name'],['prjClient','client'],['prjJob','job'],['prjSite','site']].forEach(([id,k])=>$(id).addEventListener('input',()=>{
+    projMeta()[k]=$(id).value; if(k==='name') $('hdrProj').textContent=$(id).value; store(); }));
+  [['prjName','name']].forEach(([id])=>$(id).addEventListener('blur',renderProj));
+  $('prjNew').onclick=()=>{
+    const id='p'+Date.now().toString(36); proj.list[id]={name:'New project '+(Object.keys(proj.list).length+1),client:'',job:'',site:''};
+    proj.data[proj.active]=JSON.parse(JSON.stringify(snapProj())); loadProjData({}); proj.active=id; store(); refreshAfterSwitch();
+    setTimeout(()=>{ $('prjName').focus(); $('prjName').select(); },100); toast('New project created');
+  };
+  $('prjDel').onclick=function(){ twoTap(this,()=>{
+    const ids=Object.keys(proj.list); if(ids.length<2) return; const gone=proj.active, name=projMeta().name, next=ids.find(i=>i!==gone);
+    loadProjData(proj.data[next]); delete proj.data[next]; delete proj.list[gone]; delete proj.data[gone]; proj.active=next;
+    store(); refreshAfterSwitch(); pdbGc(); toast('Deleted project '+name);
+  }); };
+  let bakScope='this'; try{ bakScope=localStorage.getItem('cx-bakscope')||'this'; }catch(e){}
+  function renderBakScope(){ document.querySelectorAll('#bakScope button').forEach(b=>b.classList.toggle('on',b.dataset.v===bakScope)); }
+  document.querySelectorAll('#bakScope button').forEach(b=>b.onclick=()=>{ bakScope=b.dataset.v; try{localStorage.setItem('cx-bakscope',bakScope);}catch(e){} renderBakScope(); bakCache=null; prepareBackup(); });
+  function backupProjects(){ const all=bakScope==='all'; const out=[];
+    Object.keys(proj.list).forEach(id=>{ if(!all && id!==proj.active) return; const d=id===proj.active?snapProj():(proj.data[id]||{});
+      out.push({id,meta:proj.list[id],data:{lib:d.lib||{},libM:d.libM||{},libV:d.libV||{},punch:d.punch||[],punchSeq:d.punchSeq||1}}); });
+    return out; }
+  function mergeData(t,src){ const c={i:0,m:0,v:0,p:0};
+    Object.keys(src.lib||{}).forEach(k=>{ const v=src.lib[k]; if(v&&typeof v==='object'){ const x=Object.assign(DEF(),v,{tag:k}); delete x.m; t.lib[k]=x; c.i++; } });
+    Object.keys(src.libM||{}).forEach(k=>{ const v=src.libM[k]; if(v&&typeof v==='object'){ t.libM[k]=Object.assign({},v,{tag:k}); c.m++; } });
+    Object.keys(src.libV||{}).forEach(k=>{ const v=src.libV[k]; if(v&&typeof v==='object'){ t.libV[k]=Object.assign({},v,{tag:k}); c.v++; } });
+    (src.punch||[]).forEach(it=>{ if(!it||!it.id) return; const i=t.punch.findIndex(x=>x.id===it.id); if(i>=0) t.punch[i]=it; else t.punch.push(it); c.p++; });
+    t.punchSeq=Math.max(t.punchSeq||1, src.punchSeq||1, ...t.punch.map(x=>typeof x.no==='number'?x.no+1:1));
+    return c; }
+
+  // ---------- company header & logo ----------
+  let company={name:'',logo:''}, logoId='';
+  try{ company=Object.assign(company, JSON.parse(localStorage.getItem('cx-company')||'{}')); logoId=company.logo||''; }catch(e){}
+  let logoData=null;
+  function saveCompany(){ company.logo=logoId; try{ localStorage.setItem('cx-company',JSON.stringify(company)); }catch(e){} bakCache=null; }
+  function renderCompany(){
+    if(document.activeElement!==$('coName')) $('coName').value=company.name||'';
+    logoId=company.logo||logoId||'';
+    if(logoId){ pdbGet(logoId).then(d=>{ logoData=d; $('coLogo').src=d||''; $('coLogo').style.display=d?'block':'none'; $('coLogoDel').classList.toggle('hidden',!d); }); }
+    else { logoData=null; $('coLogo').style.display='none'; $('coLogoDel').classList.add('hidden'); }
+  }
+  $('coName').addEventListener('input',()=>{ company.name=$('coName').value; saveCompany(); });
+  $('coLogoIn').addEventListener('change',()=>{
+    const f=$('coLogoIn').files&&$('coLogoIn').files[0]; $('coLogoIn').value=''; if(!f) return;
+    const url=URL.createObjectURL(f), im=new Image();
+    im.onload=()=>{ const sc=Math.min(1,600/im.width,240/im.height), c=document.createElement('canvas'); c.width=Math.round(im.width*sc); c.height=Math.round(im.height*sc);
+      const g=c.getContext('2d'); g.fillStyle='#ffffff'; g.fillRect(0,0,c.width,c.height); g.drawImage(im,0,0,c.width,c.height); URL.revokeObjectURL(url);
+      const d=c.toDataURL('image/jpeg',.9), id='logo'+Date.now().toString(36); pdbPut(id,d); logoId=id; logoData=d; saveCompany(); renderCompany(); pdbGc(); toast('Logo added'); };
+    im.onerror=()=>toast('Could not read that image'); im.src=url;
+  });
+  $('coLogoDel').onclick=function(){ twoTap(this,()=>{ logoId=''; logoData=null; saveCompany(); renderCompany(); pdbGc(); }); };
+
   // ---------- backup file ----------
   let bakCache=null, bakBusy=false;
   async function buildBackup(withPhotos){
-    const o={app:'cx-instrument',v:4,appVersion:APP_VERSION,saved:new Date().toISOString(),lib,libM,libV,punch,punchSeq};
-    if(withPhotos){ const ids=new Set(), add=x=>((x&&x.photos)||[]).forEach(p=>ids.add(p.id));
-      [lib,libM,libV].forEach(Lb=>Object.values(Lb).forEach(add)); punch.forEach(add); add(cur); add(curM); add(curV);
+    const prs=backupProjects();
+    const o={app:'cx-instrument',v:5,appVersion:APP_VERSION,saved:new Date().toISOString(),projects:prs,company:company};
+    if(withPhotos){ const ids=new Set(), add=x=>{ ((x&&x.photos)||[]).forEach(p=>ids.add(p.id)); sigIdsOf(x).forEach(id=>ids.add(id)); };
+      prs.forEach(pr=>{ const d=pr.data; [d.lib,d.libM,d.libV].forEach(Lb=>Object.values(Lb).forEach(add)); d.punch.forEach(add); });
+      if(logoId) ids.add(logoId);
       o.photos={}; for(const id of ids){ const d=await pdbGet(id); if(d) o.photos[id]=d; } }
     return o;
   }
   async function prepareBackup(){
     if(bakBusy) return; bakBusy=true;
-    try{ const withP=$('bakPh').checked, o=await buildBackup(withP), txt=JSON.stringify(o), name='cx-backup-'+today()+'.json';
+    try{ const withP=$('bakPh').checked, o=await buildBackup(withP), txt=JSON.stringify(o), name='cx-backup-'+(bakScope==='all'?'all-projects':String(projMeta().name||'project').replace(/[^\w-]+/g,'-'))+'-'+today()+'.json';
       const blob=new Blob([txt],{type:'application/json'}); let file=null; try{ file=new File([blob],name,{type:'application/json'}); }catch(e){}
       bakCache={blob,file,name,at:Date.now()};
       const np=o.photos?Object.keys(o.photos).length:0;
-      $('bakInfo').textContent='Backup ready: '+Object.keys(lib).length+' instruments, '+Object.keys(libM).length+' motors, '+Object.keys(libV).length+' valves, '+punch.length+' punch items'+(withP?', '+np+' photos':'')+' ('+fmt(blob.size/1048576,2)+' MB).';
+      const t=o.projects.reduce((a,pr)=>{ const d=pr.data; a[0]+=Object.keys(d.lib).length; a[1]+=Object.keys(d.libM).length; a[2]+=Object.keys(d.libV).length; a[3]+=d.punch.length; return a; },[0,0,0,0]);
+      $('bakInfo').textContent='Backup ready: '+(o.projects.length>1?o.projects.length+' projects, ':'“'+(o.projects[0]&&o.projects[0].meta.name||'')+'”: ')+t[0]+' instruments, '+t[1]+' motors, '+t[2]+' valves, '+t[3]+' punch items'+(withP?', '+np+' photos/signatures':'')+' ('+fmt(blob.size/1048576,2)+' MB).';
     }finally{ bakBusy=false; }
   }
   $('bakPh').addEventListener('change',()=>{ bakCache=null; prepareBackup(); });
@@ -2104,6 +2257,70 @@
     const r=new FileReader(); r.onload=()=>importBackup(String(r.result)); r.onerror=()=>toast('Could not read that file'); r.readAsText(f);
   });
 
+  // ---------- signatures ----------
+  const sigIdsOf=o=>{ const out=[]; if(!o) return out; if(o.sigs) Object.values(o.sigs).forEach(x=>{ if(x&&x.id) out.push(x.id); }); if(o.sigC&&o.sigC.id) out.push(o.sigC.id); return out; };
+  const sigObj=k=>k==='inst'?cur:k==='motor'?M():k==='valve'?VX():k==='punch'?PD():null;
+  function renderSigs(kind){
+    const box=document.querySelector('.sigs[data-sig="'+kind+'"]'); if(!box) return; const o=sigObj(kind); if(!o) return;
+    const slot=(role,label,nameHtml,sig)=>'<div class="sigrow"><div>'+nameHtml+'</div><div><div class="sigbox" data-sgk="'+kind+'" data-sgr="'+role+'">'+
+      (sig&&sig.id?'<img data-sgid="'+sig.id+'" alt="Signature">':'<span class="ph">✍︎ Tap to sign</span>')+'</div>'+
+      '<div class="sigmeta">'+label+(sig&&sig.at?' · signed '+esc(sig.at.replace('T',' ')):'')+(sig&&sig.id?' · <a href="#" data-sgclr="'+role+'" style="color:var(--bad)">clear</a>':'')+'</div></div></div>';
+    let h='';
+    if(kind==='punch'){
+      h+=slot('close','Close-out signature','<label for="pdClosedBy">Closed by</label><input id="pdClosedBy" type="text" value="'+esc(o.closedBy||'')+'">',o.sigC);
+    } else {
+      o.sigs=o.sigs||{};
+      h+=slot('tested','Tested by signature','<label>Tested by</label><div style="padding:11px 0;font-size:15px">'+esc(o.tech||'—')+'</div>',o.sigs.tested);
+      h+=slot('witness','Witness signature','<label>Witness name</label><input type="text" data-witname="'+kind+'" value="'+esc(o.witName||'')+'">',o.sigs.witness);
+    }
+    box.innerHTML=h;
+    box.querySelectorAll('img[data-sgid]').forEach(im=>pdbGet(im.dataset.sgid).then(d=>{ if(d) im.src=d; }));
+    box.querySelectorAll('.sigbox').forEach(b=>b.onclick=()=>openSigPad(b.dataset.sgk,b.dataset.sgr));
+    box.querySelectorAll('[data-sgclr]').forEach(a=>a.onclick=e=>{ e.preventDefault(); const r=a.dataset.sgclr, ob=sigObj(kind);
+      if(kind==='punch') delete ob.sigC; else if(ob.sigs) delete ob.sigs[r]; renderSigs(kind); refreshHeader(); store(); pdbGc(); });
+    const wn=box.querySelector('[data-witname]'); if(wn) wn.addEventListener('input',()=>{ sigObj(kind).witName=wn.value; refreshHeader(); store(); });
+    const cb=box.querySelector('#pdClosedBy'); if(cb) cb.addEventListener('input',()=>{ PD().closedBy=cb.value; store(); });
+  }
+  [['tech','inst'],['mTech','motor'],['xTech','valve']].forEach(([id,k])=>{ const el=$(id); if(el) el.addEventListener('input',()=>setTimeout(()=>renderSigs(k),0)); });
+  let spT=null, spDraw=false, spLast=null, spInk=false, spBox=null;
+  function openSigPad(kind,role){
+    const o=sigObj(kind); spT={kind,role};
+    const who = kind==='punch' ? (o.closedBy||'') : role==='tested' ? (o.tech||'') : (o.witName||'');
+    $('spTitle').textContent=(role==='tested'?'Tested by':role==='witness'?'Witness':'Close-out')+(who?' – '+who:'');
+    $('sigpad').style.display='flex';
+    const c=$('spCan'), dpr=window.devicePixelRatio||1, w=c.clientWidth||Math.min(window.innerWidth-44,616), h=Math.round(Math.min(240,Math.max(150,w*0.4)));
+    c.style.height=h+'px'; c.width=Math.round(w*dpr); c.height=Math.round(h*dpr);
+    const g=c.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); g.fillStyle='#fff'; g.fillRect(0,0,w,h); g.lineCap='round'; g.lineJoin='round'; g.strokeStyle='#0b1f4d'; g.lineWidth=2.4;
+    spInk=false; spBox=[1e9,1e9,-1e9,-1e9];
+  }
+  (function(){
+    const c=$('spCan'), pos=e=>{ const r=c.getBoundingClientRect(); return [e.clientX-r.left,e.clientY-r.top]; };
+    const ext=p=>{ spBox[0]=Math.min(spBox[0],p[0]); spBox[1]=Math.min(spBox[1],p[1]); spBox[2]=Math.max(spBox[2],p[0]); spBox[3]=Math.max(spBox[3],p[1]); };
+    c.addEventListener('pointerdown',e=>{ e.preventDefault(); c.setPointerCapture&&c.setPointerCapture(e.pointerId); spDraw=true; spLast=pos(e); ext(spLast);
+      const g=c.getContext('2d'); g.beginPath(); g.arc(spLast[0],spLast[1],1.2,0,Math.PI*2); g.fillStyle='#0b1f4d'; g.fill(); spInk=true; });
+    c.addEventListener('pointermove',e=>{ if(!spDraw) return; e.preventDefault(); const p=pos(e), g=c.getContext('2d');
+      g.beginPath(); g.moveTo(spLast[0],spLast[1]); const mx=(spLast[0]+p[0])/2, my=(spLast[1]+p[1])/2; g.quadraticCurveTo(spLast[0],spLast[1],mx,my); g.lineTo(p[0],p[1]); g.stroke(); spLast=p; ext(p); spInk=true; });
+    const end=()=>{ spDraw=false; }; c.addEventListener('pointerup',end); c.addEventListener('pointercancel',end); c.addEventListener('pointerleave',end);
+  })();
+  $('spClear').onclick=()=>{ if(spT) openSigPad(spT.kind,spT.role); };
+  $('spCancel').onclick=()=>{ $('sigpad').style.display='none'; spT=null; };
+  $('spSave').onclick=()=>{
+    if(!spT) return; if(!spInk){ toast('Sign in the box first'); return; }
+    const c=$('spCan'), dpr=window.devicePixelRatio||1, pad=8;
+    const x0=Math.max(0,(spBox[0]-pad)*dpr), y0=Math.max(0,(spBox[1]-pad)*dpr), x1=Math.min(c.width,(spBox[2]+pad)*dpr), y1=Math.min(c.height,(spBox[3]+pad)*dpr);
+    const sw=x1-x0, sh=y1-y0, sc=Math.min(1,600/sw,200/sh), o=document.createElement('canvas'); o.width=Math.max(20,Math.round(sw*sc)); o.height=Math.max(10,Math.round(sh*sc));
+    const g=o.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,o.width,o.height); g.drawImage(c,x0,y0,sw,sh,0,0,o.width,o.height);
+    const d=o.toDataURL('image/jpeg',.88), id='sg'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+    const now=new Date(), at=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+'T'+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    pdbPut(id,d).then(ok=>{ if(!ok) toast('Signature kept for this session only'); });
+    const ob=sigObj(spT.kind);
+    if(spT.kind==='punch') ob.sigC={id,at}; else { ob.sigs=ob.sigs||{}; ob.sigs[spT.role]={id,at}; }
+    const k=spT.kind; $('sigpad').style.display='none'; spT=null; renderSigs(k); refreshHeader(); store(); toast('Signature saved');
+  };
+  function signSec(o){ const s=o.sigs||{};
+    return {type:'sign',title:'Sign-off',items:[{role:'Tested by',name:o.tech||'',date:s.tested&&s.tested.at?s.tested.at.replace('T',' '):(o.tdate||''),sig:s.tested&&s.tested.id},
+      {role:'Witness',name:o.witName||'',date:s.witness&&s.witness.at?s.witness.at.replace('T',' '):'',sig:s.witness&&s.witness.id}]}; }
+
   // ---------- photos (IndexedDB) ----------
   const PDB={db:null,mem:{}};
   function pdbOpen(){ return new Promise(res=>{ try{ const r=indexedDB.open('cx-photos',1);
@@ -2112,11 +2329,14 @@
     try{ const t=PDB.db.transaction('p','readwrite'); t.objectStore('p').put(v,id); t.oncomplete=()=>res(true); t.onerror=()=>res(false); }catch(e){res(false);} }); }
   function pdbGet(id){ if(PDB.mem[id]) return Promise.resolve(PDB.mem[id]); return new Promise(res=>{ if(!PDB.db) return res(null);
     try{ const r=PDB.db.transaction('p').objectStore('p').get(id); r.onsuccess=()=>{ if(r.result) PDB.mem[id]=r.result; res(r.result||null); }; r.onerror=()=>res(null); }catch(e){res(null);} }); }
-  function pdbGc(){ if(!PDB.db) return; const keepIds=new Set(); const add=o=>{ ((o&&o.photos)||[]).forEach(p=>keepIds.add(p.id)); };
+  function pdbGc(){ if(!PDB.db) return; const keepIds=new Set(); const add=o=>{ ((o&&o.photos)||[]).forEach(p=>keepIds.add(p.id)); sigIdsOf(o).forEach(id=>keepIds.add(id)); };
     add(cur); add(curM); add(curV); add(pd); Object.values(lib).forEach(add); Object.values(libM).forEach(add); Object.values(libV).forEach(add); punch.forEach(add);
+    Object.values(proj.data||{}).forEach(d=>{ if(!d) return; add(d.cur); add(d.curM); add(d.curV); add(d.pd); [d.lib,d.libM,d.libV].forEach(L=>Object.values(L||{}).forEach(add)); (d.punch||[]).forEach(add); });
+    if(logoId) keepIds.add(logoId);
     try{ const st=PDB.db.transaction('p','readwrite').objectStore('p'); const r=st.getAllKeys(); r.onsuccess=()=>r.result.forEach(k=>{ if(!keepIds.has(k)){ st.delete(k); delete PDB.mem[k]; } }); }catch(e){} }
   const plist = which => which==='motor' ? (M().photos=M().photos||[]) : which==='valve' ? (VX().photos=VX().photos||[]) : which==='punch' ? (PD().photos=PD().photos||[]) : (cur.photos=cur.photos||[]);
   function renderPhotos(which){
+    renderSigs(which);
     const box=$('ph-'+which); if(!box) return; const L=plist(which); box.innerHTML='';
     L.forEach((p,i)=>{ const w=document.createElement('div'), im=document.createElement('img'); im.className='th'; im.alt=p.lbl;
       pdbGet(p.id).then(d=>{ if(d) im.src=d; }); im.onclick=()=>openViewer(which,i);
@@ -2362,6 +2582,13 @@
     const nw=c=>String(cellV(c)).length<=16?';white-space:nowrap':'';
     const TB='border-collapse:collapse;margin:0 0 8px;'+F;
     let h='<div style="'+F+'">';
+    const hd=rep.hdr||{}, pl=[hd.project?'Project: '+hd.project:'',hd.client?'Client: '+hd.client:'',hd.job?'Job no.: '+hd.job:'',hd.site?'Site: '+hd.site:''].filter(Boolean);
+    if(hd.company||(opt.images&&hd.logo)||pl.length){
+      h+='<table style="border-collapse:collapse;width:100%;margin:0 0 10px;border-bottom:2px solid #0b3d6b;'+F+'"><tr>'+
+        '<td style="padding:0 10px 6px 0;vertical-align:middle;width:1%;white-space:nowrap">'+(opt.images&&hd.logo?'<img src="'+hd.logo+'" style="max-height:44px;max-width:180px" alt="">':'')+'</td>'+
+        '<td style="padding:0 0 6px;vertical-align:middle;text-align:right">'+(hd.company?'<div style="font-weight:bold;font-size:13px">'+H(hd.company)+'</div>':'')+
+        (pl.length?'<div style="color:#444;font-size:11px">'+H(pl.join(' · '))+'</div>':'')+'</td></tr></table>';
+    }
     h+='<div style="font-size:17px;font-weight:bold;margin:0 0 2px">'+H(rep.title)+(rep.tag?' – '+H(rep.tag):'')+'</div>';
     if(rep.sub) h+='<div style="color:#444;margin:0 0 2px">'+H(rep.sub)+'</div>';
     h+='<div style="color:#777;font-size:11px;margin:0 0 10px">Generated '+H(new Date().toLocaleString())+' · Cx Pocket '+APP_VERSION+'</div>';
@@ -2382,10 +2609,16 @@
         h+='<table style="'+TB+'">'+sec.items.map(([ok,t])=>'<tr><td style="'+TD+';text-align:center;width:22px;font-size:14px;'+(ok?'color:#0a7d3b':'color:#999')+'">'+(ok?'☑':'☐')+'</td><td style="'+TD+'">'+H(t)+'</td></tr>').join('')+'</table>';
       } else if(sec.type==='text'){
         h+='<div style="white-space:pre-wrap;border:1px solid #9aa4ad;padding:6px 8px">'+H(sec.text)+'</div>';
+      } else if(sec.type==='sign'){
+        h+='<table style="'+TB+'"><tr>'+['','Name','Signature','Date / time'].map(x=>'<th style="'+TH+'">'+x+'</th>').join('')+'</tr>'+
+          sec.items.map(it=>{ const im=it.sig&&rep.sigImg&&rep.sigImg[it.sig];
+            return '<tr><td style="'+TD+';background:#f4f6f8;white-space:nowrap">'+H(it.role)+'</td><td style="'+TD+';min-width:110px">'+(H(it.name)||'&nbsp;')+'</td>'+
+              '<td style="'+TD+';width:200px;height:52px;padding:2px 6px">'+(im&&opt.images?'<img src="'+im+'" style="max-height:48px;max-width:190px" alt="signature">':(it.sig?'Signed':'&nbsp;'))+'</td>'+
+              '<td style="'+TD+';white-space:nowrap">'+(H(it.date)||'&nbsp;')+'</td></tr>'; }).join('')+'</table>';
       }
     });
     if(opt.images && rep.images && rep.images.length){
-      h+='<div style="font-weight:bold;font-size:13px;margin:14px 0 6px;color:#0b3d6b;border-bottom:2px solid #0b3d6b;padding-bottom:2px">Photos</div><div>';
+      h+='<div style="font-weight:bold;font-size:13px;margin:14px 0 6px;color:#0b3d6b;border-bottom:2px solid #0b3d6b;padding-bottom:2px">'+H(rep.imgTitle||'Photos')+'</div><div>';
       rep.images.forEach(im=>{ h+='<div style="display:inline-block;vertical-align:top;margin:0 8px 10px 0;width:220px;page-break-inside:avoid"><img src="'+im.src+'" style="width:220px;border:1px solid #ccc;border-radius:4px" alt=""><div style="font-size:11px;color:#444">'+H(im.cap)+'</div></div>'; });
       h+='</div>';
     }
@@ -2399,7 +2632,9 @@
   }
   function repText(rep){
     const L=[rep.title+(rep.tag?' – '+rep.tag:'')]; if(rep.sub) L.push(rep.sub);
+    { const hd=rep.hdr||{}; const pl=[hd.company,hd.project,hd.client,hd.job?'Job '+hd.job:'',hd.site].filter(Boolean); if(pl.length) L.push(pl.join(' · ')); }
     rep.sections.forEach(sec=>{
+      if(sec.type==='sign'){ L.push('','SIGN-OFF'); sec.items.forEach(it=>L.push(it.role+': '+(it.name||'________')+(it.sig?' (signed'+(it.date?' '+it.date:'')+')':' · signature ________'))); return; }
       if(sec.type==='kv'){ const rows=sec.rows.filter(r=>cellV(r[1])!==''); if(!rows.length&&!sec.keep) return;
         L.push('', (sec.title||'').toUpperCase()); (sec.keep?sec.rows:rows).forEach(r=>L.push(r[0]+': '+(cellV(r[1])===''?'________':cellV(r[1])))); }
       else if(sec.type==='table'){ L.push('', (sec.title||'').toUpperCase());
@@ -2416,7 +2651,9 @@
   function repCSV(rep){
     const q=v=>{ v=String(cellV(v)); return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
     const L=[q(rep.title+(rep.tag?' – '+rep.tag:''))]; if(rep.sub) L.push(q(rep.sub));
+    { const hd=rep.hdr||{}; [['Company',hd.company],['Project',hd.project],['Client',hd.client],['Job no.',hd.job],['Site',hd.site]].forEach(r=>{ if(r[1]) L.push(q(r[0])+','+q(r[1])); }); }
     rep.sections.forEach(sec=>{
+      if(sec.type==='sign'){ L.push('',q('Sign-off'),'Role,Name,Signed,Date'); sec.items.forEach(it=>L.push([it.role,it.name,it.sig?'Yes':'No',it.date].map(q).join(','))); return; }
       if(sec.type==='kv'){ const rows=sec.rows.filter(r=>sec.keep||cellV(r[1])!==''); if(!rows.length) return; L.push('',q(sec.title||'')); rows.forEach(r=>L.push(q(r[0])+','+q(r[1]))); }
       else if(sec.type==='table'){ L.push('',q(sec.title||'')); L.push(sec.head.map(q).join(',')); sec.rows.forEach(r=>L.push(r.map(q).join(','))); }
       else if(sec.type==='check'){ L.push('',q(sec.title||'')); sec.items.forEach(([ok,t])=>L.push((ok?'Yes':'No')+','+q(t))); }
@@ -2429,7 +2666,8 @@
   async function loadRepImages(rep){
     const refs=[]; (rep.photos||[]).forEach(p=>refs.push({id:p.id,cap:(rep.tag?rep.tag+' – ':'')+p.lbl}));
     (rep.photosBy||[]).forEach(g=>g.photos.forEach(p=>refs.push({id:p.id,cap:g.cap+' – '+p.lbl})));
-    const out=[]; for(const r of refs){ const d=await pdbGet(r.id); if(!d) continue; const t=await thumbFrom(d,700); if(t) out.push({cap:r.cap,src:t}); }
+    for(const id of (rep.sigIds||[])){ const d=await pdbGet(id); if(d) rep.sigImg[id]=d; }
+    const out=[]; for(const r of refs){ const d=await pdbGet(r.id); if(!d) continue; const t=r.id.startsWith('sg')?d:await thumbFrom(d,700); if(t) out.push({cap:r.cap,src:t}); }
     rep.images=out; if(rep===curRep && $('rep').style.display==='flex') showPreview();
   }
   async function copyRich(html,text){
@@ -2450,26 +2688,186 @@
   function openExport(build){
     let r=null; try{ r=build(); }catch(e){ console.error(e); }
     if(!r){ toast('Nothing to export yet'); return; }
+    const pm=projMeta(); r.hdr={company:company.name||'',logo:logoData||'',project:pm.name||'',client:pm.client||'',job:pm.job||'',site:pm.site||''};
+    r.sigIds=[]; r.sections.forEach(x=>{ if(x.type==='sign') x.items.forEach(it=>{ if(it.sig) r.sigIds.push(it.sig); }); });
+    r.needsMedia=!!((r.photos||[]).length||(r.photosBy||[]).length||r.sigIds.length); r.sigImg={};
     curRep=r; r.images=null; loadRepImages(r);
     $('expTitle').textContent='Export · '+r.title+(r.tag?' – '+r.tag:'');
     $('exp').style.display='flex';
   }
   function showPreview(){ if(!curRep) return; $('repBody').innerHTML=repHTML(curRep,{images:true}); $('rep').style.display='flex'; }
-  function doPrint(){ if(!isHosted()){ toast('PDF/print works in the installed app'); return; } showPreview(); setTimeout(()=>{ try{ window.print(); }catch(e){ toast('Printing isn’t available here'); } },50); }
+  function doPDF(){
+    if(!curRep) return false;
+    if(curRep.images===null && curRep.needsMedia){ toast('Preparing photos… tap PDF again'); return false; }
+    let bytes; try{ bytes=repPDF(curRep); }catch(e){ console.error(e); toast('Couldn’t build the PDF'); return true; }
+    shareFile(bytes, fname('.pdf'), 'application/pdf'); return true;
+  }
   const fname=e=>((curRep.file||curRep.title)+'').replace(/[^\w.-]+/g,'-').replace(/-+/g,'-')+e;
   $('exp').addEventListener('click',e=>{ if(e.target.id==='exp'){ $('exp').style.display='none'; return; }
-    const b=e.target.closest('[data-ex]'); if(!b||!curRep) return; const a=b.dataset.ex; $('exp').style.display='none';
+    const b=e.target.closest('[data-ex]'); if(!b||!curRep) return; const a=b.dataset.ex;
+    if(a==='pdf'){ if(doPDF()) $('exp').style.display='none'; return; }
+    $('exp').style.display='none';
     if(a==='copy') copyRich(repHTML(curRep,{images:false}), repText(curRep));
     else if(a==='text'){ shareMode=true; copyText(repText(curRep)); shareMode=false; }
     else if(a==='csv') shareFile(repCSV(curRep), fname('.csv'), 'text/csv');
     else if(a==='html') shareFile(repHTML(curRep,{images:true,full:true}), fname('.html'), 'text/html');
-    else if(a==='pdf') doPrint();
     else if(a==='view') showPreview();
   });
   $('repClose').onclick=()=>{ $('rep').style.display='none'; };
   $('repCopy').onclick=()=>copyRich(repHTML(curRep,{images:false}), repText(curRep));
   $('repFile').onclick=()=>shareFile(repHTML(curRep,{images:true,full:true}), fname('.html'), 'text/html');
-  $('repPrint').onclick=()=>{ if(!isHosted()){ toast('PDF/print works in the installed app'); return; } try{ window.print(); }catch(e){} };
+  $('repPrint').onclick=()=>doPDF();
+
+  // ---------- built-in PDF writer (no internet needed) ----------
+  const PDFW={"n":[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584,761,556,0,222,556,333,1000,556,556,333,1000,667,333,1000,0,611,0,0,222,222,333,333,350,556,1000,333,1000,500,333,944,0,500,667,278,333,556,556,556,556,260,556,333,737,370,556,584,333,737,333,400,584,333,333,333,556,537,278,333,333,365,556,834,834,834,611,667,667,667,667,667,667,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,500,556,556,556,556,278,278,278,278,556,556,556,556,556,556,556,584,611,556,556,556,556,500,556,500],"b":[278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584,761,556,0,278,556,500,1000,556,556,333,1000,667,333,1000,0,611,0,0,278,278,500,500,350,556,1000,333,1000,556,333,944,0,500,667,278,333,556,556,556,556,280,556,333,737,370,556,584,333,737,333,400,584,333,333,333,611,556,278,333,333,365,556,834,834,834,611,722,722,722,722,722,722,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,556,556,556,556,556,278,278,278,278,611,611,611,611,611,611,611,584,611,611,611,611,611,556,611,556]};
+  const CP1252={"8364":128,"8218":130,"402":131,"8222":132,"8230":133,"8224":134,"8225":135,"710":136,"8240":137,"352":138,"8249":139,"338":140,"381":142,"8216":145,"8217":146,"8220":147,"8221":148,"8226":149,"8211":150,"8212":151,"732":152,"8482":153,"353":154,"8250":155,"339":156,"382":158,"376":159};
+  const PSUB={'✓':'OK','✗':'X','☑':'[x]','☐':'[ ]','↑':'up','↓':'dn','Δ':'d','Ω':'ohm','√':'sqrt','≤':'<=','≥':'>=','≈':'~','→':'->','←':'<-',
+    '₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','⚙':'','⧓':'','⚑':'','︎':'','️':'',' ':' ',' ':' ',' ':' ','−':'-','×':'x'};
+  function pdfCodes(str){ const out=[]; for(const ch of String(str==null?'':str)){ const sub=PSUB[ch]; if(sub!==undefined){ for(const c of sub) out.push(c.charCodeAt(0)); continue; }
+      const u=ch.codePointAt(0); if(u>=32&&u<127) out.push(u); else if(u>=160&&u<=255) out.push(u); else if(CP1252[u]) out.push(CP1252[u]); else if(u===10||u===9) out.push(32); else out.push(63); }
+    return out; }
+  const pdfW=(codes,size,bold)=>{ const t=bold?PDFW.b:PDFW.n; let w=0; for(const c of codes) w+=(t[c-32]||556); return w*size/1000; };
+  const hex2=n=>(n<16?'0':'')+n.toString(16);
+  const rgb=h=>{ h=h.replace('#',''); return [parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255].map(x=>x.toFixed(3)).join(' '); };
+  function jpegInfo(b64){ const bin=atob(b64), n=bin.length, by=new Uint8Array(n); for(let i=0;i<n;i++) by[i]=bin.charCodeAt(i);
+    let i=2; while(i<n){ if(by[i]!==0xFF){ i++; continue; } const m=by[i+1], len=(by[i+2]<<8)|by[i+3];
+      if(m>=0xC0&&m<=0xC2){ return {bytes:by,h:(by[i+5]<<8)|by[i+6],w:(by[i+7]<<8)|by[i+8],c:by[i+9]}; } i+=2+len; } return null; }
+  function PDFDoc(land){
+    const P={W:land?841.89:595.28,H:land?595.28:841.89,M:34,pages:[],imgs:[],cur:null};
+    P.CW=P.W-2*P.M;
+    P.add=()=>{ P.cur=[]; P.pages.push(P.cur); P.y=P.M; };
+    P.op=o=>P.cur.push(o);
+    P.text=(x,y,str,size,bold,color)=>{ const c=pdfCodes(str); if(!c.length) return; P.op('BT /'+(bold?'F2':'F1')+' '+size+' Tf '+rgb(color||'#111111')+' rg '+x.toFixed(2)+' '+(P.H-y-size*0.8).toFixed(2)+' Td <'+c.map(hex2).join('')+'> Tj ET'); };
+    P.rect=(x,y,w,h,fill,stroke,lw)=>{ let o=''; if(fill) o+=rgb(fill)+' rg '; if(stroke) o+=rgb(stroke)+' RG '+(lw||0.6)+' w '; o+=x.toFixed(2)+' '+(P.H-y-h).toFixed(2)+' '+w.toFixed(2)+' '+h.toFixed(2)+' re '+(fill&&stroke?'B':fill?'f':'S'); P.op(o); };
+    P.line=(x1,y1,x2,y2,col,lw)=>P.op(rgb(col||'#000000')+' RG '+(lw||0.6)+' w '+x1.toFixed(2)+' '+(P.H-y1).toFixed(2)+' m '+x2.toFixed(2)+' '+(P.H-y2).toFixed(2)+' l S');
+    P.image=(info,x,y,w,h)=>{ let k=P.imgs.indexOf(info); if(k<0){ P.imgs.push(info); k=P.imgs.length-1; } P.op('q '+w.toFixed(2)+' 0 0 '+h.toFixed(2)+' '+x.toFixed(2)+' '+(P.H-y-h).toFixed(2)+' cm /Im'+k+' Do Q'); };
+    P.wrap=(str,size,bold,maxw)=>{ const out=[]; String(str==null?'':str).split('\n').forEach(par=>{ const words=par.split(/ +/); let line='';
+        words.forEach(wd=>{ const t=line?line+' '+wd:wd; if(pdfW(pdfCodes(t),size,bold)<=maxw||!line){ line=t;
+            while(pdfW(pdfCodes(line),size,bold)>maxw && line.length>1){ let k=line.length-1; while(k>1&&pdfW(pdfCodes(line.slice(0,k)),size,bold)>maxw) k--; out.push(line.slice(0,k)); line=line.slice(k); } }
+          else { out.push(line); line=wd; while(pdfW(pdfCodes(line),size,bold)>maxw && line.length>1){ let k=line.length-1; while(k>1&&pdfW(pdfCodes(line.slice(0,k)),size,bold)>maxw) k--; out.push(line.slice(0,k)); line=line.slice(k); } } });
+        out.push(line); }); return out; };
+    P.need=h=>{ if(P.y+h>P.H-P.M-14){ P.add(); return true; } return false; };
+    P.build=footer=>{
+      const enc=new TextEncoder(), chunks=[], offs=[]; let len=0;
+      const put=x=>{ const b=typeof x==='string'?enc.encode(x):x; chunks.push(b); len+=b.length; };
+      const N=P.pages.length, nImg=P.imgs.length;
+      // object numbers: 1 catalog, 2 pages, 3 F1, 4 F2, images 5.., then per page: page obj, content obj
+      const imgBase=5, pgBase=imgBase+nImg;
+      const obj=(n,body)=>{ offs[n]=len; put(n+' 0 obj\n'); put(body); put('\nendobj\n'); };
+      put('%PDF-1.4\n'); put(new Uint8Array([37,226,227,207,211,10]));
+      obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
+      obj(2,'<< /Type /Pages /Count '+N+' /Kids ['+P.pages.map((_,i)=>(pgBase+i*2)+' 0 R').join(' ')+'] >>');
+      obj(3,'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+      obj(4,'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+      P.imgs.forEach((im,k)=>{ offs[imgBase+k]=len; put((imgBase+k)+' 0 obj\n<< /Type /XObject /Subtype /Image /Width '+im.w+' /Height '+im.h+' /ColorSpace /'+(im.c===1?'DeviceGray':'DeviceRGB')+' /BitsPerComponent 8 /Filter /DCTDecode /Length '+im.bytes.length+' >>\nstream\n'); put(im.bytes); put('\nendstream\nendobj\n'); });
+      const xo=nImg?'/XObject << '+P.imgs.map((_,k)=>'/Im'+k+' '+(imgBase+k)+' 0 R').join(' ')+' >> ':'';
+      P.pages.forEach((ops,i)=>{
+        const f=footer?footer(i+1,N):''; const all=ops.slice(); if(f){ const c=pdfCodes(f); all.push('BT /F1 7.5 Tf 0.45 0.45 0.45 rg '+P.M+' '+(P.M-12)+' Td <'+c.map(hex2).join('')+'> Tj ET'); }
+        const content=all.join('\n'), cb=enc.encode(content);
+        obj(pgBase+i*2,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+P.W.toFixed(2)+' '+P.H.toFixed(2)+'] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> '+xo+'>> /Contents '+(pgBase+i*2+1)+' 0 R >>');
+        offs[pgBase+i*2+1]=len; put((pgBase+i*2+1)+' 0 obj\n<< /Length '+cb.length+' >>\nstream\n'); put(cb); put('\nendstream\nendobj\n');
+      });
+      const total=pgBase+N*2, xref=len;
+      let x='xref\n0 '+total+'\n0000000000 65535 f \n'; for(let n=1;n<total;n++) x+=String(offs[n]).padStart(10,'0')+' 00000 n \n';
+      put(x+'trailer\n<< /Size '+total+' /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF');
+      const out=new Uint8Array(len); let o=0; chunks.forEach(c=>{ out.set(c,o); o+=c.length; }); return out;
+    };
+    P.add(); return P;
+  }
+  const PCOL={ok:'#0a7d3b',bad:'#c62828',warn:'#9a6400'};
+  const PFILL={catA:'#fde2e2',catB:'#fff1d6',catC:'#eceff1'}, PCATC={catA:'#b00000',catB:'#8a5a00',catC:'#455a64'};
+  function repPDF(rep){
+    const wide=rep.sections.some(x=>x.type==='table'&&x.head.length>8);
+    const P=PDFDoc(wide), M=P.M, CW=P.CW, FS=8.6, LH=11, PAD=3.5, BORDER='#9aa4ad';
+    const cc=c=>{ const k=c&&typeof c==='object'?c.c:''; return {fill:PFILL[k]||null,col:PCATC[k]||PCOL[k]||'#111111',bold:!!(PCOL[k]||PCATC[k])}; };
+    // company / project header
+    const hd=rep.hdr||{}, pl=[hd.project?'Project: '+hd.project:'',hd.client?'Client: '+hd.client:'',hd.job?'Job no.: '+hd.job:'',hd.site?'Site: '+hd.site:''].filter(Boolean);
+    const logo=hd.logo?jpegInfo(hd.logo.split(',')[1]):null;
+    if(logo||hd.company||pl.length){
+      let lh=0; if(logo){ const h=Math.min(38,logo.h*(150/logo.w)), w=h*logo.w/logo.h; P.image(logo,M,P.y,w,h); lh=h; }
+      let ty=P.y+2; const R_=t=>M+CW-pdfW(pdfCodes(t),9,false);
+      if(hd.company){ const w=pdfW(pdfCodes(hd.company),11,true); P.text(M+CW-w,ty,hd.company,11,true,'#111111'); ty+=14; }
+      const pls=P.wrap(pl.join(' · '),8.5,false,CW*0.65); pls.forEach(t=>{ const w=pdfW(pdfCodes(t),8.5,false); P.text(M+CW-w,ty,t,8.5,false,'#444444'); ty+=11; });
+      P.y=Math.max(P.y+lh,ty)+4; P.line(M,P.y,M+CW,P.y,'#0b3d6b',1.5); P.y+=10;
+    }
+    // title block
+    P.text(M,P.y,rep.title+(rep.tag?' – '+rep.tag:''),15,true,'#111111'); P.y+=20;
+    if(rep.sub){ P.text(M,P.y,rep.sub,9.5,false,'#444444'); P.y+=13; }
+    P.text(M,P.y,'Generated '+new Date().toLocaleString()+' · Cx Pocket '+APP_VERSION,7.5,false,'#777777'); P.y+=14;
+    const heading=t=>{ P.need(40); P.y+=6; P.text(M,P.y,t,10.5,true,'#0b3d6b'); P.y+=14; P.line(M,P.y,M+CW,P.y,'#0b3d6b',1.2); P.y+=5; };
+    rep.sections.forEach(sec=>{
+      if(sec.title) heading(sec.title);
+      if(sec.type==='kv'){
+        const rows=sec.rows.filter(r=>sec.keep||cellV(r[1])!==''); if(!rows.length){ P.text(M,P.y,'—',FS,false,'#777777'); P.y+=LH+2; return; }
+        const kw=CW*0.17, vw=CW*0.33;
+        for(let i=0;i<rows.length;i+=2){
+          const pair=[rows[i],rows[i+1]].filter(Boolean);
+          const lines=pair.map(r=>({k:P.wrap(r[0],FS,false,kw-2*PAD),v:P.wrap(cellV(r[1]),FS,cc(r[1]).bold,vw-2*PAD)}));
+          let h=Math.max(...lines.map(l=>Math.max(l.k.length,l.v.length)))*LH+2*PAD-2; if(sec.keep) h=Math.max(h,22);
+          if(P.need(h)) {}
+          pair.forEach((r,j)=>{ const x=M+j*(kw+vw), st=cc(r[1]);
+            P.rect(x,P.y,kw,h,'#f4f6f8',BORDER); P.rect(x+kw,P.y,vw,h,st.fill,BORDER);
+            lines[j].k.forEach((t,li)=>P.text(x+PAD,P.y+PAD+li*LH,t,FS,false,'#333333'));
+            lines[j].v.forEach((t,li)=>P.text(x+kw+PAD,P.y+PAD+li*LH,t,FS,st.bold,st.col)); });
+          P.y+=h;
+        }
+        P.y+=6;
+      } else if(sec.type==='table'){
+        if(!sec.rows.length){ P.text(M,P.y,'No rows.',FS,false,'#777777'); P.y+=LH+2; return; }
+        const n=sec.head.length, nat=[], minw=[];
+        for(let c=0;c<n;c++){ let w=pdfW(pdfCodes(sec.head[c]),FS,true); let mw=0;
+          sec.rows.forEach(r=>{ const v=String(cellV(r[c])); w=Math.max(w,pdfW(pdfCodes(v),FS,false));
+            v.split(/\s+/).forEach(wd=>mw=Math.max(mw,pdfW(pdfCodes(wd),FS,false))); });
+          sec.head[c].split(/\s+/).forEach(wd=>mw=Math.max(mw,pdfW(pdfCodes(wd),FS,true)));
+          nat.push(w+2*PAD+1); minw.push(Math.min(mw+2*PAD+1,CW*0.3)); }
+        let ws=nat.slice(), tot=ws.reduce((a,b)=>a+b,0);
+        if(tot>CW){ // shrink the widest columns down toward their minimum
+          for(let guard=0;guard<200&&tot>CW+0.5;guard++){ let bi=-1,bw=0; ws.forEach((w,i)=>{ if(w-minw[i]>bw){ bw=w-minw[i]; bi=i; } }); if(bi<0) break;
+            const cut=Math.min(tot-CW, Math.max(4,(ws[bi]-minw[bi])/2)); ws[bi]-=cut; tot-=cut; }
+          if(tot>CW){ const f=CW/tot; ws=ws.map(w=>w*f); tot=CW; } }
+        else if(tot<CW*0.75){ const f=Math.min(CW/tot,1.35); ws=ws.map(w=>w*f); }
+        const drawHead=()=>{ const hl=sec.head.map((t,c)=>P.wrap(t,FS,true,ws[c]-2*PAD)); const h=Math.max(...hl.map(l=>l.length))*LH+2*PAD-2;
+          let x=M; hl.forEach((l,c)=>{ P.rect(x,P.y,ws[c],h,'#e8edf2',BORDER); l.forEach((t,li)=>P.text(x+PAD,P.y+PAD+li*LH,t,FS,true,'#111111')); x+=ws[c]; }); P.y+=h; };
+        P.need(40); drawHead();
+        sec.rows.forEach((r,ri)=>{
+          const cl=r.map((c,ci)=>P.wrap(cellV(c),FS,cc(c).bold,ws[ci]-2*PAD)); const h=Math.max(...cl.map(l=>l.length))*LH+2*PAD-2;
+          if(P.need(h)) drawHead();
+          let x=M; r.forEach((c,ci)=>{ const st=cc(c); P.rect(x,P.y,ws[ci],h,st.fill||(ri%2?'#fafbfc':null),BORDER);
+            cl[ci].forEach((t,li)=>P.text(x+PAD,P.y+PAD+li*LH,t,FS,st.bold,st.col)); x+=ws[ci]; });
+          P.y+=h; });
+        P.y+=8;
+      } else if(sec.type==='check'){
+        sec.items.forEach(([ok,t])=>{ const l=P.wrap(t,FS,false,CW-26); const h=Math.max(l.length*LH+2*PAD-2,16); P.need(h);
+          P.rect(M,P.y,CW,h,null,BORDER); P.rect(M+6,P.y+4,8,8,null,ok?'#0a7d3b':'#888888',0.8);
+          if(ok){ P.line(M+7.5,P.y+8,M+9.5,P.y+10.5,'#0a7d3b',1.3); P.line(M+9.5,P.y+10.5,M+13,P.y+5,'#0a7d3b',1.3); }
+          l.forEach((x,li)=>P.text(M+22,P.y+PAD+li*LH,x,FS,false,'#111111')); P.y+=h; });
+        P.y+=8;
+      } else if(sec.type==='sign'){
+        const cw=[CW*0.16,CW*0.28,CW*0.34,CW*0.22], hh=15; P.need(hh+2*46);
+        let x=M; ['','Name','Signature','Date / time'].forEach((t,i)=>{ P.rect(x,P.y,cw[i],hh,'#e8edf2',BORDER); P.text(x+PAD,P.y+PAD,t,FS,true,'#111111'); x+=cw[i]; }); P.y+=hh;
+        sec.items.forEach(it=>{ const h=46; P.need(h); let x=M;
+          P.rect(x,P.y,cw[0],h,'#f4f6f8',BORDER); P.text(x+PAD,P.y+PAD,it.role,FS,false,'#333333'); x+=cw[0];
+          P.rect(x,P.y,cw[1],h,null,BORDER); P.wrap(it.name,FS,false,cw[1]-2*PAD).slice(0,3).forEach((t,li)=>P.text(x+PAD,P.y+PAD+li*LH,t,FS,false,'#111111')); x+=cw[1];
+          P.rect(x,P.y,cw[2],h,null,BORDER);
+          const d=it.sig&&rep.sigImg&&rep.sigImg[it.sig], inf=d?jpegInfo(d.split(',')[1]):null;
+          if(inf){ const sc=Math.min((cw[2]-8)/inf.w,(h-6)/inf.h); P.image(inf,x+4,P.y+3,inf.w*sc,inf.h*sc); } else if(it.sig) P.text(x+PAD,P.y+PAD,'Signed',FS,false,'#111111');
+          x+=cw[2]; P.rect(x,P.y,cw[3],h,null,BORDER); P.text(x+PAD,P.y+PAD,it.date||'',FS,false,'#111111'); P.y+=h; });
+        P.y+=8;
+      } else if(sec.type==='text'){
+        const l=P.wrap(sec.text,FS,false,CW-2*PAD); let i=0;
+        while(i<l.length){ const room=Math.max(1,Math.floor((P.H-P.M-14-P.y-2*PAD)/LH)); const part=l.slice(i,i+room); const h=part.length*LH+2*PAD;
+          P.rect(M,P.y,CW,h,null,BORDER); part.forEach((t,li)=>P.text(M+PAD,P.y+PAD+li*LH,t,FS,false,'#111111')); P.y+=h; i+=part.length; if(i<l.length) P.add(); }
+        P.y+=8;
+      }
+    });
+    const imgs=(rep.images||[]).map(im=>({cap:im.cap,info:jpegInfo(im.src.split(',')[1])})).filter(x=>x.info);
+    if(imgs.length){ heading(rep.imgTitle||'Photos'); const per=wide?4:3, gap=10, w=(CW-(per-1)*gap)/per;
+      for(let i=0;i<imgs.length;i+=per){ const row=imgs.slice(i,i+per); const hs=row.map(x=>w*x.info.h/x.info.w); const h=Math.max(...hs)+16; P.need(h);
+        row.forEach((x,j)=>{ const xx=M+j*(w+gap); P.image(x.info,xx,P.y,w,hs[j]); P.rect(xx,P.y,w,hs[j],null,'#cccccc',0.5); P.text(xx,P.y+hs[j]+3,P.wrap(x.cap,7.5,false,w)[0],7.5,false,'#444444'); });
+        P.y+=h+6; } }
+    const foot=[hd.job?'Job '+hd.job:(hd.project||''),(rep.tag?rep.tag+' – ':'')+rep.title].filter(Boolean).join(' · ');
+    return P.build((i,N)=>foot+' · Page '+i+' of '+N);
+  }
 
   // report builders
   function repCheckTable(){ if(!rangeOk()) return null; const s=sig(), r=rawR();
@@ -2488,7 +2886,7 @@
          textRow:r=>r[0]+' ('+r[1]+' '+s.u+', expect '+r[2]+' '+rd.u+') · AF '+(r[3]||'–')+(cellV(r[4])?' ('+cellV(r[4])+'%'+(r[4].c==='ok'?' ✓':' ✗')+')':'')+' · AL '+(r[5]||'–')+(cellV(r[6])?' ('+cellV(r[6])+'%'+(r[6].c==='ok'?' ✓':' ✗')+')':'')},
         kvs('Result',[['As found',resCell(R.saf)],['As left',resCell(R.sal)]]),
         cur.notes?{type:'text',title:'Notes',text:cur.notes}:null,
-        kvs('Sign-off',[['Tested by',cur.tech],['Date',cur.tdate],['Signature',''],['Witness','']],true)].filter(Boolean)}; }
+        signSec(cur)].filter(Boolean)}; }
   function repMotor(){ const m=M(), r=motorCalc();
     return {title:'Motor / VFD sheet',tag:m.tag,sub:m.desc,file:(m.tag||'motor')+'-motor-sheet',photos:m.photos,sections:[
       kvs('Motor',[['Tag',m.tag],['Description',m.desc],['Location',m.loc],['Manufacturer',m.make],['Model',m.model],['Serial no.',m.serial],['Frame',m.frame],['IP rating',m.ip],['Duty',m.duty]]),
@@ -2499,7 +2897,7 @@
       kvs('VFD',[['Drive',m.vfdModel],['Drive serial no.',m.vfdSerial],['Min / max frequency',(m.vMin||m.vMax)?(m.vMin||'–')+' / '+(m.vMax||'–')+' Hz':''],
         ['Accel / decel',(m.vAcc||m.vDec)?(m.vAcc||'–')+' / '+(m.vDec||'–')+' s':''],['Control mode',m.vCtl],['Load type',m.vLoad]]),
       {type:'check',title:'Commissioning checklist ('+chkN(m)+'/'+CHK.length+')',items:CHK.map((t,i)=>[!!m.chk[i],t])},
-      kvs('Sign-off',[['Tested by',m.tech],['Date',m.tdate],['Signature',''],['Witness','']],true)]}; }
+      signSec(m)]}; }
   function repValve(){ const v=VX(), r=vCoil(v), R=strokeEval(v), pts=XPTS[v.ptSet]||XPTS['9'], nn=vChkN(v);
     const ec=e=>(e===null||e===undefined)?'':{v:(e>=0?'+':'')+e.toFixed(2),c:Math.abs(e)<=R.tol+1e-9?'ok':'bad'};
     const secs=[kvs('Valve',[['Tag',v.tag],['Description',v.desc],['Location',v.loc],['Type',VTYPE[v.type]],['Actuator',v.act],['Fail position',v.fail],['Size',v.dn?'DN '+v.dn:''],['Kv',v.kv]]),
@@ -2521,7 +2919,7 @@
     }
     secs.push({type:'check',title:'Commissioning checklist ('+nn[0]+'/'+nn[1]+')',items:vChkList(v).map(it=>[!!v.chk[it[0]],it[1]])});
     if(v.notes) secs.push({type:'text',title:'Notes',text:v.notes});
-    secs.push(kvs('Sign-off',[['Tested by',v.tech],['Date',v.tdate],['Signature',''],['Witness','']],true));
+    secs.push(signSec(v));
     return {title:'Valve sheet',tag:v.tag,sub:[v.desc,VTYPE[v.type]].filter(Boolean).join(' · '),file:(v.tag||'valve')+'-valve-sheet',photos:v.photos,sections:secs}; }
   function repRegI(){ const keys=Object.keys(lib).sort(byTag); if(!keys.length) return null; const keep=cur, kF=F;
     const rc=st=>st?{v:(st.pass?(st.n<st.of?'Incomplete':'Pass'):'Fail')+' ('+fmt(st.max,2)+'%)',c:st.pass?(st.n<st.of?'warn':'ok'):'bad'}:'';
@@ -2553,10 +2951,12 @@
       ['Open Cat C',open.filter(p=>p.cat==='C').length],['Overdue',open.filter(p=>p.due&&p.due<td).length]]));
     secs.push({type:'table',title:'Items',head:['No','Cat','Tag','Description','Action by','Location','Due','Status','Closed / note'],
       rows:L.map(p=>[p.no,{v:p.cat,c:'cat'+p.cat},p.tag,p.desc,p.owner,p.loc,p.due?{v:p.due,c:(p.status==='open'&&p.due<td)?'bad':''}:'',
-        p.status==='open'?'Open':'Closed',p.status==='closed'?(p.closed+(p.closeNote?': '+p.closeNote:'')):'']),
+        p.status==='open'?'Open':'Closed',p.status==='closed'?(p.closed+(p.closeNote?': '+p.closeNote:'')+(p.closedBy?' · '+p.closedBy:'')+(p.sigC?' (signed)':'')):'']),
       textRow:r=>'#'+r[0]+' ['+cellV(r[1])+'] '+(r[2]?r[2]+' – ':'')+r[3]+' ('+[r[4],r[5],cellV(r[6])?'due '+cellV(r[6]):'',r[7],r[8]].filter(Boolean).join(', ')+')'});
-    return {title:'Punch list',sub:fdesc+' · '+L.length+' item'+(L.length===1?'':'s')+' · '+td,file:'punch-list-'+td,
-      photosBy:L.filter(p=>p.photos&&p.photos.length).map(p=>({cap:'#'+p.no+(p.tag?' '+p.tag:''),photos:p.photos})),sections:secs}; }
+    const anySig=L.some(p=>p.sigC&&p.sigC.id), anyPh=L.some(p=>p.photos&&p.photos.length);
+    return {imgTitle:anySig?(anyPh?'Photos & close-out signatures':'Close-out signatures'):'Photos',title:'Punch list',sub:fdesc+' · '+L.length+' item'+(L.length===1?'':'s')+' · '+td,file:'punch-list-'+td,
+      photosBy:L.filter(p=>p.photos&&p.photos.length).map(p=>({cap:'#'+p.no+(p.tag?' '+p.tag:''),photos:p.photos}))
+        .concat(L.filter(p=>p.sigC&&p.sigC.id).map(p=>({cap:'#'+p.no+' close-out',photos:[{id:p.sigC.id,lbl:'signed '+(p.closedBy||'')+(p.sigC.at?' '+p.sigC.at.replace('T',' '):'')}]}))),sections:secs}; }
   $('copyTbl').onclick=()=>openExport(repCheckTable);
   $('copyLoop').onclick=()=>openExport(repLoop);
   $('vCopy').onclick=()=>openExport(repMotor);
@@ -2571,8 +2971,11 @@
   function route(){
     const h=(location.hash||'#scale').slice(1); const v=VIEWS[h]||'scale'; curView=v; try{ if(VIEWS[h]) localStorage.setItem('cx-view',h); }catch(e){}
     document.querySelectorAll('.view').forEach(el=>el.classList.toggle('on', el.id==='v-'+v));
-    document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v || (v==='valve'&&a.dataset.v==='motor')));
-    if(v==='loop') renderLoop(); if(v==='inst') renderLib(); if(v==='motor') renderMotor(); if(v==='valve') renderValve(); if(v==='punch') renderPunch(); if(v==='inst'){ bakCache=null; prepareBackup(); renderAbout(); } refreshHeader();
+    const GRP={scale:'ins',loop:'ins',motor:'dev',valve:'dev',punch:'pun',proc:'tls',units:'tls',inst:'mor'}, HASH={scale:'scale',loop:'loop',motor:'motor',valve:'valve',proc:'process',units:'tools'};
+    let lastSub={}; try{ lastSub=JSON.parse(localStorage.getItem('cx-sub')||'{}'); }catch(e){}
+    if(HASH[v]){ lastSub[GRP[v]]=HASH[v]; try{ localStorage.setItem('cx-sub',JSON.stringify(lastSub)); }catch(e){} }
+    document.querySelectorAll('nav a').forEach(a=>{ a.classList.toggle('on', a.dataset.g===GRP[v]); if(lastSub[a.dataset.g]) a.setAttribute('href','#'+lastSub[a.dataset.g]); });
+    if(v==='loop') renderLoop(); if(v==='inst') renderLib(); if(v==='motor') renderMotor(); if(v==='valve') renderValve(); if(v==='punch') renderPunch(); if(v==='inst'){ bakCache=null; prepareBackup(); renderAbout(); renderProj(); renderCompany(); } refreshHeader();
     window.scrollTo(0,0);
   }
   window.addEventListener('hashchange',route);
@@ -2580,14 +2983,14 @@
   function renderAll(){ renderChips(); renderWarn(); renderLevel(); renderConv(null); renderTable(); renderLoop(); renderMotor(); renderValve(); renderPhotos('inst'); refreshHeader(); }
 
   loadInputs(); renderUChips(); buildUFrom(0); renderUnits(); renderAll();
-  applyDisp(); renderTChips(); renderPChips(); renderRecent();
+  applyDisp(); renderTChips(); renderPChips(); renderRecent(); renderBakScope();
   calcElec(); calcPump(); calcFlow(); calcRtd('t'); solvePTN(); setSMode(keep.sMode||'press',false); calcDose(); calcPoly(); calcJar(); calcLab();
   if(!location.hash){ try{ const lv=localStorage.getItem('cx-view'); if(lv && VIEWS[lv]) history.replaceState(null,'','#'+lv); }catch(e){} }
   route();
   pdbOpen().then(()=>{
     const mig=o=>{ if(o&&o.m&&o.m.photo){ const id='p'+Math.random().toString(36).slice(2,10); pdbPut(id,o.m.photo); o.m.photos=(o.m.photos||[]).concat([{id,lbl:'Nameplate'}]); delete o.m.photo; } };
     const migM=o=>{ if(o&&o.photo){ const id='p'+Math.random().toString(36).slice(2,10); pdbPut(id,o.photo); o.photos=(o.photos||[]).concat([{id,lbl:'Nameplate'}]); delete o.photo; } };
-    migM(curM); Object.values(libM).forEach(migM); store(); renderPhotos('inst'); renderPhotos('motor');
+    migM(curM); Object.values(libM).forEach(migM); store(); renderPhotos('inst'); renderPhotos('motor'); renderCompany(); renderProj();
   });
 
   // offline install (works when hosted on your own https site; ignored inside the Claude viewer)
