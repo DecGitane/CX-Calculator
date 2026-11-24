@@ -187,6 +187,10 @@
   #sigpad .sp-in{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;width:100%;max-width:640px}
   #sigpad .sp-t{font-weight:700;margin:0 2px 8px}
   #spCan{display:block;width:100%;background:#fff;border-radius:10px;touch-action:none;border:1px solid #bbb}
+  #pts.one .pt,#ptsHdr.one{grid-template-columns:1.05fr 1fr}
+  #pts.one [data-al],#pts.one .alcell,#ptsHdr.one #alHdr{display:none}
+  .pt input::placeholder{color:var(--text);opacity:.45}
+  .err.def{color:var(--muted)!important}
 </style>
 </head>
 <body>
@@ -256,8 +260,9 @@
         <div class="note mt">Same units as the range. From the datasheet, e.g. ifm PI2897: −50 / 1000 / 250 mbar. Warns if the range is outside the sensor or narrower than it accepts.</div>
       </details>
 
-      <details id="dLvl">
-        <summary>Level → pressure range</summary>
+      <div id="lvlWrap" style="margin-top:10px;border-top:1px solid var(--line);padding-top:10px">
+        <label class="toggle"><input type="checkbox" id="lvlOn"> Show level → pressure range helper</label>
+        <div id="lvlBody" class="hidden">
         <div class="grid mt">
           <div><label for="hU">Level unit</label><select id="hU" data-k="hU"><option>m</option><option>mm</option></select></div>
           <div></div>
@@ -272,7 +277,8 @@
           <button class="btn sm" type="button" data-apply="kPa">Use kPa range</button>
         </div>
         <div class="note mt">Gauge pressure at the sensor = (level + offset) × SG × 98.0665 mbar/m. A negative offset means the sensor sits above level zero.</div>
-      </details>
+              </div>
+      </div>
     </section>
 
     <section class="card conv">
@@ -332,11 +338,12 @@
           <option value="5">5-point</option><option value="3">3-point</option>
           <option value="9">5 up / down</option><option value="11">11-point</option></select></div>
       </div>
-      <div class="note mt">Enter what you read at each point: e.g. the HMI/PLC value while injecting mA, or the mA you measure while applying the process value. Error is % of span.</div>
+      <label class="toggle mt"><input type="checkbox" id="useAL"> Adjusted? Also record as-left readings</label>
+      <div class="note mt">Every point counts as healthy (at its expected value) unless you type a different reading. Only enter readings that differ. Error is % of span.</div>
     </section>
 
     <section class="card">
-      <div class="colhdr"><span>Point / expected</span><span>As found</span><span>As left</span></div>
+      <div class="colhdr" id="ptsHdr"><span>Point / expected</span><span id="afHdr">Reading</span><span id="alHdr">As left</span></div>
       <div id="pts"></div>
       <div class="row">
         <div class="sum" id="loopRes"></div>
@@ -353,7 +360,7 @@
       <label class="mt" for="notes">Notes</label>
       <textarea id="notes" data-k="notes" placeholder="Calibrator, as-found issues, adjustments made…"></textarea>
       <div class="row">
-        <button class="btn danger sm" id="clrLoop" type="button">Clear readings</button>
+        <button class="btn danger sm" id="clrLoop" type="button">Reset to expected</button>
         <button class="btn pri" id="copyLoop" type="button">📤 Export report</button>
       </div>
       <div class="note mt">Export as a table for Outlook, Teams, Word or Excel, a PDF, a spreadsheet or plain text.</div>
@@ -1090,7 +1097,7 @@
 
 <script>
 (function(){
-  const APP_VERSION = 'v14', APP_DATE = '2026-11-24';
+  const APP_VERSION = 'v15', APP_DATE = '2026-11-24';
   const $ = id => document.getElementById(id);
   const num = v => { if(v===null||v===undefined) return NaN; const x = parseFloat(String(v).replace(',', '.')); return isFinite(x)?x:NaN; };
   const fmt = (x, d) => {
@@ -1130,7 +1137,7 @@
   const today = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
   const DEF = () => ({tag:'',desc:'',preset:'level',lrv:'0',urv:'5',unit:'m',sqrt:false,sig:'4-20',raw:'none',
     rawMin:'0',rawMax:'27648',lrl:'',url:'',minSpan:'',hMin:'0',hMax:'5',hOff:'0',hSg:'1.0',hU:'m',
-    tol:'0.5',readIn:'pv',ptSet:'5',af:[],al:[],tech:'',tdate:today(),notes:''});
+    tol:'0.5',readIn:'pv',ptSet:'5',useAL:false,showLvl:false,af:[],al:[],tech:'',tdate:today(),notes:''});
 
   let cur = DEF(), lib = {}, F = 0.5, curM = null, libM = {}, curV = null, libV = {}, punch = [], punchSeq = 1, pd = null;
   let proj = {list:{p1:{name:'My project',client:'',job:'',site:''}}, active:'p1', data:{}};
@@ -1312,6 +1319,7 @@
     });
   });
   $('sqrt').addEventListener('change', ()=>{ cur.sqrt=$('sqrt').checked; renderAll(); });
+  $('lvlOn').addEventListener('change', ()=>{ cur.showLvl=$('lvlOn').checked; renderLevel(); refreshHeader(); });
   $('swap').addEventListener('click', ()=>{ const a=cur.lrv; cur.lrv=cur.urv; cur.urv=a; loadInputs(); renderAll(); });
 
   // ---------- warnings ----------
@@ -1331,6 +1339,9 @@
   // ---------- level helper ----------
   let lvlRes = null;
   function renderLevel(){
+    const lvlType=['level','press'].includes(cur.preset);
+    $('lvlWrap').classList.toggle('hidden', !lvlType && !cur.showLvl);
+    $('lvlOn').checked=!!cur.showLvl; $('lvlBody').classList.toggle('hidden', !cur.showLvl);
     const hu=cur.hU==='mm'?'mm':'m', hf=hu==='mm'?0.001:1; $('hMinL').textContent='Level at 0% ('+hu+')'; $('hMaxL').textContent='Level at 100% ('+hu+')'; $('hOffL').textContent='Sensor below level zero ('+hu+')';
     const a=num(cur.hMin)*hf, b=num(cur.hMax)*hf, off=(num(cur.hOff)||0)*hf, sg=num(cur.hSg);
     const out=$('lvlOut'); out.innerHTML='';
@@ -1420,6 +1431,9 @@
     const opts=[['pv','Value ('+(cur.unit||'PV')+')'],['sig','Signal ('+s.u+')']].concat(r?[['raw','PLC raw']]:[]);
     if(cur.readIn==='raw' && !r) cur.readIn='pv';
     ri.innerHTML=opts.map(o=>'<option value="'+o[0]+'"'+(o[0]===cur.readIn?' selected':'')+'>'+esc(o[1])+'</option>').join('');
+    if(!cur.useAL && (cur.al||[]).some(v=>v!==''&&v!=null)) cur.useAL=true;
+    $('useAL').checked=!!cur.useAL; $('pts').classList.toggle('one',!cur.useAL); $('ptsHdr').classList.toggle('one',!cur.useAL);
+    $('afHdr').textContent=cur.useAL?'As found':'Reading';
     const box=$('pts'); box.innerHTML='';
     if(!rangeOk()){ box.innerHTML='<div class="note" style="padding:10px 0">Set a valid range on the Scale tab first.</div>'; $('loopRes').innerHTML=''; return; }
     const rd=readDef(), pts=PTS[cur.ptSet]||PTS['5'];
@@ -1430,30 +1444,30 @@
         '<div class="lbl"><b>'+p+'%'+dir+'</b><div>'+fmt(f2s(f),s.d)+' '+s.u+'</div><div>'+fmt(f2pv(f))+' '+esc(cur.unit)+'</div>'+
           (rd.u==='raw'?'<div>'+fmt(f2r(f),0)+' raw</div>':'')+'</div>'+
         '<div><input inputmode="decimal" type="text" data-af="'+i+'" placeholder="'+esc(fmt(rd.exp(f),rd.d))+'" value="'+esc(cur.af[i]??'')+'"><div class="err" id="eaf'+i+'"></div></div>'+
-        '<div><input inputmode="decimal" type="text" data-al="'+i+'" placeholder="'+esc(fmt(rd.exp(f),rd.d))+'" value="'+esc(cur.al[i]??'')+'"><div class="err" id="eal'+i+'"></div></div>';
+        '<div class="alcell"><input inputmode="decimal" type="text" data-al="'+i+'" placeholder="'+esc(cur.af[i]!==undefined&&cur.af[i]!==''?cur.af[i]:fmt(rd.exp(f),rd.d))+'" value="'+esc(cur.al[i]??'')+'"><div class="err" id="eal'+i+'"></div></div>';
       box.appendChild(d);
     });
     box.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
       const isAf = inp.dataset.af!==undefined, i=+(isAf?inp.dataset.af:inp.dataset.al);
-      (isAf?cur.af:cur.al)[i]=inp.value; updLoop(); refreshHeader();
+      (isAf?cur.af:cur.al)[i]=inp.value;
+      if(isAf){ const al=box.querySelector('[data-al="'+i+'"]'); if(al) al.placeholder=inp.value!==''?inp.value:inp.placeholder; }
+      updLoop(); refreshHeader();
     }));
     updLoop();
   }
   function evalLoop(){
-    const rd=readDef(), pts=PTS[cur.ptSet]||PTS['5'], tol=Math.abs(num(cur.tol));
-    const res={af:[],al:[],tol,rd,pts};
-    ['af','al'].forEach(k=>{
-      pts.forEach((p,i)=>{
-        const v=num(cur[k][i]);
-        if(!isFinite(v)||!rd.den){ res[k][i]=null; return; }
-        const e=(v-rd.exp(p/100))/rd.den*100;
-        res[k][i]={e, pass: !isFinite(tol) || Math.abs(e)<=tol+1e-9};
-      });
+    const rd=readDef(), pts=PTS[cur.ptSet]||PTS['5'], tol=Math.abs(num(cur.tol)), tl=isFinite(tol)?tol:Infinity;
+    const res={af:[],al:[],tol,rd,pts,useAL:!!cur.useAL};
+    pts.forEach((p,i)=>{
+      const ex=rd.exp(p/100), va=num(cur.af[i]), afv=isFinite(va)?va:ex;
+      const mk=(v,def)=>{ if(!rd.den) return null; const e=(v-ex)/rd.den*100; return {e,v,def,pass:Math.abs(e)<=tl+1e-9}; };
+      res.af[i]=mk(afv,!isFinite(va));
+      const vl=num((cur.al||[])[i]); res.al[i]= res.useAL ? mk(isFinite(vl)?vl:afv, !isFinite(vl)) : res.af[i];
     });
     const sum=k=>{ const r=res[k].filter(Boolean); if(!r.length) return null;
       const mx=r.reduce((m,x)=>Math.abs(x.e)>Math.abs(m)?x.e:m,0);
-      return {n:r.length, of:pts.length, max:mx, pass:r.every(x=>x.pass)}; };
-    res.saf=sum('af'); res.sal=sum('al');
+      return {k, n:r.length, of:pts.length, nd:r.filter(x=>x.def).length, max:mx, pass:r.every(x=>x.pass)}; };
+    res.saf=sum('af'); res.sal=sum('al'); if(res.sal&&!res.useAL) res.sal.same=true;
     return res;
   }
   function updLoop(){
@@ -1461,19 +1475,21 @@
     ['af','al'].forEach(k=>R.pts.forEach((p,i)=>{
       const el=$('e'+k+i); if(!el) return; const x=R[k][i];
       if(!x){ el.textContent=''; el.className='err'; return; }
-      el.textContent=(x.e>=0?'+':'')+fmt(x.e,2)+'% '+(x.pass?'✓':'✗'); el.className='err '+(x.pass?'ok':'bad');
+      if(x.def && Math.abs(x.e)<1e-9){ el.textContent='✓ expected'; el.className='err def'; el.style.color=''; return; }
+      el.textContent=(x.e>=0?'+':'')+x.e.toFixed(2)+'% '+(x.pass?'✓':'✗'); el.className='err '+(x.pass?'ok':'bad');
       el.style.color = x.pass?'var(--ok)':'var(--bad)';
     }));
-    const b=(lbl,s)=> s ? '<span class="badge '+(s.pass?(s.n<s.of?'warn':'ok'):'bad')+'">'+lbl+': '+(s.pass?(s.n<s.of?'INCOMPLETE':'PASS'):'FAIL')+' · max '+(s.max>=0?'+':'')+fmt(s.max,2)+'%</span>'
+    const b=(lbl,s)=> s ? '<span class="badge '+(s.pass?'ok':'bad')+'">'+lbl+': '+(s.pass?'PASS':'FAIL')+' · max '+(s.max>=0?'+':'')+s.max.toFixed(2)+'%'+(s.nd===s.of?(s.k==='al'?' (same as found)':' (all at expected)'):'')+'</span>'
                           : '<span class="badge" style="color:var(--muted);border:1px solid var(--line)">'+lbl+': —</span>';
-    $('loopRes').innerHTML = b('As found',R.saf)+b('As left',R.sal);
+    $('loopRes').innerHTML = b(R.useAL?'As found':'Result',R.saf)+(R.useAL?b('As left',R.sal):'');
   }
+  $('useAL').addEventListener('change',()=>{ cur.useAL=$('useAL').checked; if(!cur.useAL) cur.al=[]; renderLoop(); refreshHeader(); });
   $('ptSet').addEventListener('change',()=>{
     const has = cur.af.some(v=>v!==''&&v!=null) || cur.al.some(v=>v!==''&&v!=null);
     cur.ptSet=$('ptSet').value; if(has){ cur.af=[]; cur.al=[]; toast('Readings cleared for new point set'); }
     renderLoop(); refreshHeader();
   });
-  $('clrLoop').onclick=function(){ twoTap(this,()=>{ cur.af=[]; cur.al=[]; renderLoop(); refreshHeader(); toast('Readings cleared'); }); };
+  $('clrLoop').onclick=function(){ twoTap(this,()=>{ cur.af=[]; cur.al=[]; renderLoop(); refreshHeader(); toast('All points reset to expected'); }); };
   const resWord = s => s ? (s.pass?(s.n<s.of?'INCOMPLETE':'PASS'):'FAIL')+' (max '+fmt(s.max,2)+'% span, '+s.n+'/'+s.of+' pts)' : 'not done';
   $('copyLoop').onclick=()=>{
     if(!rangeOk()){ toast('Set a valid range first'); return; }
@@ -2078,7 +2094,7 @@
   const newPd=keep=>({id:null,no:null,tag:keep?keep.tag:'',desc:'',cat:keep?keep.cat:'B',owner:keep?keep.owner:'',due:'',loc:keep?keep.loc:'',
     photos:[],status:'open',raised:today(),closed:'',closeNote:''});
   const PD=()=>{ if(!pd) pd=newPd(); return pd; };
-  const nextNo=()=>Math.max(punchSeq, ...punch.map(x=>typeof x.no==='number'?x.no+1:(/^\d+$/.test(String(x.no))?parseInt(x.no,10)+1:1)));
+  const nextNo=()=>punch.length ? Math.max(1, ...punch.map(x=>typeof x.no==='number'?x.no+1:(/^\d+$/.test(String(x.no))?parseInt(x.no,10)+1:1))) : 1;
   let plStat='open', plCatF='all';
   try{ const ps=JSON.parse(localStorage.getItem('cx-plf')||'null'); if(ps){ plStat=ps.s||plStat; plCatF=ps.c||plCatF; } }catch(e){}
   function loadPd(){
@@ -2931,16 +2947,17 @@
       sections:[kvs('Configuration',[['Range',cur.lrv+' to '+cur.urv+' '+cur.unit],['Signal',s.n],['Square root',cur.sqrt?'Yes':''],['PLC raw',r?r.min+' – '+r.max:'']]),
         {type:'table',title:'Check points',head:['%',s.u,'Value ('+(cur.unit||'PV')+')'].concat(r?['PLC raw']:[]),
          rows:TBL.map(p=>{ const f=p/100; return [p,fmt(f2s(f),s.d),fmt(f2pv(f))].concat(r?[fmt(f2r(f),0)]:[]); })}]}; }
-  const resCell=st=>st?{v:(st.pass?(st.n<st.of?'INCOMPLETE':'PASS'):'FAIL')+' · max '+(st.max>=0?'+':'')+st.max.toFixed(2)+'% · '+st.n+'/'+st.of+' pts',c:st.pass?(st.n<st.of?'warn':'ok'):'bad'}:'Not done';
+  const resCell=st=>st?{v:(st.pass?'PASS':'FAIL')+' · max '+(st.max>=0?'+':'')+st.max.toFixed(2)+'% · '+st.of+' pts'+(st.nd===st.of?(st.k==='al'?' (same as found)':' (all at expected)'):st.nd?' ('+(st.of-st.nd)+' measured)':''),c:st.pass?'ok':'bad'}:'Not done';
   function repLoop(){ if(!rangeOk()) return null; const R=evalLoop(), rd=R.rd, s=sig(), r=rawR();
     const ec=x=>x?{v:(x.e>=0?'+':'')+x.e.toFixed(2),c:x.pass?'ok':'bad'}:'';
     return {title:'Loop check',tag:cur.tag,sub:[cur.desc,presetName()].filter(Boolean).join(' · '),file:(cur.tag||'instrument')+'-loop-check',photos:cur.photos,
       sections:[kvs('Instrument',[['Tag',cur.tag],['Description',cur.desc],['Type',presetName()],['Location',cur.loc],['Manufacturer',cur.mfr],['Model',cur.model],['Serial no.',cur.serial],['Order code',cur.code],['Firmware',cur.fw]]),
         kvs('Configuration',[['Range',cur.lrv+' to '+cur.urv+' '+cur.unit],['Signal',s.n],['Square root',cur.sqrt?'Yes':''],['PLC raw',r?r.min+' – '+r.max:''],['Reading in',rd.u],['Tolerance','± '+cur.tol+' % of span']]),
-        {type:'table',title:'Readings',head:['Point','Signal ('+s.u+')','Expected ('+rd.u+')','As found','Error %','As left','Error %'],
-         rows:R.pts.map((p,i)=>{ const f=p/100; return [p+'%'+(cur.ptSet==='9'?(i<5?' ↑':' ↓'):''),f2s(f).toFixed(s.d),fmt(rd.exp(f),rd.d),cur.af[i]||'',ec(R.af[i]),cur.al[i]||'',ec(R.al[i])]; }),
-         textRow:r=>r[0]+' ('+r[1]+' '+s.u+', expect '+r[2]+' '+rd.u+') · AF '+(r[3]||'–')+(cellV(r[4])?' ('+cellV(r[4])+'%'+(r[4].c==='ok'?' ✓':' ✗')+')':'')+' · AL '+(r[5]||'–')+(cellV(r[6])?' ('+cellV(r[6])+'%'+(r[6].c==='ok'?' ✓':' ✗')+')':'')},
-        kvs('Result',[['As found',resCell(R.saf)],['As left',resCell(R.sal)]]),
+        {type:'table',title:'Readings',head:['Point','Signal ('+s.u+')','Expected ('+rd.u+')',R.useAL?'As found':'Reading','Error %'].concat(R.useAL?['As left','Error %']:[]),
+         rows:R.pts.map((p,i)=>{ const f=p/100, a=R.af[i], l=R.al[i], vv=x=>x?fmt(x.v,rd.d):'';
+           return [p+'%'+(cur.ptSet==='9'?(i<5?' ↑':' ↓'):''),f2s(f).toFixed(s.d),fmt(rd.exp(f),rd.d),vv(a),ec(a)].concat(R.useAL?[vv(l),ec(l)]:[]); }),
+         textRow:r=>r[0]+' ('+r[1]+' '+s.u+', expect '+r[2]+' '+rd.u+') · '+(R.useAL?'AF ':'')+(r[3]||'–')+(cellV(r[4])?' ('+cellV(r[4])+'%'+(r[4].c==='ok'?' ✓':' ✗')+')':'')+(R.useAL?' · AL '+(r[5]||'–')+(cellV(r[6])?' ('+cellV(r[6])+'%'+(r[6].c==='ok'?' ✓':' ✗')+')':''):'')},
+        kvs('Result',R.useAL?[['As found',resCell(R.saf)],['As left',resCell(R.sal)]]:[['Result',resCell(R.saf)],['As left','Same as found (no adjustment)']]),
         cur.notes?{type:'text',title:'Notes',text:cur.notes}:null,
         signSec(cur)].filter(Boolean)}; }
   function repMotor(){ const m=M(), r=motorCalc();
