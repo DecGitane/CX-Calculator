@@ -21,7 +21,7 @@ Then on the iPhone
     cached and works offline.
 
 Updating later
- - Upload the new index.html, change VERSION in sw.js (e.g. cx-calc-v2),
+ - Upload the new index.html and sw.js together (sw.js carries the cache version),
    then open the app once with signal.
 
 Your data

@@ -929,6 +929,16 @@
       <textarea id="impTxt" class="mt" placeholder="Paste a backup here to import"></textarea>
       <div class="row"><span class="note" id="impMsg"></span><button class="btn sm" id="impBtn" type="button">Import</button></div>
     </section>
+    <section class="card">
+      <h2>About</h2>
+      <div style="font-weight:700">Cx Pocket Calculator <span id="abVer"></span></div>
+      <div class="note" id="abDate"></div>
+      <div class="note" id="abOff"></div>
+      <div class="row">
+        <span class="note" id="abUpd"></span>
+        <button class="btn sm" id="abChk" type="button">Check for update</button>
+      </div>
+    </section>
   </div>
 </main>
 
@@ -960,6 +970,7 @@
 
 <script>
 (function(){
+  const APP_VERSION = 'v10', APP_DATE = '2026-11-24';
   const $ = id => document.getElementById(id);
   const num = v => { if(v===null||v===undefined) return NaN; const x = parseFloat(String(v).replace(',', '.')); return isFinite(x)?x:NaN; };
   const fmt = (x, d) => {
@@ -2016,7 +2027,7 @@
   // ---------- backup file ----------
   let bakCache=null, bakBusy=false;
   async function buildBackup(withPhotos){
-    const o={app:'cx-instrument',v:4,saved:new Date().toISOString(),lib,libM,libV,punch,punchSeq};
+    const o={app:'cx-instrument',v:4,appVersion:APP_VERSION,saved:new Date().toISOString(),lib,libM,libV,punch,punchSeq};
     if(withPhotos){ const ids=new Set(), add=x=>((x&&x.photos)||[]).forEach(p=>ids.add(p.id));
       [lib,libM,libV].forEach(Lb=>Object.values(Lb).forEach(add)); punch.forEach(add); add(cur); add(curM); add(curV);
       o.photos={}; for(const id of ids){ const d=await pdbGet(id); if(d) o.photos[id]=d; } }
@@ -2272,13 +2283,34 @@
   document.addEventListener('keydown',e=>{ if(e.key==='Enter' && e.target.tagName==='INPUT' && isTyping(e.target)){ e.preventDefault(); e.target.blur(); } });
   document.querySelectorAll('input').forEach(i=>{ if(isTyping(i)) i.setAttribute('enterkeyhint','done'); });
 
+  // ---------- about / version ----------
+  function renderAbout(){
+    $('abVer').textContent=APP_VERSION;
+    const d=new Date(APP_DATE+'T00:00:00'); $('abDate').textContent='Released '+d.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+    const hosted=location.protocol==='https:' && !/claude|anthropic/.test(location.hostname);
+    const ctl=('serviceWorker' in navigator) && navigator.serviceWorker.controller;
+    $('abOff').textContent = !hosted ? 'Running in the Claude viewer: needs signal.' : ctl ? 'Offline copy installed ✓' : 'Offline copy not installed yet: open the app once more with signal.';
+    $('abChk').classList.toggle('hidden', !hosted);
+  }
+  $('abChk').onclick=async()=>{
+    $('abUpd').textContent='Checking…';
+    try{
+      const r=await fetch('./index.html?v='+Date.now(),{cache:'no-store'}); const t=await r.text();
+      const m=t.match(/APP_VERSION = '(v[0-9.]+)'/); const live=m?m[1]:null;
+      if(!live){ $('abUpd').textContent='Couldn’t read the online version.'; return; }
+      if(live===APP_VERSION){ $('abUpd').textContent='Up to date ('+live+').'; return; }
+      $('abUpd').innerHTML='<b>'+esc(live)+' is available.</b>';
+      $('abChk').textContent='Update now'; $('abChk').onclick=()=>{ try{ navigator.serviceWorker.getRegistration().then(g=>{ if(g) g.update(); }).finally(()=>location.reload()); }catch(e){ location.reload(); } };
+    }catch(e){ $('abUpd').textContent='No signal: try again when you’re online.'; }
+  };
+
   // ---------- routing ----------
   const VIEWS={scale:'scale',loop:'loop',motor:'motor',valve:'valve',punch:'punch',process:'proc',tools:'units',units:'units',instruments:'inst'};
   function route(){
     const h=(location.hash||'#scale').slice(1); const v=VIEWS[h]||'scale'; curView=v; try{ if(VIEWS[h]) localStorage.setItem('cx-view',h); }catch(e){}
     document.querySelectorAll('.view').forEach(el=>el.classList.toggle('on', el.id==='v-'+v));
     document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v || (v==='valve'&&a.dataset.v==='motor')));
-    if(v==='loop') renderLoop(); if(v==='inst') renderLib(); if(v==='motor') renderMotor(); if(v==='valve') renderValve(); if(v==='punch') renderPunch(); if(v==='inst'){ bakCache=null; prepareBackup(); } refreshHeader();
+    if(v==='loop') renderLoop(); if(v==='inst') renderLib(); if(v==='motor') renderMotor(); if(v==='valve') renderValve(); if(v==='punch') renderPunch(); if(v==='inst'){ bakCache=null; prepareBackup(); renderAbout(); } refreshHeader();
     window.scrollTo(0,0);
   }
   window.addEventListener('hashchange',route);
