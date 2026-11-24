@@ -634,9 +634,13 @@
       <div class="chips mt" id="plCat"></div>
       <input id="plQ" class="mt" type="text" placeholder="Filter by tag, text, owner or area" autocapitalize="off">
       <div id="plSum" class="sum mt"></div>
+      <div id="plHidden" class="note mt hidden"></div>
       <div id="plList" class="mt"></div>
       <div class="row">
-        <span></span>
+        <span style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn sm danger" id="plClrClosed" type="button">Clear closed</button>
+          <button class="btn sm danger" id="plClrAll" type="button">Clear all</button>
+        </span>
         <button class="btn pri" id="plCopy" type="button">📤 Export list</button>
       </div>
       <div class="note mt">Export uses the filters above, e.g. open Cat A items only.</div>
@@ -1000,6 +1004,21 @@
       <div class="row"><span class="note" id="impMsg"></span><button class="btn sm" id="impBtn" type="button">Import</button></div>
     </section>
     <section class="card">
+      <h2>Clear data</h2>
+      <div class="note">Clears data from the current project (<b id="clrProj"></b>) on this phone. Save a backup file first if you might need it again.</div>
+      <label class="toggle mt"><input type="checkbox" class="clrk" value="i" checked> Instruments &amp; loop checks <span class="note" id="clrNi"></span></label>
+      <label class="toggle mt"><input type="checkbox" class="clrk" value="m" checked> Motors <span class="note" id="clrNm"></span></label>
+      <label class="toggle mt"><input type="checkbox" class="clrk" value="v" checked> Valves <span class="note" id="clrNv"></span></label>
+      <label class="toggle mt"><input type="checkbox" class="clrk" value="p" checked> Punch list <span class="note" id="clrNp"></span></label>
+      <div class="row">
+        <span></span>
+        <button class="btn danger" id="clrSel" type="button">Clear selected</button>
+      </div>
+      <div class="sub">Start again</div>
+      <div class="note">Removes every project, photo, signature, logo and setting from this phone, and returns the app to new.</div>
+      <div class="row" style="margin-top:6px"><span></span><button class="btn danger" id="clrAllApp" type="button">Reset app</button></div>
+    </section>
+    <section class="card">
       <h2>About</h2>
       <div style="font-weight:700">Cx Pocket Calculator <span id="abVer"></span></div>
       <div class="note" id="abDate"></div>
@@ -1071,7 +1090,7 @@
 
 <script>
 (function(){
-  const APP_VERSION = 'v13', APP_DATE = '2026-11-24';
+  const APP_VERSION = 'v14', APP_DATE = '2026-11-24';
   const $ = id => document.getElementById(id);
   const num = v => { if(v===null||v===undefined) return NaN; const x = parseFloat(String(v).replace(',', '.')); return isFinite(x)?x:NaN; };
   const fmt = (x, d) => {
@@ -1128,7 +1147,8 @@
       if(s.proj && s.proj.list && s.proj.active) proj = Object.assign({data:{}}, s.proj);
     }
   }catch(e){}
-  function store(){ try{ localStorage.setItem('cx-tool', JSON.stringify({cur,lib,F,curM,libM,curV,libV,punch,punchSeq,pd,proj})); }catch(e){} }
+  let resetting=false;
+  function store(){ if(resetting) return; try{ localStorage.setItem('cx-tool', JSON.stringify({cur,lib,F,curM,libM,curV,libV,punch,punchSeq,pd,proj})); }catch(e){} }
 
   // ---------- helpers ----------
   const L = () => num(cur.lrv), U = () => num(cur.urv), SP = () => U()-L();
@@ -2111,7 +2131,12 @@
     const open=punch.filter(p=>p.status==='open'), td=today(), od=open.filter(p=>p.due&&p.due<td).length;
     $('plCount').textContent=punch.length?'('+open.length+' open · '+(punch.length-open.length)+' closed)':'';
     $('plSum').innerHTML = open.length ? ['A','B','C'].map(c=>{ const n=open.filter(p=>p.cat===c).length; return n?'<span class="badge cat'+c+'">Open '+c+': '+n+'</span>':''; }).join('')+(od?'<span class="badge bad">Overdue: '+od+'</span>':'') : '';
+    if(pd&&pd.id&&!punch.some(x=>x.id===pd.id)){ pd=null; loadPd(); }
     const L=plFiltered(), box=$('plList'); box.innerHTML='';
+    const inStat=punch.filter(p=>plStat==='all'||p.status===plStat).length, hid=inStat-L.length;
+    $('plHidden').classList.toggle('hidden',!hid);
+    if(hid) $('plHidden').innerHTML='Showing '+L.length+' of '+inStat+' '+(plStat==='all'?'':plStat+' ')+'items: '+hid+' hidden by the '+(plCatF!=='all'?'category':'')+(plCatF!=='all'&&($('plQ').value||'').trim()?' and ':'')+(($('plQ').value||'').trim()?'text':'')+' filter. <a href="#" id="plShowAll">Show all</a>';
+    const sa=$('plShowAll'); if(sa) sa.onclick=e=>{ e.preventDefault(); plCatF='all'; $('plQ').value=''; try{localStorage.setItem('cx-plf',JSON.stringify({s:plStat,c:plCatF}));}catch(x){} renderPL(); };
     if(!L.length) box.innerHTML='<div class="note">'+(punch.length?'Nothing matches these filters.':'No punch items yet. Add one above, or tap ⚑ at the top from any instrument, motor or valve.')+'</div>';
     L.forEach(p=>{ const d=document.createElement('div'); d.className='inst pi'+(p.status==='closed'?' closed':'');
       const over=p.status==='open'&&p.due&&p.due<td;
@@ -2216,6 +2241,37 @@
     im.onerror=()=>toast('Could not read that image'); im.src=url;
   });
   $('coLogoDel').onclick=function(){ twoTap(this,()=>{ logoId=''; logoData=null; saveCompany(); renderCompany(); pdbGc(); }); };
+
+  // ---------- clear data ----------
+  function renderClear(){
+    $('clrProj').textContent=projMeta().name||'this project';
+    const n=(x,w)=>'('+x+' '+w+(x===1?'':'s')+')';
+    $('clrNi').textContent=n(Object.keys(lib).length,'saved instrument'); $('clrNm').textContent=n(Object.keys(libM).length,'saved motor');
+    $('clrNv').textContent=n(Object.keys(libV).length,'saved valve'); $('clrNp').textContent=n(punch.length,'item');
+  }
+  $('clrSel').onclick=function(){
+    const k=[...document.querySelectorAll('.clrk')].filter(c=>c.checked).map(c=>c.value);
+    if(!k.length){ toast('Tick what to clear first'); return; }
+    twoTap(this,()=>{
+      if(k.includes('i')){ lib={}; cur=DEF(); F=.5; }
+      if(k.includes('m')){ libM={}; curM=null; }
+      if(k.includes('v')){ libV={}; curV=null; }
+      if(k.includes('p')){ punch=[]; punchSeq=1; pd=null; }
+      recTags=recTags.filter(t=> t.startsWith('M:')?!k.includes('m'):t.startsWith('V:')?!k.includes('v'):!k.includes('i'));
+      try{ localStorage.setItem('cx-rectags',JSON.stringify(recTags)); }catch(e){}
+      store(); refreshAfterSwitch(); renderClear(); pdbGc(); toast('Cleared');
+    });
+  };
+  $('clrAllApp').onclick=function(){ twoTap(this,()=>{
+    resetting=true;
+    try{ Object.keys(localStorage).filter(k=>k.startsWith('cx-')||k==='ma-scaler'||k==='ma-scaler-p').forEach(k=>localStorage.removeItem(k)); }catch(e){}
+    try{ if(PDB.db){ PDB.db.close(); } indexedDB.deleteDatabase('cx-photos'); }catch(e){}
+    toast('App reset'); setTimeout(()=>{ location.replace(location.href.split('#')[0]); },400);
+  }); };
+  $('plClrClosed').onclick=function(){ const n=punch.filter(p=>p.status==='closed').length; if(!n){ toast('No closed items'); return; }
+    twoTap(this,()=>{ punch=punch.filter(p=>p.status!=='closed'); if(pd&&pd.id&&!punch.some(x=>x.id===pd.id)) pd=null; store(); renderPunch(); pdbGc(); toast('Cleared '+n+' closed item'+(n===1?'':'s')); }); };
+  $('plClrAll').onclick=function(){ if(!punch.length){ toast('The punch list is already empty'); return; }
+    twoTap(this,()=>{ const n=punch.length; punch=[]; punchSeq=1; pd=null; store(); renderPunch(); pdbGc(); toast('Cleared '+n+' item'+(n===1?'':'s')); }); };
 
   // ---------- backup file ----------
   let bakCache=null, bakBusy=false;
@@ -2975,7 +3031,7 @@
     let lastSub={}; try{ lastSub=JSON.parse(localStorage.getItem('cx-sub')||'{}'); }catch(e){}
     if(HASH[v]){ lastSub[GRP[v]]=HASH[v]; try{ localStorage.setItem('cx-sub',JSON.stringify(lastSub)); }catch(e){} }
     document.querySelectorAll('nav a').forEach(a=>{ a.classList.toggle('on', a.dataset.g===GRP[v]); if(lastSub[a.dataset.g]) a.setAttribute('href','#'+lastSub[a.dataset.g]); });
-    if(v==='loop') renderLoop(); if(v==='inst') renderLib(); if(v==='motor') renderMotor(); if(v==='valve') renderValve(); if(v==='punch') renderPunch(); if(v==='inst'){ bakCache=null; prepareBackup(); renderAbout(); renderProj(); renderCompany(); } refreshHeader();
+    if(v==='loop') renderLoop(); if(v==='inst') renderLib(); if(v==='motor') renderMotor(); if(v==='valve') renderValve(); if(v==='punch') renderPunch(); if(v==='inst'){ bakCache=null; prepareBackup(); renderAbout(); renderProj(); renderCompany(); renderClear(); } refreshHeader();
     window.scrollTo(0,0);
   }
   window.addEventListener('hashchange',route);
