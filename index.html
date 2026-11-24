@@ -156,6 +156,27 @@
   input[type=date]::-webkit-calendar-picker-indicator{opacity:.7}
   body.sun input[type=date]::-webkit-calendar-picker-indicator,body.light input[type=date]::-webkit-calendar-picker-indicator{filter:none}
   input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.8)}
+  .sheetbg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:30;display:none;align-items:flex-end;justify-content:center}
+  .sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px 16px 0 0;width:100%;max-width:520px;
+    padding:14px 14px calc(14px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}
+  .sheetT{font-weight:700;margin:0 4px 10px;font-size:15px}
+  .expb{display:block;width:100%;text-align:left;background:var(--field);border:1px solid var(--line);color:var(--text);
+    border-radius:12px;padding:11px 12px;margin-bottom:8px;font-family:inherit;cursor:pointer}
+  .expb b{display:block;font-size:15px} .expb span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+  .expb:active{border-color:var(--accent)}
+  #rep{position:fixed;inset:0;z-index:35;background:#fff;color:#111;display:none;flex-direction:column}
+  #repBar{display:flex;gap:6px;align-items:center;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;background:#f1f3f5;border-bottom:1px solid #ccc}
+  #repBar .btn{background:#fff;color:#111;border-color:#bbb} #repBar .btn.pri{background:#0b5cad;color:#fff;border-color:#0b5cad}
+  #repBody{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:14px}
+  #repBody table{max-width:none;width:auto}
+  #repBody th,#repBody td{text-align:left;text-transform:none;letter-spacing:0;color:#111;font-size:12px}
+  @media print{
+    body{background:#fff!important}
+    body>*:not(#rep){display:none!important}
+    #rep{position:static!important;display:block!important;overflow:visible!important;height:auto!important}
+    #repBar{display:none!important}
+    #repBody{overflow:visible!important;padding:0!important}
+  }
 </style>
 </head>
 <body>
@@ -268,7 +289,7 @@
       </table>
       <div class="row">
         <span class="note">Tap a row to load it.</span>
-        <span><button class="btn sm" data-share="copyTbl" type="button">↗ Share</button> <button class="btn sm" id="copyTbl" type="button">Copy table</button></span>
+        <button class="btn sm" id="copyTbl" type="button">📤 Export table</button>
       </div>
     </section>
 
@@ -320,9 +341,9 @@
       <textarea id="notes" data-k="notes" placeholder="Calibrator, as-found issues, adjustments made…"></textarea>
       <div class="row">
         <button class="btn danger sm" id="clrLoop" type="button">Clear readings</button>
-        <span><button class="btn" data-share="copyLoop" type="button">↗ Share</button> <button class="btn pri" id="copyLoop" type="button">Copy report</button></span>
+        <button class="btn pri" id="copyLoop" type="button">📤 Export report</button>
       </div>
-      <div class="note mt">Report is tab-separated, so it pastes straight into Excel or an ITR table.</div>
+      <div class="note mt">Export as a table for Outlook, Teams, Word or Excel, a PDF, a spreadsheet or plain text.</div>
     </section>
   </div>
 
@@ -419,7 +440,7 @@
       </div>
       <div class="row">
         <button class="btn danger sm" id="vChkClr" type="button">Untick all</button>
-        <span><button class="btn" data-share="vCopy" type="button">↗ Share</button> <button class="btn pri" id="vCopy" type="button">Copy sheet</button></span>
+        <button class="btn pri" id="vCopy" type="button">📤 Export sheet</button>
       </div>
     </section>
 
@@ -553,7 +574,7 @@
       <textarea id="xNotes" data-x="notes" placeholder="Settings, adjustments, issues…"></textarea>
       <div class="row">
         <button class="btn danger sm" id="xChkClr" type="button">Untick all</button>
-        <span><button class="btn" data-share="xCopy" type="button">↗ Share</button> <button class="btn pri" id="xCopy" type="button">Copy sheet</button></span>
+        <button class="btn pri" id="xCopy" type="button">📤 Export sheet</button>
       </div>
     </section>
   </div>
@@ -597,10 +618,10 @@
       <div id="plSum" class="sum mt"></div>
       <div id="plList" class="mt"></div>
       <div class="row">
-        <button class="btn sm" id="plCopy" type="button">Copy list</button>
-        <button class="btn sm" data-share="plCopy" type="button">↗ Share list</button>
+        <span></span>
+        <button class="btn pri" id="plCopy" type="button">📤 Export list</button>
       </div>
-      <div class="note mt">Copy and share use the filters above, e.g. open Cat A items only.</div>
+      <div class="note mt">Export uses the filters above, e.g. open Cat A items only.</div>
     </section>
     <datalist id="tagList"></datalist><datalist id="ownerList"></datalist>
   </div>
@@ -908,9 +929,9 @@
       <div id="instList" class="mt"></div>
       <div class="row">
         <span class="note" style="width:100%">Registers:</span>
-        <span><button class="btn sm" id="copyReg" type="button">Copy instruments</button> <button class="btn sm" data-share="copyReg" type="button">↗</button></span>
-        <span><button class="btn sm" id="copyRegM" type="button">Copy motors</button> <button class="btn sm" data-share="copyRegM" type="button">↗</button></span>
-        <span><button class="btn sm" id="copyRegV" type="button">Copy valves</button> <button class="btn sm" data-share="copyRegV" type="button">↗</button></span>
+        <button class="btn sm" id="copyReg" type="button">📤 Instruments</button>
+        <button class="btn sm" id="copyRegM" type="button">📤 Motors</button>
+        <button class="btn sm" id="copyRegV" type="button">📤 Valves</button>
       </div>
     </section>
     <section class="card">
@@ -958,6 +979,28 @@
   <div class="row"><span class="note">Copy was blocked. Select all and copy manually.</span><button class="btn" id="copyClose" type="button">Close</button></div>
 </div></div>
 <div class="toast" id="toast"></div>
+<div id="exp" class="sheetbg">
+  <div class="sheet">
+    <div class="sheetT" id="expTitle">Export</div>
+    <button class="expb" type="button" data-ex="copy"><b>📋 Copy as table</b><span>Paste into Outlook, Teams, Word or Excel</span></button>
+    <button class="expb" type="button" data-ex="pdf"><b>🖨 PDF / print</b><span>Formatted report with photos. In the print screen, tap Share to save or send the PDF</span></button>
+    <button class="expb" type="button" data-ex="html"><b>📄 Share report file</b><span>The formatted report as a file to email or save to Files</span></button>
+    <button class="expb" type="button" data-ex="csv"><b>📊 Share as spreadsheet</b><span>CSV file for Excel or Numbers</span></button>
+    <button class="expb" type="button" data-ex="text"><b>💬 Share as text</b><span>Plain message for Teams, WhatsApp, SMS or Notes</span></button>
+    <button class="expb" type="button" data-ex="view"><b>👁 Preview</b><span>See the formatted report</span></button>
+    <button class="btn" type="button" data-ex="close" style="width:100%;margin-top:6px">Cancel</button>
+  </div>
+</div>
+<div id="rep">
+  <div id="repBar">
+    <button class="btn sm" type="button" id="repClose">✕ Close</button>
+    <span style="flex:1"></span>
+    <button class="btn sm" type="button" id="repCopy">📋 Copy</button>
+    <button class="btn sm" type="button" id="repFile">📄 File</button>
+    <button class="btn sm pri" type="button" id="repPrint">🖨 PDF</button>
+  </div>
+  <div id="repBody"></div>
+</div>
 <div id="viewer">
   <div class="vbar">
     <button class="btn sm" id="vwClose" type="button">✕ Close</button>
@@ -970,7 +1013,7 @@
 
 <script>
 (function(){
-  const APP_VERSION = 'v10', APP_DATE = '2026-11-24';
+  const APP_VERSION = 'v11', APP_DATE = '2026-11-24';
   const $ = id => document.getElementById(id);
   const num = v => { if(v===null||v===undefined) return NaN; const x = parseFloat(String(v).replace(',', '.')); return isFinite(x)?x:NaN; };
   const fmt = (x, d) => {
@@ -2303,6 +2346,225 @@
       $('abChk').textContent='Update now'; $('abChk').onclick=()=>{ try{ navigator.serviceWorker.getRegistration().then(g=>{ if(g) g.update(); }).finally(()=>location.reload()); }catch(e){ location.reload(); } };
     }catch(e){ $('abUpd').textContent='No signal: try again when you’re online.'; }
   };
+
+  // ---------- formatted exports ----------
+  const cellV=c=>(c&&typeof c==='object'&&'v' in c)?c.v:(c==null?'':c);
+  const CST={ok:'color:#0a7d3b;font-weight:bold',bad:'color:#c62828;font-weight:bold',warn:'color:#9a6400;font-weight:bold',
+    catA:'background:#fde2e2;color:#b00000;font-weight:bold;text-align:center',catB:'background:#fff1d6;color:#8a5a00;font-weight:bold;text-align:center',catC:'background:#eceff1;color:#455a64;font-weight:bold;text-align:center'};
+  const cst=c=>(c&&typeof c==='object'&&c.c&&CST[c.c])?CST[c.c]:'';
+  const kvs=(title,rows,keep)=>({type:'kv',title,rows,keep});
+  const fx=(v,u)=>(v===''||v==null)?'':v+(u?' '+u:'');
+  const H=v=>esc(String(v==null?'':v));
+  function repHTML(rep,opt){
+    opt=opt||{}; const F='font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#111;line-height:1.35';
+    const TH='border:1px solid #9aa4ad;padding:4px 7px;background:#e8edf2;text-align:left;font-weight:bold;white-space:nowrap;color:#111;text-transform:none;letter-spacing:0';
+    const TD='border:1px solid #9aa4ad;padding:4px 7px;vertical-align:top;text-align:left;color:#111';
+    const nw=c=>String(cellV(c)).length<=16?';white-space:nowrap':'';
+    const TB='border-collapse:collapse;margin:0 0 8px;'+F;
+    let h='<div style="'+F+'">';
+    h+='<div style="font-size:17px;font-weight:bold;margin:0 0 2px">'+H(rep.title)+(rep.tag?' – '+H(rep.tag):'')+'</div>';
+    if(rep.sub) h+='<div style="color:#444;margin:0 0 2px">'+H(rep.sub)+'</div>';
+    h+='<div style="color:#777;font-size:11px;margin:0 0 10px">Generated '+H(new Date().toLocaleString())+' · Cx Pocket '+APP_VERSION+'</div>';
+    rep.sections.forEach(sec=>{
+      if(sec.title) h+='<div style="font-weight:bold;font-size:13px;margin:12px 0 5px;color:#0b3d6b;border-bottom:2px solid #0b3d6b;padding-bottom:2px">'+H(sec.title)+'</div>';
+      if(sec.type==='kv'){
+        const rows=sec.rows.filter(r=>sec.keep||cellV(r[1])!==''); if(!rows.length){ h+='<div style="color:#777">—</div>'; return; }
+        h+='<table style="'+TB+'">';
+        for(let i=0;i<rows.length;i+=2){ h+='<tr>'; [rows[i],rows[i+1]].forEach(r=>{ if(!r){ h+='<td style="border:0"></td><td style="border:0"></td>'; return; }
+          h+='<td style="'+TD+';background:#f4f6f8;color:#333;white-space:nowrap">'+H(r[0])+'</td><td style="'+TD+';min-width:110px;'+cst(r[1])+'">'+(sec.keep&&cellV(r[1])===''?'&nbsp;':H(cellV(r[1])))+'</td>'; }); h+='</tr>'; }
+        h+='</table>';
+      } else if(sec.type==='table'){
+        if(!sec.rows.length){ h+='<div style="color:#777">No rows.</div>'; return; }
+        h+='<div style="overflow-x:auto"><table style="'+TB+'"><thead><tr>'+sec.head.map(x=>'<th style="'+TH+'">'+H(x)+'</th>').join('')+'</tr></thead><tbody>';
+        sec.rows.forEach((r,ri)=>{ h+='<tr>'+r.map(c=>'<td style="'+TD+nw(c)+(ri%2?';background:#fafbfc':'')+';'+cst(c)+'">'+H(cellV(c))+'</td>').join('')+'</tr>'; });
+        h+='</tbody></table></div>';
+      } else if(sec.type==='check'){
+        h+='<table style="'+TB+'">'+sec.items.map(([ok,t])=>'<tr><td style="'+TD+';text-align:center;width:22px;font-size:14px;'+(ok?'color:#0a7d3b':'color:#999')+'">'+(ok?'☑':'☐')+'</td><td style="'+TD+'">'+H(t)+'</td></tr>').join('')+'</table>';
+      } else if(sec.type==='text'){
+        h+='<div style="white-space:pre-wrap;border:1px solid #9aa4ad;padding:6px 8px">'+H(sec.text)+'</div>';
+      }
+    });
+    if(opt.images && rep.images && rep.images.length){
+      h+='<div style="font-weight:bold;font-size:13px;margin:14px 0 6px;color:#0b3d6b;border-bottom:2px solid #0b3d6b;padding-bottom:2px">Photos</div><div>';
+      rep.images.forEach(im=>{ h+='<div style="display:inline-block;vertical-align:top;margin:0 8px 10px 0;width:220px;page-break-inside:avoid"><img src="'+im.src+'" style="width:220px;border:1px solid #ccc;border-radius:4px" alt=""><div style="font-size:11px;color:#444">'+H(im.cap)+'</div></div>'; });
+      h+='</div>';
+    }
+    h+='</div>';
+    if(opt.full){
+      const wide=rep.sections.some(x=>x.type==='table'&&x.head.length>8);
+      return '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'+H(rep.title+(rep.tag?' – '+rep.tag:''))+'</title>'+
+        '<style>body{margin:16px;background:#fff}@page{margin:12mm'+(wide?';size:A4 landscape':'')+'}</style></head><body>'+h+'</body></html>';
+    }
+    return h;
+  }
+  function repText(rep){
+    const L=[rep.title+(rep.tag?' – '+rep.tag:'')]; if(rep.sub) L.push(rep.sub);
+    rep.sections.forEach(sec=>{
+      if(sec.type==='kv'){ const rows=sec.rows.filter(r=>cellV(r[1])!==''); if(!rows.length&&!sec.keep) return;
+        L.push('', (sec.title||'').toUpperCase()); (sec.keep?sec.rows:rows).forEach(r=>L.push(r[0]+': '+(cellV(r[1])===''?'________':cellV(r[1])))); }
+      else if(sec.type==='table'){ L.push('', (sec.title||'').toUpperCase());
+        if(!sec.rows.length){ L.push('(none)'); return; }
+        if(sec.textRow){ sec.rows.forEach(r=>L.push('• '+sec.textRow(r))); }
+        else if(sec.head.length<=6){ L.push(sec.head.join(' | ')); sec.rows.forEach(r=>L.push(r.map(c=>cellV(c)===''?'–':cellV(c)).join(' | '))); }
+        else sec.rows.forEach(r=>L.push('• '+sec.head.map((h,i)=>cellV(r[i])!==''?h+': '+cellV(r[i]):'').filter(Boolean).join(', '))); }
+      else if(sec.type==='check'){ L.push('', (sec.title||'').toUpperCase()); sec.items.forEach(([ok,t])=>L.push((ok?'☑ ':'☐ ')+t)); }
+      else if(sec.type==='text'){ L.push('', (sec.title||'').toUpperCase(), sec.text); }
+    });
+    L.push('', 'Generated '+new Date().toLocaleString()+' · Cx Pocket '+APP_VERSION);
+    return L.filter((x,i,a)=>!(x===''&&a[i-1]==='')).join('\n').replace(/^\n+/,'');
+  }
+  function repCSV(rep){
+    const q=v=>{ v=String(cellV(v)); return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+    const L=[q(rep.title+(rep.tag?' – '+rep.tag:''))]; if(rep.sub) L.push(q(rep.sub));
+    rep.sections.forEach(sec=>{
+      if(sec.type==='kv'){ const rows=sec.rows.filter(r=>sec.keep||cellV(r[1])!==''); if(!rows.length) return; L.push('',q(sec.title||'')); rows.forEach(r=>L.push(q(r[0])+','+q(r[1]))); }
+      else if(sec.type==='table'){ L.push('',q(sec.title||'')); L.push(sec.head.map(q).join(',')); sec.rows.forEach(r=>L.push(r.map(q).join(','))); }
+      else if(sec.type==='check'){ L.push('',q(sec.title||'')); sec.items.forEach(([ok,t])=>L.push((ok?'Yes':'No')+','+q(t))); }
+      else if(sec.type==='text'){ L.push('',q(sec.title||''),q(sec.text)); }
+    });
+    return '﻿'+L.join('\r\n');
+  }
+  function thumbFrom(d,max){ return new Promise(res=>{ const im=new Image(); im.onload=()=>{ const sc=Math.min(1,max/Math.max(im.width,im.height)), c=document.createElement('canvas');
+    c.width=Math.round(im.width*sc); c.height=Math.round(im.height*sc); c.getContext('2d').drawImage(im,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',.78)); }; im.onerror=()=>res(null); im.src=d; }); }
+  async function loadRepImages(rep){
+    const refs=[]; (rep.photos||[]).forEach(p=>refs.push({id:p.id,cap:(rep.tag?rep.tag+' – ':'')+p.lbl}));
+    (rep.photosBy||[]).forEach(g=>g.photos.forEach(p=>refs.push({id:p.id,cap:g.cap+' – '+p.lbl})));
+    const out=[]; for(const r of refs){ const d=await pdbGet(r.id); if(!d) continue; const t=await thumbFrom(d,700); if(t) out.push({cap:r.cap,src:t}); }
+    rep.images=out; if(rep===curRep && $('rep').style.display==='flex') showPreview();
+  }
+  async function copyRich(html,text){
+    try{ if(window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){
+      await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([text],{type:'text/plain'})})]);
+      toast('Table copied: paste into Outlook, Teams, Word or Excel'); return; } }catch(e){}
+    doCopy(text,'Copied as text (tables aren’t supported here)');
+  }
+  function shareFile(content,name,type){
+    const blob=new Blob([content],{type}); let file=null; try{ file=new File([blob],name,{type}); }catch(e){}
+    const dl=()=>{ try{ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },3000); toast('Saved '+name); }catch(e){ toast('Saving files isn’t available here'); } };
+    try{ if(file&&navigator.canShare&&navigator.canShare({files:[file]})){ navigator.share({files:[file],title:name}).catch(e=>{ if(!e||e.name!=='AbortError') dl(); }); return; } }catch(e){}
+    dl();
+  }
+  const isHosted=()=>location.protocol==='https:' && !/claude|anthropic/.test(location.hostname);
+  let curRep=null;
+  function openExport(build){
+    let r=null; try{ r=build(); }catch(e){ console.error(e); }
+    if(!r){ toast('Nothing to export yet'); return; }
+    curRep=r; r.images=null; loadRepImages(r);
+    $('expTitle').textContent='Export · '+r.title+(r.tag?' – '+r.tag:'');
+    $('exp').style.display='flex';
+  }
+  function showPreview(){ if(!curRep) return; $('repBody').innerHTML=repHTML(curRep,{images:true}); $('rep').style.display='flex'; }
+  function doPrint(){ if(!isHosted()){ toast('PDF/print works in the installed app'); return; } showPreview(); setTimeout(()=>{ try{ window.print(); }catch(e){ toast('Printing isn’t available here'); } },50); }
+  const fname=e=>((curRep.file||curRep.title)+'').replace(/[^\w.-]+/g,'-').replace(/-+/g,'-')+e;
+  $('exp').addEventListener('click',e=>{ if(e.target.id==='exp'){ $('exp').style.display='none'; return; }
+    const b=e.target.closest('[data-ex]'); if(!b||!curRep) return; const a=b.dataset.ex; $('exp').style.display='none';
+    if(a==='copy') copyRich(repHTML(curRep,{images:false}), repText(curRep));
+    else if(a==='text'){ shareMode=true; copyText(repText(curRep)); shareMode=false; }
+    else if(a==='csv') shareFile(repCSV(curRep), fname('.csv'), 'text/csv');
+    else if(a==='html') shareFile(repHTML(curRep,{images:true,full:true}), fname('.html'), 'text/html');
+    else if(a==='pdf') doPrint();
+    else if(a==='view') showPreview();
+  });
+  $('repClose').onclick=()=>{ $('rep').style.display='none'; };
+  $('repCopy').onclick=()=>copyRich(repHTML(curRep,{images:false}), repText(curRep));
+  $('repFile').onclick=()=>shareFile(repHTML(curRep,{images:true,full:true}), fname('.html'), 'text/html');
+  $('repPrint').onclick=()=>{ if(!isHosted()){ toast('PDF/print works in the installed app'); return; } try{ window.print(); }catch(e){} };
+
+  // report builders
+  function repCheckTable(){ if(!rangeOk()) return null; const s=sig(), r=rawR();
+    return {title:'Check points',tag:cur.tag,sub:[cur.desc,presetName()].filter(Boolean).join(' · '),file:(cur.tag||'instrument')+'-check-points',
+      sections:[kvs('Configuration',[['Range',cur.lrv+' to '+cur.urv+' '+cur.unit],['Signal',s.n],['Square root',cur.sqrt?'Yes':''],['PLC raw',r?r.min+' – '+r.max:'']]),
+        {type:'table',title:'Check points',head:['%',s.u,'Value ('+(cur.unit||'PV')+')'].concat(r?['PLC raw']:[]),
+         rows:TBL.map(p=>{ const f=p/100; return [p,fmt(f2s(f),s.d),fmt(f2pv(f))].concat(r?[fmt(f2r(f),0)]:[]); })}]}; }
+  const resCell=st=>st?{v:(st.pass?(st.n<st.of?'INCOMPLETE':'PASS'):'FAIL')+' · max '+(st.max>=0?'+':'')+st.max.toFixed(2)+'% · '+st.n+'/'+st.of+' pts',c:st.pass?(st.n<st.of?'warn':'ok'):'bad'}:'Not done';
+  function repLoop(){ if(!rangeOk()) return null; const R=evalLoop(), rd=R.rd, s=sig(), r=rawR();
+    const ec=x=>x?{v:(x.e>=0?'+':'')+x.e.toFixed(2),c:x.pass?'ok':'bad'}:'';
+    return {title:'Loop check',tag:cur.tag,sub:[cur.desc,presetName()].filter(Boolean).join(' · '),file:(cur.tag||'instrument')+'-loop-check',photos:cur.photos,
+      sections:[kvs('Instrument',[['Tag',cur.tag],['Description',cur.desc],['Type',presetName()],['Location',cur.loc],['Manufacturer',cur.mfr],['Model',cur.model],['Serial no.',cur.serial],['Order code',cur.code],['Firmware',cur.fw]]),
+        kvs('Configuration',[['Range',cur.lrv+' to '+cur.urv+' '+cur.unit],['Signal',s.n],['Square root',cur.sqrt?'Yes':''],['PLC raw',r?r.min+' – '+r.max:''],['Reading in',rd.u],['Tolerance','± '+cur.tol+' % of span']]),
+        {type:'table',title:'Readings',head:['Point','Signal ('+s.u+')','Expected ('+rd.u+')','As found','Error %','As left','Error %'],
+         rows:R.pts.map((p,i)=>{ const f=p/100; return [p+'%'+(cur.ptSet==='9'?(i<5?' ↑':' ↓'):''),f2s(f).toFixed(s.d),fmt(rd.exp(f),rd.d),cur.af[i]||'',ec(R.af[i]),cur.al[i]||'',ec(R.al[i])]; }),
+         textRow:r=>r[0]+' ('+r[1]+' '+s.u+', expect '+r[2]+' '+rd.u+') · AF '+(r[3]||'–')+(cellV(r[4])?' ('+cellV(r[4])+'%'+(r[4].c==='ok'?' ✓':' ✗')+')':'')+' · AL '+(r[5]||'–')+(cellV(r[6])?' ('+cellV(r[6])+'%'+(r[6].c==='ok'?' ✓':' ✗')+')':'')},
+        kvs('Result',[['As found',resCell(R.saf)],['As left',resCell(R.sal)]]),
+        cur.notes?{type:'text',title:'Notes',text:cur.notes}:null,
+        kvs('Sign-off',[['Tested by',cur.tech],['Date',cur.tdate],['Signature',''],['Witness','']],true)].filter(Boolean)}; }
+  function repMotor(){ const m=M(), r=motorCalc();
+    return {title:'Motor / VFD sheet',tag:m.tag,sub:m.desc,file:(m.tag||'motor')+'-motor-sheet',photos:m.photos,sections:[
+      kvs('Motor',[['Tag',m.tag],['Description',m.desc],['Location',m.loc],['Manufacturer',m.make],['Model',m.model],['Serial no.',m.serial],['Frame',m.frame],['IP rating',m.ip],['Duty',m.duty]]),
+      kvs('Nameplate',[['Power',fx(m.P,m.Pu)],['Voltage',fx(m.V,'V')],['Current',fx(m.I,'A')],['Frequency',fx(m.f,'Hz')],['Speed',fx(m.n,'rpm')],['Power factor',m.pf],['Efficiency',fx(m.eff,'%')],
+        ['Phases',m.ph==='1'?'1-phase':'3-phase'],['Connection',m.conn],['Service factor',m.sf],['Insulation class',m.ins]]),
+      kvs('Calculated',[['Poles',r.poles||''],['Synchronous speed',r.ns?fmt(r.ns,0)+' rpm':''],['Slip',r.ns?fmt(r.slip,0)+' rpm ('+fmt(r.slipPct,1)+'%)':''],['Rated torque',r.T?fmt(r.T,1)+' N·m':''],
+        ['Calculated FLC',r.Ic?fmt(r.Ic,1)+' A':''],['Overload setting',r.I>0?fmt(r.I,1)+' A':'']]),
+      kvs('VFD',[['Drive',m.vfdModel],['Drive serial no.',m.vfdSerial],['Min / max frequency',(m.vMin||m.vMax)?(m.vMin||'–')+' / '+(m.vMax||'–')+' Hz':''],
+        ['Accel / decel',(m.vAcc||m.vDec)?(m.vAcc||'–')+' / '+(m.vDec||'–')+' s':''],['Control mode',m.vCtl],['Load type',m.vLoad]]),
+      {type:'check',title:'Commissioning checklist ('+chkN(m)+'/'+CHK.length+')',items:CHK.map((t,i)=>[!!m.chk[i],t])},
+      kvs('Sign-off',[['Tested by',m.tech],['Date',m.tdate],['Signature',''],['Witness','']],true)]}; }
+  function repValve(){ const v=VX(), r=vCoil(v), R=strokeEval(v), pts=XPTS[v.ptSet]||XPTS['9'], nn=vChkN(v);
+    const ec=e=>(e===null||e===undefined)?'':{v:(e>=0?'+':'')+e.toFixed(2),c:Math.abs(e)<=R.tol+1e-9?'ok':'bad'};
+    const secs=[kvs('Valve',[['Tag',v.tag],['Description',v.desc],['Location',v.loc],['Type',VTYPE[v.type]],['Actuator',v.act],['Fail position',v.fail],['Size',v.dn?'DN '+v.dn:''],['Kv',v.kv]]),
+      kvs('Identification',[['Valve',[v.make,v.model].filter(Boolean).join(' ')],['Valve serial no.',v.serial],['Actuator',v.aModel],['Actuator serial no.',v.aSerial],
+        ['Solenoid / positioner',v.pModel],['Sol. / positioner S/N',v.pSerial],['Limit switch box',v.lsModel]])];
+    if(vCoilOn(v)) secs.push(kvs('Solenoid coil & supply',[['Coil',v.coilW?fx(v.coilV,'V DC')+' · '+v.coilW+' W':fx(v.coilV,'V DC')],['Coil current',r.I?fmt(r.I,3)+' A':''],
+      ['Cable',v.cabL?v.cabL+' m one way · '+v.cabA+' mm²':''],['Calc. V at coil',r.Vc!==undefined?{v:fmt(r.Vc,2)+' V (min '+fmt(r.Vmin,1)+' V)',c:r.ok?'ok':'bad'}:''],
+      ['Measured coil R',v.rMeas?v.rMeas+' Ω'+(r.Rexp?' (expected '+fmt(r.Rexp,1)+' Ω)':''):''],['Measured V at coil',r.Vm!==undefined?{v:fmt(r.Vm,2)+' V',c:r.vmOk?'ok':'bad'}:'']]));
+    const fct=num(v.dFac)||1.5, sug=t=>Math.ceil(Math.max(t*fct,t+2));
+    secs.push(kvs('End position feedback',[['Feedback',v.fb||'None'],['Open travel time',v.tOpen?v.tOpen+' s':''],['Close travel time',v.tClose?v.tClose+' s':''],
+      ['Fail-to-open alarm',num(v.tOpen)>0?sug(num(v.tOpen))+' s':''],['Fail-to-close alarm',num(v.tClose)>0?sug(num(v.tClose))+' s':'']]));
+    if(v.type==='ctl'){
+      secs.push(kvs('Positioner',[['Closed at',v.sigClosed+' mA'],['Feedback closed at',v.fbClosed?v.fbClosed+' mA':'No feedback'],['Supply air',fx(v.air,'bar')],['Spring range',v.spring],['Tight shut-off',fx(v.cutoff,'%')],['Tolerance','± '+R.tol+' %']]));
+      secs.push({type:'table',title:'Stroke test',head:['Setpoint','Signal (mA)','Position %','Error %','Feedback (mA)','Error %'],
+        rows:pts.map((sp,i)=>[sp+'%'+(v.ptSet==='9'?(i<5?' ↑':' ↓'):''),spMa(sp,v).toFixed(2),v.pos[i]||'',ec(R.pe[i]),v.fbm[i]||'',ec(R.fe[i])]),
+        textRow:r=>r[0]+' ('+r[1]+' mA) · position '+(r[2]||'–')+(cellV(r[3])?' ('+cellV(r[3])+'%)':'')+' · feedback '+(r[4]||'–')+(cellV(r[5])?' mA ('+cellV(r[5])+'%)':'')});
+      const rc=(e,lim)=>(e===null||e===undefined)?'':{v:e.toFixed(2)+' %',c:Math.abs(e)<=lim+1e-9?'ok':'bad'};
+      secs.push(kvs('Stroke test result',[['Max position error',rc(R.mp,R.tol)],['Max feedback error',rc(R.mf,R.tol)],['Hysteresis',rc(R.hy,R.tol)]]));
+    }
+    secs.push({type:'check',title:'Commissioning checklist ('+nn[0]+'/'+nn[1]+')',items:vChkList(v).map(it=>[!!v.chk[it[0]],it[1]])});
+    if(v.notes) secs.push({type:'text',title:'Notes',text:v.notes});
+    secs.push(kvs('Sign-off',[['Tested by',v.tech],['Date',v.tdate],['Signature',''],['Witness','']],true));
+    return {title:'Valve sheet',tag:v.tag,sub:[v.desc,VTYPE[v.type]].filter(Boolean).join(' · '),file:(v.tag||'valve')+'-valve-sheet',photos:v.photos,sections:secs}; }
+  function repRegI(){ const keys=Object.keys(lib).sort(byTag); if(!keys.length) return null; const keep=cur, kF=F;
+    const rc=st=>st?{v:(st.pass?(st.n<st.of?'Incomplete':'Pass'):'Fail')+' ('+fmt(st.max,2)+'%)',c:st.pass?(st.n<st.of?'warn':'ok'):'bad'}:'';
+    const rows=keys.map(k=>{ cur=Object.assign(DEF(),lib[k]); const R=rangeOk()?evalLoop():{};
+      return [k,cur.desc,presetName(),[cur.mfr,cur.model].filter(Boolean).join(' '),cur.serial,cur.loc,cur.lrv+' – '+cur.urv+' '+cur.unit,sig().n+(cur.sqrt?' √':''),rc(R.saf),rc(R.sal),cur.tech,cur.tdate]; });
+    cur=keep; F=kF;
+    return {title:'Instrument register',sub:keys.length+' instrument'+(keys.length===1?'':'s'),file:'instrument-register-'+today(),
+      sections:[{type:'table',title:'Instruments',head:['Tag','Description','Type','Make / model','Serial no.','Location','Range','Signal','As found','As left','Tested by','Date'],rows,
+        textRow:r=>[r[0],r[1],r[6],'AF '+(cellV(r[8])||'–'),'AL '+(cellV(r[9])||'–')].filter(Boolean).join(' · ')}]}; }
+  function repRegM(){ const keys=Object.keys(libM).sort(byTag); if(!keys.length) return null; const keepM=curM;
+    const rows=keys.map(k=>{ curM=normM(libM[k]); const m=curM, r=motorCalc(), n=chkN(m);
+      return [k,m.desc,m.loc,[m.make,m.model].filter(Boolean).join(' '),m.serial,fx(m.P,m.Pu),fx(m.V,'V'),fx(m.I,'A'),fx(m.n,'rpm'),r.poles||'',r.T?fmt(r.T,1):'',m.vfdModel,m.vfdSerial,
+        (m.vMin||m.vMax)?(m.vMin||'–')+'–'+(m.vMax||'–')+' Hz':'',{v:n+'/'+CHK.length,c:n===CHK.length?'ok':n?'warn':''},m.tech,m.tdate]; });
+    curM=keepM;
+    return {title:'Motor register',sub:keys.length+' motor'+(keys.length===1?'':'s'),file:'motor-register-'+today(),
+      sections:[{type:'table',title:'Motors',head:['Tag','Description','Location','Make / model','Serial no.','Power','Voltage','Current','Speed','Poles','Torque (N·m)','VFD','VFD serial no.','Freq range','Checklist','Tested by','Date'],rows,
+        textRow:r=>[r[0],r[1],[r[5],r[6],r[7],r[8]].filter(Boolean).join(' / '),'checklist '+cellV(r[14])].filter(Boolean).join(' · ')}]}; }
+  function repRegV(){ const keys=Object.keys(libV).sort(byTag); if(!keys.length) return null;
+    const rows=keys.map(k=>{ const v=normV(libV[k]), R=strokeEval(v), nn=vChkN(v);
+      return [k,v.desc,VTYPE[v.type],v.act,v.fail,v.dn,[v.make,v.model].filter(Boolean).join(' '),v.serial,v.fb,v.tOpen,v.tClose,
+        v.type==='ctl'&&R.mp!==null?{v:fmt(R.mp,2)+'%',c:Math.abs(R.mp)<=R.tol?'ok':'bad'}:'',{v:nn[0]+'/'+nn[1],c:nn[0]===nn[1]?'ok':nn[0]?'warn':''},v.tech,v.tdate]; });
+    return {title:'Valve register',sub:keys.length+' valve'+(keys.length===1?'':'s'),file:'valve-register-'+today(),
+      sections:[{type:'table',title:'Valves',head:['Tag','Description','Type','Actuator','Fail','DN','Make / model','Serial no.','Feedback','Open (s)','Close (s)','Stroke max err','Checklist','Tested by','Date'],rows,
+        textRow:r=>[r[0],r[1],r[2]+' '+r[4],'checklist '+cellV(r[12])].filter(Boolean).join(' · ')}]}; }
+  function repPunch(){ const L=plFiltered(); if(!L.length) return null; const td=today(), open=L.filter(p=>p.status==='open');
+    const fdesc=(plStat==='all'?'All':plStat==='open'?'Open':'Closed')+' items'+(plCatF==='all'?'':' · Cat '+plCatF)+(($('plQ').value||'').trim()?' · filter "'+$('plQ').value.trim()+'"':'');
+    const secs=[];
+    if(plStat!=='closed') secs.push(kvs('Summary',[['Open Cat A',open.filter(p=>p.cat==='A').length],['Open Cat B',open.filter(p=>p.cat==='B').length],
+      ['Open Cat C',open.filter(p=>p.cat==='C').length],['Overdue',open.filter(p=>p.due&&p.due<td).length]]));
+    secs.push({type:'table',title:'Items',head:['No','Cat','Tag','Description','Action by','Location','Due','Status','Closed / note'],
+      rows:L.map(p=>[p.no,{v:p.cat,c:'cat'+p.cat},p.tag,p.desc,p.owner,p.loc,p.due?{v:p.due,c:(p.status==='open'&&p.due<td)?'bad':''}:'',
+        p.status==='open'?'Open':'Closed',p.status==='closed'?(p.closed+(p.closeNote?': '+p.closeNote:'')):'']),
+      textRow:r=>'#'+r[0]+' ['+cellV(r[1])+'] '+(r[2]?r[2]+' – ':'')+r[3]+' ('+[r[4],r[5],cellV(r[6])?'due '+cellV(r[6]):'',r[7],r[8]].filter(Boolean).join(', ')+')'});
+    return {title:'Punch list',sub:fdesc+' · '+L.length+' item'+(L.length===1?'':'s')+' · '+td,file:'punch-list-'+td,
+      photosBy:L.filter(p=>p.photos&&p.photos.length).map(p=>({cap:'#'+p.no+(p.tag?' '+p.tag:''),photos:p.photos})),sections:secs}; }
+  $('copyTbl').onclick=()=>openExport(repCheckTable);
+  $('copyLoop').onclick=()=>openExport(repLoop);
+  $('vCopy').onclick=()=>openExport(repMotor);
+  $('xCopy').onclick=()=>openExport(repValve);
+  $('copyReg').onclick=()=>openExport(repRegI);
+  $('copyRegM').onclick=()=>openExport(repRegM);
+  $('copyRegV').onclick=()=>openExport(repRegV);
+  $('plCopy').onclick=()=>openExport(repPunch);
 
   // ---------- routing ----------
   const VIEWS={scale:'scale',loop:'loop',motor:'motor',valve:'valve',punch:'punch',process:'proc',tools:'units',units:'units',instruments:'inst'};
