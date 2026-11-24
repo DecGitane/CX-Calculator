@@ -150,9 +150,12 @@
   body.sun .big{font-size:36px}
   body.sun th,body.sun td{border-bottom-color:#000}
   body.sun input::placeholder{color:#666}
-  #kbDone{position:fixed;right:12px;bottom:12px;z-index:40;display:none;background:var(--accent);color:var(--onaccent,#1a1205);
-    border:0;border-radius:999px;padding:10px 16px;font:700 15px system-ui,-apple-system,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.35)}
-  #kbDone.on{display:block}
+  .grid>*,.grid3>*{min-width:0}
+  input[type=date]{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;min-height:46px;line-height:22px;text-align:left}
+  input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
+  input[type=date]::-webkit-calendar-picker-indicator{opacity:.7}
+  body.sun input[type=date]::-webkit-calendar-picker-indicator,body.light input[type=date]::-webkit-calendar-picker-indicator{filter:none}
+  input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.8)}
 </style>
 </head>
 <body>
@@ -568,10 +571,10 @@
       <label class="mt">Category</label>
       <div class="seg" id="pdCat"><button type="button" data-v="A">A</button><button type="button" data-v="B">B</button><button type="button" data-v="C">C</button></div>
       <div class="note mt" id="pdCatNote"></div>
-      <div class="grid mt">
-        <div><label for="pdDue">Due date</label><input id="pdDue" type="date"></div>
-        <div><label for="pdLoc">Location / area</label><input id="pdLoc" type="text"></div>
-      </div>
+      <label class="mt" for="pdDue">Due date</label>
+      <input id="pdDue" type="date">
+      <label class="mt" for="pdLoc">Location / area</label>
+      <input id="pdLoc" type="text" placeholder="e.g. Inlet works, MCC-01">
       <div class="row"><label class="btn sm filebtn">📷 Add photo<input type="file" accept="image/*" multiple class="hidden" data-photo="punch"></label></div>
       <div class="photos" id="ph-punch"></div>
       <div id="pdCloseRow" class="hidden mt">
@@ -945,7 +948,6 @@
   <div class="row"><span class="note">Copy was blocked. Select all and copy manually.</span><button class="btn" id="copyClose" type="button">Close</button></div>
 </div></div>
 <div class="toast" id="toast"></div>
-<button id="kbDone" type="button" aria-label="Hide keyboard">⌨︎ Done</button>
 <div id="viewer">
   <div class="vbar">
     <button class="btn sm" id="vwClose" type="button">✕ Close</button>
@@ -2265,14 +2267,7 @@
     el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>{ keep[el.id]=el.value; try{ localStorage.setItem('cx-keep',JSON.stringify(keep)); }catch(e){} });
   });
 
-  // ---------- hide-keyboard button ----------
-  const kb=$('kbDone'), isTyping=el=>el && ((el.tagName==='INPUT' && !['checkbox','radio','file','range','button'].includes(el.type)) || el.tagName==='TEXTAREA');
-  function placeKb(){ const vv=window.visualViewport; const gap=vv ? Math.max(0, window.innerHeight-(vv.height+vv.offsetTop)) : 0; kb.style.bottom=(gap+12)+'px'; }
-  document.addEventListener('focusin',e=>{ if(isTyping(e.target)){ kb.classList.add('on'); placeKb(); } });
-  document.addEventListener('focusout',()=>setTimeout(()=>{ if(!isTyping(document.activeElement)) kb.classList.remove('on'); },80));
-  if(window.visualViewport){ visualViewport.addEventListener('resize',placeKb); visualViewport.addEventListener('scroll',placeKb); }
-  const hideKb=e=>{ e.preventDefault(); const a=document.activeElement; if(a&&a.blur) a.blur(); kb.classList.remove('on'); };
-  kb.addEventListener('touchstart',hideKb,{passive:false}); kb.addEventListener('mousedown',hideKb);
+  const isTyping=el=>el && ((el.tagName==='INPUT' && !['checkbox','radio','file','range','button'].includes(el.type)) || el.tagName==='TEXTAREA');
   // return key closes the keyboard on single-line fields
   document.addEventListener('keydown',e=>{ if(e.key==='Enter' && e.target.tagName==='INPUT' && isTyping(e.target)){ e.preventDefault(); e.target.blur(); } });
   document.querySelectorAll('input').forEach(i=>{ if(isTyping(i)) i.setAttribute('enterkeyhint','done'); });
