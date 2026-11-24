@@ -96,8 +96,8 @@
   .inst .a{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center}
   /* nav */
   nav{position:fixed;left:0;right:0;bottom:0;z-index:10;background:#121a20;border-top:1px solid var(--line);
-    display:grid;grid-template-columns:repeat(5,1fr);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
-  nav a{color:var(--muted);text-decoration:none;text-align:center;font-size:12px;padding:6px 2px;border-radius:10px}
+    display:grid;grid-template-columns:repeat(7,1fr);padding:6px 3px calc(6px + env(safe-area-inset-bottom))}
+  nav a{color:var(--muted);text-decoration:none;text-align:center;font-size:10px;padding:6px 0;border-radius:10px}
   nav a b{display:block;font-size:19px;line-height:1.1;margin-bottom:2px;font-weight:400}
   nav a.on{color:var(--accent);background:rgba(242,169,59,.08)}
   .view{display:none}
@@ -109,6 +109,50 @@
   .toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#24303a;color:var(--text);
     padding:9px 14px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
   .toast.on{opacity:1}
+  .catA{background:rgba(239,90,90,.18);color:var(--bad)} .catB{background:rgba(242,169,59,.18);color:var(--warn)} .catC{background:rgba(138,154,166,.18);color:var(--muted)}
+  body.sun .catA,body.sun .catB,body.sun .catC{background:#fff;border:2px solid currentColor}
+  .pi.closed .t,.pi.closed .d{opacity:.6}
+  /* photos */
+  .photos{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .photos .th{width:76px;height:76px;border-radius:10px;border:1px solid var(--line);object-fit:cover;cursor:pointer;background:var(--field)}
+  .photos .cap{font-size:10px;color:var(--muted);text-align:center;margin-top:2px;max-width:76px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .filebtn{display:inline-flex;align-items:center;gap:6px;margin:0;color:var(--text)}
+  #viewer{position:fixed;inset:0;background:#000;z-index:25;display:none;flex-direction:column}
+  #viewer .vbar{display:flex;gap:8px;align-items:center;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;background:#111}
+  #viewer .vbar select{width:auto;flex:1;padding:8px}
+  #viewer .vimg{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;display:flex;align-items:center;justify-content:center}
+  #viewer img{max-width:100%;max-height:100%}
+  #viewer.zoom .vimg{display:block}
+  #viewer.zoom img{max-width:none;max-height:none;width:260%}
+  /* recent */
+  .recent{display:flex;gap:6px;align-items:center;overflow-x:auto;margin-bottom:10px;scrollbar-width:none}
+  .recent::-webkit-scrollbar{display:none}
+  .recent span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;flex:0 0 auto}
+  .recent .chip{padding:6px 10px;font-size:13px}
+  .hdrBtns{display:flex;gap:6px}
+  main,nav{zoom:var(--z,1)}
+  .seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .seg button{flex:1;background:var(--field);color:var(--text);border:0;padding:10px 4px;font-size:14px;font-family:inherit;cursor:pointer}
+  .seg button+button{border-left:1px solid var(--line)}
+  .seg button.on{background:var(--accent);color:var(--onaccent,#1a1205);font-weight:700}
+  .sub{font-size:13px;font-weight:600;color:var(--text);margin:14px 0 8px}
+  /* themes */
+  body.light{--bg:#eef1f4;--panel:#ffffff;--line:#cfd6dc;--text:#111;--muted:#56626c;--accent:#d27c06;--field:#ffffff;--ok:#11804a;--bad:#c62828;--warn:#9a6400}
+  body.light nav{background:#ffffff} body.light .toast{background:#333;color:#fff}
+  body.light .warnbox{color:#8b1a1a;background:#fdecec}
+  body.sun{--bg:#ffffff;--panel:#ffffff;--line:#000;--text:#000;--muted:#1d1d1d;--accent:#0047b3;--onaccent:#fff;--field:#fff;--ok:#00622b;--bad:#b00000;--warn:#7a4f00}
+  body.sun{font-weight:500}
+  body.sun .card,body.sun input,body.sun select,body.sun textarea,body.sun .chip,body.sun .btn{border-width:2px}
+  body.sun nav{background:#fff;border-top:2px solid #000} body.sun nav a{color:#000} body.sun nav a.on{color:#fff;background:#0047b3}
+  body.sun .chip.on,body.sun .btn.pri{color:#fff} body.sun h1 span{color:#0047b3}
+  body.sun .warnbox{color:#7a0000;background:#ffe5e5;border:2px solid #b00000}
+  body.sun .badge{border:2px solid currentColor;background:#fff} body.sun .toast{background:#000;color:#fff}
+  body.sun .big{font-size:36px}
+  body.sun th,body.sun td{border-bottom-color:#000}
+  body.sun input::placeholder{color:#666}
+  #kbDone{position:fixed;right:12px;bottom:12px;z-index:40;display:none;background:var(--accent);color:var(--onaccent,#1a1205);
+    border:0;border-radius:999px;padding:10px 16px;font:700 15px system-ui,-apple-system,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+  #kbDone.on{display:block}
 </style>
 </head>
 <body>
@@ -116,7 +160,7 @@
   <header>
     <h1>Cx <span>Pocket</span></h1>
     <span class="hdrTag" id="hdrTag"></span>
-    <button class="btn sm" id="hdrSave" type="button">Save</button>
+    <span class="hdrBtns"><button class="btn sm" id="hdrPunch" type="button" aria-label="Add punch item">⚑</button><button class="btn sm" id="hdrSun" type="button" aria-label="Sunlight mode">☀︎</button><button class="btn sm" id="hdrSave" type="button">Save</button></span>
   </header>
 
   <!-- ================= SCALE ================= -->
@@ -128,6 +172,22 @@
         <div><label for="desc">Description</label><input id="desc" data-k="desc" type="text" placeholder="optional"></div>
       </div>
       <div class="chips mt" id="chips"></div>
+      <details id="dId">
+        <summary>Identification &amp; photos <span class="note" id="idSum"></span></summary>
+        <div class="grid mt">
+          <div><label for="mfr">Manufacturer</label><input id="mfr" data-k="mfr" type="text"></div>
+          <div><label for="model">Model / type</label><input id="model" data-k="model" type="text" autocapitalize="characters"></div>
+          <div><label for="serial">Serial no.</label><input id="serial" data-k="serial" type="text" autocapitalize="characters"></div>
+          <div><label for="code">Order code</label><input id="code" data-k="code" type="text" autocapitalize="characters"></div>
+          <div><label for="fw">Firmware / rev</label><input id="fw" data-k="fw" type="text"></div>
+          <div><label for="loc">Location</label><input id="loc" data-k="loc" type="text"></div>
+        </div>
+        <div class="row">
+          <label class="btn sm filebtn">📷 Add photo<input type="file" accept="image/*" multiple class="hidden" data-photo="inst"></label>
+        </div>
+        <div class="photos" id="ph-inst"></div>
+        <div class="note mt">Take a new photo or pick one from your library. Tap a photo to view it full screen and zoom in to read serials. Photos are stored on this phone.</div>
+      </details>
     </section>
 
     <section class="card">
@@ -135,7 +195,7 @@
       <div class="grid3">
         <div><label for="lrv">LRV (0%)</label><input id="lrv" data-k="lrv" inputmode="decimal" type="text"></div>
         <div><label for="urv">URV (100%)</label><input id="urv" data-k="urv" inputmode="decimal" type="text"></div>
-        <div><label for="unit">Units</label><input id="unit" data-k="unit" type="text" autocapitalize="off"></div>
+        <div><label for="unitSel">Units</label><select id="unitSel"></select><input id="unit" data-k="unit" type="text" autocapitalize="off" placeholder="unit" class="hidden" style="margin-top:6px"></div>
       </div>
       <div class="row">
         <label class="toggle"><input type="checkbox" id="sqrt"> √ extraction (DP flow)</label>
@@ -164,9 +224,11 @@
       <details id="dLvl">
         <summary>Level → pressure range</summary>
         <div class="grid mt">
-          <div><label for="hMin">Level at 0% (m)</label><input id="hMin" data-k="hMin" inputmode="decimal" type="text"></div>
-          <div><label for="hMax">Level at 100% (m)</label><input id="hMax" data-k="hMax" inputmode="decimal" type="text"></div>
-          <div><label for="hOff">Sensor below level zero (m)</label><input id="hOff" data-k="hOff" inputmode="decimal" type="text"></div>
+          <div><label for="hU">Level unit</label><select id="hU" data-k="hU"><option>m</option><option>mm</option></select></div>
+          <div></div>
+          <div><label for="hMin" id="hMinL">Level at 0% (m)</label><input id="hMin" data-k="hMin" inputmode="decimal" type="text"></div>
+          <div><label for="hMax" id="hMaxL">Level at 100% (m)</label><input id="hMax" data-k="hMax" inputmode="decimal" type="text"></div>
+          <div><label for="hOff" id="hOffL">Sensor below level zero (m)</label><input id="hOff" data-k="hOff" inputmode="decimal" type="text"></div>
           <div><label for="hSg">Liquid SG</label><input id="hSg" data-k="hSg" inputmode="decimal" type="text"></div>
         </div>
         <table class="mt"><tbody id="lvlOut"></tbody></table>
@@ -203,7 +265,7 @@
       </table>
       <div class="row">
         <span class="note">Tap a row to load it.</span>
-        <button class="btn sm" id="copyTbl" type="button">Copy table</button>
+        <span><button class="btn sm" data-share="copyTbl" type="button">↗ Share</button> <button class="btn sm" id="copyTbl" type="button">Copy table</button></span>
       </div>
     </section>
 
@@ -255,7 +317,7 @@
       <textarea id="notes" data-k="notes" placeholder="Calibrator, as-found issues, adjustments made…"></textarea>
       <div class="row">
         <button class="btn danger sm" id="clrLoop" type="button">Clear readings</button>
-        <button class="btn pri" id="copyLoop" type="button">Copy report</button>
+        <span><button class="btn" data-share="copyLoop" type="button">↗ Share</button> <button class="btn pri" id="copyLoop" type="button">Copy report</button></span>
       </div>
       <div class="note mt">Report is tab-separated, so it pastes straight into Excel or an ITR table.</div>
     </section>
@@ -263,6 +325,20 @@
 
   <!-- ================= MOTOR ================= -->
   <div class="view" id="v-motor">
+    <div class="seg" style="margin-bottom:12px"><button type="button" class="on">⚙︎ Motor</button><button type="button" onclick="location.hash='#valve'">⧓ Valve</button></div>
+    <section class="card">
+      <h2>Motor</h2>
+      <div class="grid">
+        <div><label for="mTag">Tag</label><input id="mTag" data-m="tag" type="text" autocapitalize="characters" placeholder="e.g. P-101-M"></div>
+        <div><label for="mDesc">Description</label><input id="mDesc" data-m="desc" type="text" placeholder="optional"></div>
+        <div><label for="mLoc">Location</label><input id="mLoc" data-m="loc" type="text"></div>
+        <div><label for="mOpen">Saved motors</label><select id="mOpen"></select></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="newMotor" type="button">+ New motor</button>
+        <button class="btn pri" id="saveMotor" type="button">Save motor</button>
+      </div>
+    </section>
     <section class="card">
       <h2>Motor nameplate</h2>
       <div class="grid3">
@@ -279,14 +355,22 @@
         <div><label for="mSf">Service factor</label><input id="mSf" data-m="sf" inputmode="decimal" type="text" placeholder="1.0"></div>
         <div><label for="mIns">Ins. class</label><input id="mIns" data-m="ins" type="text" placeholder="F"></div>
       </div>
-      <details id="dPhoto">
-        <summary>Nameplate photo</summary>
-        <div class="note mt">Keep a photo with the motor for reference while you enter the values. It's stored on this phone only.</div>
-        <div class="row">
-          <label class="btn sm" style="margin:0;color:var(--text)">📷 Take / choose photo<input id="mPhoto" type="file" accept="image/*" capture="environment" class="hidden"></label>
-          <button class="btn sm danger" id="mPhotoDel" type="button">Remove</button>
+      <details id="dPhoto" open>
+        <summary>Identification &amp; photos</summary>
+        <div class="grid mt">
+          <div><label for="mMake">Manufacturer</label><input id="mMake" data-m="make" type="text"></div>
+          <div><label for="mModel">Model / type</label><input id="mModel" data-m="model" type="text" autocapitalize="characters"></div>
+          <div><label for="mSer">Serial no.</label><input id="mSer" data-m="serial" type="text" autocapitalize="characters"></div>
+          <div><label for="mFrame">Frame</label><input id="mFrame" data-m="frame" type="text" autocapitalize="characters"></div>
+          <div><label for="mIP">IP rating</label><input id="mIP" data-m="ip" type="text" autocapitalize="characters" placeholder="IP55"></div>
+          <div><label for="mDuty">Duty</label><input id="mDuty" data-m="duty" type="text" autocapitalize="characters" placeholder="S1"></div>
+          <div><label for="dMake">VFD make / model</label><input id="dMake" data-m="vfdModel" type="text"></div>
+          <div><label for="dSer">VFD serial no.</label><input id="dSer" data-m="vfdSerial" type="text" autocapitalize="characters"></div>
         </div>
-        <img id="mImg" alt="Motor nameplate" style="width:100%;border-radius:10px;margin-top:10px;display:none">
+        <div class="row">
+          <label class="btn sm filebtn">📷 Add photo<input type="file" accept="image/*" multiple class="hidden" data-photo="motor"></label>
+        </div>
+        <div class="photos" id="ph-motor"></div>
       </details>
     </section>
 
@@ -326,9 +410,13 @@
     <section class="card">
       <h2>Commissioning checklist</h2>
       <div id="vChk"></div>
+      <div class="grid mt">
+        <div><label for="mTech">Tested by</label><input id="mTech" data-m="tech" type="text"></div>
+        <div><label for="mDate">Date</label><input id="mDate" data-m="tdate" type="date"></div>
+      </div>
       <div class="row">
         <button class="btn danger sm" id="vChkClr" type="button">Untick all</button>
-        <button class="btn pri" id="vCopy" type="button">Copy motor sheet</button>
+        <span><button class="btn" data-share="vCopy" type="button">↗ Share</button> <button class="btn pri" id="vCopy" type="button">Copy sheet</button></span>
       </div>
     </section>
 
@@ -346,8 +434,309 @@
     </section>
   </div>
 
+  <!-- ================= VALVE ================= -->
+  <div class="view" id="v-valve">
+    <div class="seg" style="margin-bottom:12px"><button type="button" onclick="location.hash='#motor'">⚙︎ Motor</button><button type="button" class="on">⧓ Valve</button></div>
+    <section class="card">
+      <h2>Valve</h2>
+      <div class="grid">
+        <div><label for="xTag">Tag</label><input id="xTag" data-x="tag" type="text" autocapitalize="characters" placeholder="e.g. XV-101"></div>
+        <div><label for="xDesc">Description</label><input id="xDesc" data-x="desc" type="text" placeholder="optional"></div>
+        <div><label for="xLoc">Location</label><input id="xLoc" data-x="loc" type="text"></div>
+        <div><label for="xOpen">Saved valves</label><select id="xOpen"></select></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="newValve" type="button">+ New valve</button>
+        <button class="btn pri" id="saveValve" type="button">Save valve</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Type</h2>
+      <div class="seg" id="xType"><button type="button" data-v="sol">Solenoid</button><button type="button" data-v="onoff">On/off actuated</button><button type="button" data-v="ctl">Control</button></div>
+      <div class="grid mt">
+        <div><label for="xAct">Actuator</label><select id="xAct" data-x="act">
+          <option>Direct solenoid</option><option>Pneumatic spring-return</option><option>Pneumatic double-acting</option><option>Electric</option></select></div>
+        <div><label for="xFail">Fail position</label><select id="xFail" data-x="fail">
+          <option value="FC">Fail closed (FC)</option><option value="FO">Fail open (FO)</option><option value="FL">Fail last (FL)</option></select></div>
+        <div><label for="xDn">Size (DN)</label><input id="xDn" data-x="dn" inputmode="decimal" type="text"></div>
+        <div><label for="xKv">Kv (fully open)</label><input id="xKv" data-x="kv" inputmode="decimal" type="text"></div>
+      </div>
+      <details>
+        <summary>Identification &amp; photos</summary>
+        <div class="grid mt">
+          <div><label for="xMake">Valve make</label><input id="xMake" data-x="make" type="text"></div>
+          <div><label for="xModel">Valve model</label><input id="xModel" data-x="model" type="text" autocapitalize="characters"></div>
+          <div><label for="xSer">Valve serial no.</label><input id="xSer" data-x="serial" type="text" autocapitalize="characters"></div>
+          <div><label for="xAMod">Actuator make / model</label><input id="xAMod" data-x="aModel" type="text"></div>
+          <div><label for="xASer">Actuator serial no.</label><input id="xASer" data-x="aSerial" type="text" autocapitalize="characters"></div>
+          <div><label for="xPMod">Solenoid / positioner model</label><input id="xPMod" data-x="pModel" type="text"></div>
+          <div><label for="xPSer">Solenoid / positioner S/N</label><input id="xPSer" data-x="pSerial" type="text" autocapitalize="characters"></div>
+          <div><label for="xFbMod">Limit switch box model</label><input id="xFbMod" data-x="lsModel" type="text"></div>
+        </div>
+        <div class="row">
+          <label class="btn sm filebtn">📷 Add photo<input type="file" accept="image/*" multiple class="hidden" data-photo="valve"></label>
+        </div>
+        <div class="photos" id="ph-valve"></div>
+      </details>
+    </section>
+
+    <section class="card" id="xCoilCard">
+      <h2>Solenoid coil &amp; 24 VDC supply</h2>
+      <div class="grid">
+        <div><label for="xCV">Coil voltage (V DC)</label><input id="xCV" data-x="coilV" inputmode="decimal" type="text"></div>
+        <div><label for="xCW">Coil power (W)</label><input id="xCW" data-x="coilW" inputmode="decimal" type="text" placeholder="from coil"></div>
+        <div><label for="xPsu">Supply at PSU (V)</label><input id="xPsu" data-x="psuV" inputmode="decimal" type="text"></div>
+        <div><label for="xTol">Coil tolerance (−%)</label><input id="xTol" data-x="vtol" inputmode="decimal" type="text"></div>
+        <div><label for="xCL">Cable length, one way (m)</label><input id="xCL" data-x="cabL" inputmode="decimal" type="text"></div>
+        <div><label for="xCA">Core size (mm²)</label><select id="xCA" data-x="cabA"><option>0.5</option><option>0.75</option><option>1</option><option>1.5</option><option>2.5</option><option>4</option></select></div>
+        <div><label for="xRm">Measured coil R (Ω)</label><input id="xRm" data-x="rMeas" inputmode="decimal" type="text" placeholder="optional"></div>
+        <div><label for="xVm">Measured V at coil</label><input id="xVm" data-x="vMeas" inputmode="decimal" type="text" placeholder="optional"></div>
+      </div>
+      <table class="mt"><tbody id="xCoil"></tbody></table>
+      <div class="note mt">Copper at 20 °C (0.0175 Ω·mm²/m), out and back. A warm coil reads about 0.4% higher resistance per °C, so check against the coil maker's data. Fit a suppression diode or varistor on DC coils switched by PLC outputs.</div>
+    </section>
+
+    <section class="card" id="xFbCard">
+      <h2>End position feedback</h2>
+      <div class="grid">
+        <div><label for="xFb">Feedback</label><select id="xFb" data-x="fb">
+          <option value="">None</option><option>Mechanical limit switches</option><option>Inductive prox (PNP 3-wire)</option><option>Inductive prox (2-wire DC)</option><option>NAMUR sensors</option><option>AS-i limit switch box</option><option>Position transmitter 4–20 mA</option></select></div>
+        <div><label for="xDf">Alarm timer × travel</label><input id="xDf" data-x="dFac" inputmode="decimal" type="text"></div>
+        <div><label for="xTo">Measured open time (s)</label><input id="xTo" data-x="tOpen" inputmode="decimal" type="text"></div>
+        <div><label for="xTc">Measured close time (s)</label><input id="xTc" data-x="tClose" inputmode="decimal" type="text"></div>
+      </div>
+      <table class="mt"><tbody id="xFbOut"></tbody></table>
+      <div class="note mt" id="xFbNote"></div>
+    </section>
+
+    <section class="card" id="xStrokeCard">
+      <h2>Positioner &amp; stroke test</h2>
+      <div class="grid">
+        <div><label for="xSc">Closed at signal</label><select id="xSc" data-x="sigClosed"><option value="4">4 mA (direct)</option><option value="20">20 mA (reverse)</option></select></div>
+        <div><label for="xFc">Feedback closed at</label><select id="xFc" data-x="fbClosed"><option value="4">4 mA</option><option value="20">20 mA</option><option value="">No feedback</option></select></div>
+        <div><label for="xAir">Supply air (bar)</label><input id="xAir" data-x="air" inputmode="decimal" type="text" placeholder="optional"></div>
+        <div><label for="xSpr">Spring range</label><input id="xSpr" data-x="spring" type="text" placeholder="e.g. 0.2–1.0 bar"></div>
+        <div><label for="xCut">Tight shut-off below (%)</label><input id="xCut" data-x="cutoff" inputmode="decimal" type="text" placeholder="e.g. 1"></div>
+        <div><label for="xStol">Tolerance ± %</label><input id="xStol" data-x="tol" inputmode="decimal" type="text"></div>
+        <div><label for="xPts">Points</label><select id="xPts" data-x="ptSet"><option value="5">5-point</option><option value="9">5 up / down</option></select></div>
+      </div>
+      <div class="colhdr mt" style="grid-template-columns:1.05fr 1fr 1fr;text-transform:none;letter-spacing:.3px"><span>Setpoint</span><span>Position %</span><span>Feedback mA</span></div>
+      <div id="xPtsBox"></div>
+      <div class="sum" id="xStRes"></div>
+      <div class="note mt">Read the position from the valve's travel indicator or the positioner display. Hysteresis compares the up and down readings at 25, 50 and 75%.</div>
+    </section>
+
+    <section class="card">
+      <h2>Flow through valve (Kv)</h2>
+      <div class="grid">
+        <div><label for="xQdp">ΔP across valve (bar)</label><input id="xQdp" data-x="qdp" inputmode="decimal" type="text"></div>
+        <div><label for="xQsg">SG</label><input id="xQsg" data-x="qsg" inputmode="decimal" type="text"></div>
+        <div><label for="xQo">Opening (%)</label><input id="xQo" data-x="qopen" inputmode="decimal" type="text"></div>
+        <div><label for="xQc">Characteristic</label><select id="xQc" data-x="qchar"><option value="lin">Linear</option><option value="eq">Equal %</option><option value="qo">Quick opening</option></select></div>
+      </div>
+      <div class="meta" id="xQout"></div>
+      <div class="note mt">Q (m³/h) = Kv × √(ΔP / SG) for liquids, using the valve's inherent characteristic (equal % taken as rangeability 50). This is approximate: installed flow depends on the system. Cv = 1.156 × Kv.</div>
+    </section>
+
+    <section class="card">
+      <h2>Commissioning checklist</h2>
+      <div id="xChk"></div>
+      <div class="grid mt">
+        <div><label for="xTech">Tested by</label><input id="xTech" data-x="tech" type="text"></div>
+        <div><label for="xDate">Date</label><input id="xDate" data-x="tdate" type="date"></div>
+      </div>
+      <label class="mt" for="xNotes">Notes</label>
+      <textarea id="xNotes" data-x="notes" placeholder="Settings, adjustments, issues…"></textarea>
+      <div class="row">
+        <button class="btn danger sm" id="xChkClr" type="button">Untick all</button>
+        <span><button class="btn" data-share="xCopy" type="button">↗ Share</button> <button class="btn pri" id="xCopy" type="button">Copy sheet</button></span>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= PUNCH ================= -->
+  <div class="view" id="v-punch">
+    <section class="card">
+      <h2 id="pdTitle">New punch item</h2>
+      <div class="grid">
+        <div><label for="pdTag">Tag</label><input id="pdTag" list="tagList" type="text" autocapitalize="characters" placeholder="e.g. P-101-M"></div>
+        <div><label for="pdOwner">Action by</label><input id="pdOwner" list="ownerList" type="text" placeholder="e.g. Electrical"></div>
+      </div>
+      <label class="mt" for="pdDesc">Description</label>
+      <textarea id="pdDesc" placeholder="What needs fixing…"></textarea>
+      <label class="mt">Category</label>
+      <div class="seg" id="pdCat"><button type="button" data-v="A">A</button><button type="button" data-v="B">B</button><button type="button" data-v="C">C</button></div>
+      <div class="note mt" id="pdCatNote"></div>
+      <div class="grid mt">
+        <div><label for="pdDue">Due date</label><input id="pdDue" type="date"></div>
+        <div><label for="pdLoc">Location / area</label><input id="pdLoc" type="text"></div>
+      </div>
+      <div class="row"><label class="btn sm filebtn">📷 Add photo<input type="file" accept="image/*" multiple class="hidden" data-photo="punch"></label></div>
+      <div class="photos" id="ph-punch"></div>
+      <div id="pdCloseRow" class="hidden mt">
+        <label for="pdCloseNote">Close-out note</label><input id="pdCloseNote" type="text" placeholder="How it was fixed, who verified">
+      </div>
+      <div class="row">
+        <button class="btn sm" id="pdClear" type="button">Clear</button>
+        <span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+          <button class="btn sm danger hidden" id="pdDel" type="button">Delete</button>
+          <button class="btn sm hidden" id="pdToggle" type="button">Close item</button>
+          <button class="btn pri" id="pdSave" type="button">Add item</button>
+        </span>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Punch list <span id="plCount"></span></h2>
+      <div class="seg" id="plStat"><button type="button" data-v="open">Open</button><button type="button" data-v="closed">Closed</button><button type="button" data-v="all">All</button></div>
+      <div class="chips mt" id="plCat"></div>
+      <input id="plQ" class="mt" type="text" placeholder="Filter by tag, text, owner or area" autocapitalize="off">
+      <div id="plSum" class="sum mt"></div>
+      <div id="plList" class="mt"></div>
+      <div class="row">
+        <button class="btn sm" id="plCopy" type="button">Copy list</button>
+        <button class="btn sm" data-share="plCopy" type="button">↗ Share list</button>
+      </div>
+      <div class="note mt">Copy and share use the filters above, e.g. open Cat A items only.</div>
+    </section>
+    <datalist id="tagList"></datalist><datalist id="ownerList"></datalist>
+  </div>
+
+  <!-- ================= PROCESS ================= -->
+  <div class="view" id="v-proc">
+    <div class="recent" id="rec-proc"></div>
+    <div class="chips" id="pChips" style="margin-bottom:12px"></div>
+
+    <div id="p-dose">
+      <section class="card">
+        <h2>Chemical dose rate</h2>
+        <label for="cPre">Chemical</label>
+        <select id="cPre"></select>
+        <div class="grid mt">
+          <div><label for="cQ">Process flow</label><input id="cQ" inputmode="decimal" type="text" value="50"></div>
+          <div><label for="cQu">Flow unit</label><select id="cQu" class="qunit"></select></div>
+          <div><label for="cDose">Dose (mg/L)</label><input id="cDose" inputmode="decimal" type="text" value="20"></div>
+          <div><label for="cBasis">Dose is</label><select id="cBasis"><option value="act">active chem.</option><option value="prod">product</option></select></div>
+          <div><label for="cStr">Product strength</label><input id="cStr" inputmode="decimal" type="text" value="40"></div>
+          <div><label for="cStrU">Strength unit</label><select id="cStrU"><option value="w">% w/w</option><option value="gl">g/L (w/v)</option></select></div>
+          <div><label for="cSg">Product SG</label><input id="cSg" inputmode="decimal" type="text" value="1.42"></div>
+          <div><label for="cHrs">Run hours / day</label><input id="cHrs" inputmode="decimal" type="text" value="24"></div>
+          <div><label for="cPump">Dosing pump max (L/h)</label><input id="cPump" inputmode="decimal" type="text" placeholder="optional"></div>
+          <div><label for="cTank">Storage tank (L)</label><input id="cTank" inputmode="decimal" type="text" placeholder="optional"></div>
+        </div>
+        <table class="mt"><tbody id="cOut"></tbody></table>
+        <div class="note mt" id="cNote"></div>
+      </section>
+      <section class="card">
+        <h2>Dosing pump check (calibration column)</h2>
+        <div class="grid">
+          <div><label for="kVol">Volume drawn (mL)</label><input id="kVol" inputmode="decimal" type="text"></div>
+          <div><label for="kT">Time (s)</label><input id="kT" inputmode="decimal" type="text"></div>
+        </div>
+        <table class="mt"><tbody id="kOut"></tbody></table>
+        <div class="note mt">Uses the flow, strength and SG above to give the dose actually delivered.</div>
+      </section>
+    </div>
+
+    <div id="p-sludge">
+      <section class="card">
+        <h2>Sludge solids balance</h2>
+        <div class="seg" id="sMode"><button type="button" data-v="press">Screw press</button><button type="button" data-v="thick">Screw thickener</button></div>
+        <div class="grid mt">
+          <div><label for="sQ">Feed flow (m³/h)</label><input id="sQ" inputmode="decimal" type="text" value="10"></div>
+          <div><label for="sDs">Feed solids (% DS)</label><input id="sDs" inputmode="decimal" type="text" value="2.5"></div>
+          <div><label for="sOut" id="sOutL">Cake solids (% DS)</label><input id="sOut" inputmode="decimal" type="text" value="18"></div>
+          <div><label for="sCap">Solids capture (%)</label><input id="sCap" inputmode="decimal" type="text" value="95"></div>
+          <div><label for="sRho" id="sRhoL">Cake density (kg/m³)</label><input id="sRho" inputmode="decimal" type="text" value="1050"></div>
+          <div><label for="sRate">Machine rating (kg DS/h)</label><input id="sRate" inputmode="decimal" type="text" placeholder="optional"></div>
+          <div><label for="sHrs">Run hours / day</label><input id="sHrs" inputmode="decimal" type="text" value="8"></div>
+          <div><label for="sDays">Run days / week</label><input id="sDays" inputmode="decimal" type="text" value="5"></div>
+        </div>
+        <table class="mt"><tbody id="sRes"></tbody></table>
+        <div class="note mt">Feed is taken as SG 1.0, so 1% DS = 10 kg DS/m³. Filtrate excludes wash water.</div>
+      </section>
+      <section class="card">
+        <h2>Feed solids from a lab sample</h2>
+        <div class="grid3">
+          <div><label for="lDish">Dish (g)</label><input id="lDish" inputmode="decimal" type="text"></div>
+          <div><label for="lWet">Dish + wet (g)</label><input id="lWet" inputmode="decimal" type="text"></div>
+          <div><label for="lDry">Dish + dry (g)</label><input id="lDry" inputmode="decimal" type="text"></div>
+        </div>
+        <div class="row"><span class="meta" id="lOut" style="margin:0"></span>
+          <span><button class="btn sm" type="button" id="lToFeed">→ Feed</button> <button class="btn sm" type="button" id="lToOut">→ Cake</button></span></div>
+      </section>
+    </div>
+
+    <div id="p-poly">
+      <section class="card">
+        <h2>Polymer dosing</h2>
+        <div class="grid">
+          <div><label for="yDs">Solids load (kg DS/h)</label><input id="yDs" inputmode="decimal" type="text" value="250"></div>
+          <div style="align-self:end"><button class="btn sm" type="button" id="yFromS" style="width:100%">← From sludge calc</button></div>
+          <div><label for="yDose">Dose (kg/t DS)</label><input id="yDose" inputmode="decimal" type="text" value="8"></div>
+          <div><label for="yBasis">Dose is</label><select id="yBasis"><option value="prod">product</option><option value="act">active</option></select></div>
+          <div><label for="yType">Polymer type</label><select id="yType"><option value="pow">Powder</option><option value="emu">Emulsion</option></select></div>
+          <div><label for="yAct">Active in product (%)</label><input id="yAct" inputmode="decimal" type="text" value="100"></div>
+          <div><label for="ySg">Product SG</label><input id="ySg" inputmode="decimal" type="text" value="1.0"></div>
+          <div><label for="yMk">Make-up conc (% product)</label><input id="yMk" inputmode="decimal" type="text" value="0.25"></div>
+          <div><label for="yDil">Post-dilution to (%)</label><input id="yDil" inputmode="decimal" type="text" placeholder="optional"></div>
+          <div><label for="yTank">Make-up tank (L)</label><input id="yTank" inputmode="decimal" type="text" value="2000"></div>
+          <div><label for="yPump">Poly pump max (L/h)</label><input id="yPump" inputmode="decimal" type="text" placeholder="optional"></div>
+          <div><label for="yHrs">Run hours / day</label><input id="yHrs" inputmode="decimal" type="text" value="8"></div>
+        </div>
+        <table class="mt"><tbody id="yOut"></tbody></table>
+        <div class="note mt">Solutions are taken as 1 kg/L. Typical make-up is 0.1–0.5% for powder (about 0.5–1% for emulsion), aged for about 30–60 min before use. Check the supplier's datasheet.</div>
+      </section>
+      <section class="card">
+        <h2>Polymer pump check</h2>
+        <div class="grid">
+          <div><label for="yMeas">Measured solution flow (L/h)</label><input id="yMeas" inputmode="decimal" type="text"></div>
+          <div><label for="yMeasDs">Actual solids load (kg DS/h)</label><input id="yMeasDs" inputmode="decimal" type="text" placeholder="= above"></div>
+        </div>
+        <div class="meta" id="yChk"></div>
+      </section>
+    </div>
+
+    <div id="p-jar">
+      <section class="card">
+        <h2>Stock solution</h2>
+        <div class="grid">
+          <div><label for="jStr">Product strength (% w/w)</label><input id="jStr" inputmode="decimal" type="text" value="40"></div>
+          <div><label for="jSg">Product SG</label><input id="jSg" inputmode="decimal" type="text" value="1.42"></div>
+          <div><label for="jConc">Stock strength (g/L active)</label><input id="jConc" inputmode="decimal" type="text" value="10"></div>
+          <div><label for="jVol">Make up to (mL)</label><input id="jVol" inputmode="decimal" type="text" value="100"></div>
+        </div>
+        <div class="meta" id="jStock"></div>
+        <div class="note mt">10 g/L stock: 1 mL in a 1 L jar = 10 mg/L. For a 0.1% polymer stock, put strength 100 and stock strength 1 g/L.</div>
+      </section>
+      <section class="card">
+        <h2>Coagulant jars</h2>
+        <div class="grid">
+          <div><label for="jJar">Jar volume (mL)</label><input id="jJar" inputmode="decimal" type="text" value="1000"></div>
+          <div><label for="jDoses">Doses (mg/L, comma list)</label><input id="jDoses" type="text" value="10, 20, 30, 40, 50, 60"></div>
+        </div>
+        <table class="mt"><thead><tr><th>Jar</th><th>mg/L</th><th>mL stock</th><th>µL</th></tr></thead><tbody id="jTbl"></tbody></table>
+        <div class="row"><label for="jBest" style="margin:0">Best jar (mg/L)</label>
+          <input id="jBest" inputmode="decimal" type="text" style="width:90px"><button class="btn sm" type="button" id="jToDose">Send to dose calc →</button></div>
+      </section>
+      <section class="card">
+        <h2>Polymer on sludge (beaker test)</h2>
+        <div class="grid">
+          <div><label for="jSl">Sludge sample (mL)</label><input id="jSl" inputmode="decimal" type="text" value="500"></div>
+          <div><label for="jSlDs">Sludge solids (% DS)</label><input id="jSlDs" inputmode="decimal" type="text" value="2.5"></div>
+          <div><label for="jPst">Polymer stock (% product)</label><input id="jPst" inputmode="decimal" type="text" value="0.1"></div>
+          <div><label for="jPd">Doses (kg/t DS, list)</label><input id="jPd" type="text" value="4, 6, 8, 10, 12"></div>
+        </div>
+        <table class="mt"><thead><tr><th>Test</th><th>kg/t</th><th>mL stock</th></tr></thead><tbody id="jPt"></tbody></table>
+        <div class="row"><label for="jPbest" style="margin:0">Best (kg/t)</label>
+          <input id="jPbest" inputmode="decimal" type="text" style="width:90px"><button class="btn sm" type="button" id="jToPoly">Send to polymer calc →</button></div>
+      </section>
+    </div>
+  </div>
+
   <!-- ================= UNITS ================= -->
   <div class="view" id="v-units">
+    <div class="recent" id="rec-units"></div>
     <div class="chips" id="tChips" style="margin-bottom:12px"></div>
 
     <div id="t-elec">
@@ -480,26 +869,59 @@
   <!-- ================= INSTRUMENTS ================= -->
   <div class="view" id="v-inst">
     <section class="card">
+      <h2>Display</h2>
+      <label>Theme</label>
+      <div class="seg" id="dTheme"><button type="button" data-v="dark">Dark</button><button type="button" data-v="light">Light</button><button type="button" data-v="sun">Sunlight</button></div>
+      <label class="mt">Text size</label>
+      <div class="seg" id="dSize"><button type="button" data-v="1">A</button><button type="button" data-v="1.15">A+</button><button type="button" data-v="1.3">A++</button></div>
+      <div class="note mt">Sunlight mode is black on white with heavy borders, for use outdoors. The ☀︎ button at the top switches it on and off from any screen.</div>
+    </section>
+    <section class="card" id="recInstCard">
+      <h2>Recently opened</h2>
+      <div id="recInst"></div>
+    </section>
+    <section class="card">
       <h2>Current</h2>
       <div id="curInfo" class="note"></div>
       <div class="row">
         <button class="btn" id="newInst" type="button">+ New instrument</button>
         <button class="btn pri" id="saveInst" type="button">Save</button>
       </div>
+      <div id="curInfoM" class="note mt"></div>
+      <div class="row">
+        <button class="btn" id="newMotor2" type="button">+ New motor</button>
+        <button class="btn pri" id="saveMotor2" type="button">Save motor</button>
+      </div>
+      <div id="curInfoV" class="note mt"></div>
+      <div class="row">
+        <button class="btn" id="newValve2" type="button">+ New valve</button>
+        <button class="btn pri" id="saveValve2" type="button">Save valve</button>
+      </div>
     </section>
     <section class="card">
-      <h2>Saved instruments <span id="instCount"></span></h2>
-      <input id="instFilter" type="text" placeholder="Filter by tag or description" autocapitalize="off">
+      <h2>Saved <span id="instCount"></span></h2>
+      <div class="seg" id="libKind"><button type="button" data-v="all">All</button><button type="button" data-v="i">Instruments</button><button type="button" data-v="m">Motors</button><button type="button" data-v="v">Valves</button></div>
+      <input id="instFilter" class="mt" type="text" placeholder="Filter by tag, description or serial" autocapitalize="off">
       <div id="instList" class="mt"></div>
       <div class="row">
-        <button class="btn sm" id="copyReg" type="button">Copy register</button>
+        <span class="note" style="width:100%">Registers:</span>
+        <span><button class="btn sm" id="copyReg" type="button">Copy instruments</button> <button class="btn sm" data-share="copyReg" type="button">↗</button></span>
+        <span><button class="btn sm" id="copyRegM" type="button">Copy motors</button> <button class="btn sm" data-share="copyRegM" type="button">↗</button></span>
+        <span><button class="btn sm" id="copyRegV" type="button">Copy valves</button> <button class="btn sm" data-share="copyRegV" type="button">↗</button></span>
       </div>
     </section>
     <section class="card">
       <h2>Backup</h2>
-      <div class="note">Saved instruments live in this browser on this phone only. Copy a backup now and then, and paste it here to restore or move to another device.</div>
+      <div class="note">Everything you save lives on this phone only, so back up now and then. A backup file goes to Files or iCloud Drive and can include photos. Restoring merges it back in: items with the same tag are replaced.</div>
+      <label class="toggle mt"><input type="checkbox" id="bakPh" checked> Include photos</label>
       <div class="row">
-        <button class="btn sm" id="copyBak" type="button">Copy backup</button>
+        <button class="btn pri" id="bakFile" type="button">💾 Save backup file</button>
+        <label class="btn filebtn">📂 Restore from file<input type="file" id="bakIn" accept=".json,application/json,text/plain" class="hidden"></label>
+      </div>
+      <div class="note mt" id="bakInfo"></div>
+      <div class="sub">Or as text (no photos)</div>
+      <div class="row" style="margin-top:0">
+        <button class="btn sm" id="copyBak" type="button">Copy backup text</button>
       </div>
       <textarea id="impTxt" class="mt" placeholder="Paste a backup here to import"></textarea>
       <div class="row"><span class="note" id="impMsg"></span><button class="btn sm" id="impBtn" type="button">Import</button></div>
@@ -510,9 +932,11 @@
 <nav>
   <a href="#scale" data-v="scale"><b>⚖︎</b>Scale</a>
   <a href="#loop" data-v="loop"><b>✓</b>Loop</a>
-  <a href="#motor" data-v="motor"><b>⚙︎</b>Motor</a>
+  <a href="#motor" data-v="motor"><b>⚙︎</b>Devices</a>
+  <a href="#punch" data-v="punch"><b>⚑</b>Punch</a>
+  <a href="#process" data-v="proc"><b>⚗︎</b>Process</a>
   <a href="#tools" data-v="units"><b>⇄</b>Tools</a>
-  <a href="#instruments" data-v="inst"><b>☰</b>Instruments</a>
+  <a href="#instruments" data-v="inst"><b>☰</b>More</a>
 </nav>
 
 <div id="copyBox"><div class="card">
@@ -521,6 +945,16 @@
   <div class="row"><span class="note">Copy was blocked. Select all and copy manually.</span><button class="btn" id="copyClose" type="button">Close</button></div>
 </div></div>
 <div class="toast" id="toast"></div>
+<button id="kbDone" type="button" aria-label="Hide keyboard">⌨︎ Done</button>
+<div id="viewer">
+  <div class="vbar">
+    <button class="btn sm" id="vwClose" type="button">✕ Close</button>
+    <select id="vwLbl"><option>Nameplate</option><option>Serial plate</option><option>Installed</option><option>Wiring</option><option>Other</option></select>
+    <button class="btn sm" id="vwZoom" type="button">🔍 Zoom</button>
+    <button class="btn sm danger" id="vwDel" type="button">Delete</button>
+  </div>
+  <div class="vimg"><img id="vwImg" alt="Photo"></div>
+</div>
 
 <script>
 (function(){
@@ -562,15 +996,23 @@
   const PTS = {'5':[0,25,50,75,100],'3':[0,50,100],'9':[0,25,50,75,100,75,50,25,0],'11':[0,10,20,30,40,50,60,70,80,90,100]};
   const today = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
   const DEF = () => ({tag:'',desc:'',preset:'level',lrv:'0',urv:'5',unit:'m',sqrt:false,sig:'4-20',raw:'none',
-    rawMin:'0',rawMax:'27648',lrl:'',url:'',minSpan:'',hMin:'0',hMax:'5',hOff:'0',hSg:'1.0',
+    rawMin:'0',rawMax:'27648',lrl:'',url:'',minSpan:'',hMin:'0',hMax:'5',hOff:'0',hSg:'1.0',hU:'m',
     tol:'0.5',readIn:'pv',ptSet:'5',af:[],al:[],tech:'',tdate:today(),notes:''});
 
-  let cur = DEF(), lib = {}, F = 0.5;
+  let cur = DEF(), lib = {}, F = 0.5, curM = null, libM = {}, curV = null, libV = {}, punch = [], punchSeq = 1, pd = null;
   try{
     const s = JSON.parse(localStorage.getItem('cx-tool')||'null');
-    if(s){ cur = Object.assign(DEF(), s.cur||{}); lib = s.lib||{}; if(isFinite(s.F)) F = s.F; }
+    if(s){
+      cur = Object.assign(DEF(), s.cur||{}); lib = s.lib||{}; if(isFinite(s.F)) F = s.F;
+      curM = s.curM||null; libM = s.libM||{}; curV = s.curV||null; libV = s.libV||{}; punch = s.punch||[]; punchSeq = s.punchSeq||1; pd = s.pd||null;
+      // move motor data that used to live inside instruments
+      const hasM = m => m && (m.P||m.V||m.I||m.n||m.make||m.serial||(m.photos&&m.photos.length)||m.photo);
+      if(!s.curM && hasM(cur.m)) curM = Object.assign({}, cur.m);
+      Object.keys(lib).forEach(k=>{ const m=lib[k].m; if(hasM(m) && !libM[k]) libM[k]=Object.assign({},m,{tag:k,desc:lib[k].desc||''}); delete lib[k].m; });
+      delete cur.m;
+    }
   }catch(e){}
-  function store(){ try{ localStorage.setItem('cx-tool', JSON.stringify({cur,lib,F})); }catch(e){} }
+  function store(){ try{ localStorage.setItem('cx-tool', JSON.stringify({cur,lib,F,curM,libM,curV,libV,punch,punchSeq,pd})); }catch(e){} }
 
   // ---------- helpers ----------
   const L = () => num(cur.lrv), U = () => num(cur.urv), SP = () => U()-L();
@@ -602,14 +1044,31 @@
   }
   const presetName = () => (PRESETS.find(p=>p.k===cur.preset)||PRESETS[0]).n;
   const rangeTxt = () => cur.lrv+' to '+cur.urv+' '+cur.unit+' · '+sig().n+(cur.sqrt?' · √':'')+(rawR()?' · raw '+rawR().min+'–'+rawR().max:'');
-  const snapshot = o => { const c=Object.assign({},o); return JSON.stringify(c); };
+  const stable = v => Array.isArray(v) ? '['+v.map(stable).join(',')+']' : (v && typeof v==='object') ? '{'+Object.keys(v).filter(k=>k!=='_n').sort().map(k=>JSON.stringify(k)+':'+stable(v[k])).join(',')+'}' : JSON.stringify(v===undefined?null:v);
+  const snapshot = o => stable(o);
   const isSaved = () => cur.tag && lib[cur.tag] && snapshot(lib[cur.tag])===snapshot(cur);
 
   function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('on'),1600); }
-  async function copyText(t, okMsg){
+  let shareMode=false;
+  function copyText(t, okMsg){
+    if(shareMode){
+      shareMode=false;
+      const title=(t.split('\n')[0]||'Cx Pocket').replace(/\t/g,' ').trim();
+      if(navigator.share){
+        try{ navigator.share({title, text:t}).catch(e=>{ if(!e||e.name!=='AbortError') doCopy(t,'Sharing isn’t available here, so it was copied'); }); }
+        catch(e){ doCopy(t,'Sharing isn’t available here, so it was copied'); }
+        return;
+      }
+      doCopy(t,'Sharing isn’t available here, so it was copied'); return;
+    }
+    doCopy(t, okMsg);
+  }
+  async function doCopy(t, okMsg){
     try{ await navigator.clipboard.writeText(t); toast(okMsg||'Copied'); }
     catch(e){ $('copyTxt').value=t; $('copyBox').style.display='flex'; setTimeout(()=>{$('copyTxt').focus();$('copyTxt').select();},50); }
   }
+  document.addEventListener('click',e=>{ const b=e.target.closest('[data-share]'); if(!b) return; const t=$(b.dataset.share); if(!t) return;
+    shareMode=true; t.click(); shareMode=false; });
   $('copyClose').onclick = ()=>{ $('copyBox').style.display='none'; };
   function twoTap(btn, fn){
     if(btn.dataset.arm){ delete btn.dataset.arm; btn.textContent=btn.dataset.lbl; fn(); return; }
@@ -618,19 +1077,28 @@
   }
 
   // ---------- header ----------
+  let curView='scale';
   function refreshHeader(){
-    $('hdrTag').textContent = cur.tag ? cur.tag+(cur.desc?' · '+cur.desc:'') : 'Untitled instrument';
-    const saved = isSaved();
-    [$('hdrSave'),$('saveInst')].forEach(b=>{ b.textContent = saved ? 'Saved ✓' : 'Save'; });
+    const mv = curView==='motor', vv = curView==='valve', m = mv ? M() : null, x = vv ? VX() : null;
+    $('hdrTag').textContent = mv ? (m.tag ? '⚙︎ '+m.tag+(m.desc?' · '+m.desc:'') : 'Untitled motor')
+                            : vv ? (x.tag ? '⧓ '+x.tag+(x.desc?' · '+x.desc:'') : 'Untitled valve')
+                                 : (cur.tag ? cur.tag+(cur.desc?' · '+cur.desc:'') : 'Untitled instrument');
+    const si = isSaved(), sm = isSavedM(), sv = isSavedV();
+    $('hdrSave').textContent = (mv?sm:vv?sv:si) ? 'Saved ✓' : 'Save';
+    const pv = curView==='punch'; $('hdrSave').classList.toggle('hidden', pv);
+    if(pv){ const n=punch.filter(p=>p.status==='open').length; $('hdrTag').textContent='Punch list · '+n+' open'; }
+    [$('saveValve'),$('saveValve2')].forEach(b=>{ b.textContent = sv ? 'Saved ✓' : 'Save valve'; });
+    $('saveInst').textContent = si ? 'Saved ✓' : 'Save';
+    [$('saveMotor'),$('saveMotor2')].forEach(b=>{ b.textContent = sm ? 'Saved ✓' : 'Save motor'; });
     store();
   }
   function saveCurrent(){
     const t = (cur.tag||'').trim();
     if(!t){ toast('Enter a tag first'); location.hash='#scale'; setTimeout(()=>$('tag').focus(),100); return; }
-    cur.tag = t; lib[t] = JSON.parse(snapshot(cur));
+    cur.tag = t; lib[t] = JSON.parse(snapshot(cur)); usedTag(t);
     refreshHeader(); renderLib(); toast('Saved '+t);
   }
-  $('hdrSave').onclick = saveCurrent; $('saveInst').onclick = saveCurrent;
+  $('hdrSave').onclick = ()=> curView==='motor' ? saveMotor() : curView==='valve' ? saveValve() : saveCurrent(); $('saveInst').onclick = saveCurrent;
 
   // ---------- selects / chips ----------
   Object.entries(SIGS).forEach(([k,s])=>{ const o=document.createElement('option'); o.value=k; o.textContent=s.n; $('sig').appendChild(o); });
@@ -645,16 +1113,64 @@
   }
 
   // ---------- bind data-k inputs ----------
+  const UCATS=[
+    ['Level / length',['m','mm','cm','ft','in']],
+    ['Pressure',['bar','mbar','kPa','MPa','Pa','psi','m H₂O','mm H₂O','in H₂O']],
+    ['Flow',['L/s','L/min','L/h','m³/h','m³/d','ML/d','US gpm']],
+    ['Mass flow',['kg/h','kg/d','t/h','t/d','g/min']],
+    ['Mass',['kg','t','g']],
+    ['Volume',['L','m³','ML']],
+    ['Temperature',['°C','°F','K']],
+    ['Analytical',['mg/L','% sat','pH','NTU','µS/cm','mS/cm','mV','% DS']],
+    ['Speed / frequency',['Hz','rpm']],
+    ['Percent',['%']],
+    ['Electrical',['A','V','kW']]
+  ];
+  const PCAT={level:'Level / length',press:'Pressure',temp:'Temperature',flow:'Flow',dp:'Flow',do:'Analytical',ph:'Analytical',speed:'Speed / frequency',pos:'Percent',custom:'Percent'};
+  const ALLU=UCATS.flatMap(c=>c[1]);
+  const UF={m:['L',1],mm:['L',0.001],cm:['L',0.01],ft:['L',0.3048],in:['L',0.0254],
+    bar:['P',1e5],mbar:['P',100],kPa:['P',1000],MPa:['P',1e6],Pa:['P',1],psi:['P',6894.757293],'m H₂O':['P',9806.65],'mm H₂O':['P',9.80665],'in H₂O':['P',249.08891],
+    'L/s':['Q',1],'L/min':['Q',1/60],'L/h':['Q',1/3600],'m³/h':['Q',1/3.6],'m³/d':['Q',1/86.4],'ML/d':['Q',1000/86.4],'US gpm':['Q',0.0630901964],
+    'kg/h':['W',1],'kg/d':['W',1/24],'t/h':['W',1000],'t/d':['W',1000/24],'g/min':['W',0.06],
+    kg:['M',1],t:['M',1000],g:['M',0.001], L:['V',1],'m³':['V',1000],ML:['V',1e6],
+    'µS/cm':['C',1],'mS/cm':['C',1000], '°C':['T'],'°F':['T'],K:['T']};
+  function renderUnitSel(){
+    const first=PCAT[cur.preset]||'Percent', known=ALLU.includes(cur.unit);
+    const cats=UCATS.filter(c=>c[0]===first).concat(UCATS.filter(c=>c[0]!==first));
+    $('unitSel').innerHTML=cats.map(c=>'<optgroup label="'+esc(c[0])+'">'+c[1].map(u=>'<option>'+esc(u)+'</option>').join('')+'</optgroup>').join('')+
+      '<optgroup label="Other"><option value="__c">Custom…</option></optgroup>';
+    $('unitSel').value = known ? cur.unit : '__c';
+    $('unit').classList.toggle('hidden', known);
+  }
+  function convUnit(from,to){
+    const a=UF[from], b=UF[to]; if(!a||!b||a[0]!==b[0]||from===to) return false;
+    const r=v=>String(+v.toPrecision(10));
+    let abs, del;
+    if(a[0]==='T'){
+      const toC={'°C':x=>x,'°F':x=>(x-32)*5/9,K:x=>x-273.15}, fromC={'°C':x=>x,'°F':x=>x*9/5+32,K:x=>x+273.15}, dC={'°C':1,'°F':5/9,K:1};
+      abs=x=>fromC[to](toC[from](x)); del=x=>x*dC[from]/dC[to];
+    } else { const f=a[1]/b[1]; abs=x=>x*f; del=abs; }
+    ['lrv','urv','lrl','url'].forEach(k=>{ const x=num(cur[k]); if(isFinite(x)) cur[k]=r(abs(x)); });
+    const ms=num(cur.minSpan); if(isFinite(ms)) cur.minSpan=r(del(ms));
+    return true;
+  }
+  $('unitSel').addEventListener('change',()=>{
+    const v=$('unitSel').value;
+    if(v==='__c'){ $('unit').classList.remove('hidden'); $('unit').focus(); return; }
+    const old=cur.unit, done=convUnit(old,v); cur.unit=v; loadInputs(); renderAll();
+    if(done) toast('Range converted to '+v);
+  });
   function loadInputs(){
     document.querySelectorAll('[data-k]').forEach(el=>{ const v=cur[el.dataset.k]; el.value = (v===undefined||v===null)?'':v; });
-    $('sqrt').checked = !!cur.sqrt; $('ptSet').value = cur.ptSet;
+    $('sqrt').checked = !!cur.sqrt; $('ptSet').value = cur.ptSet; renderUnitSel();
   }
   document.querySelectorAll('[data-k]').forEach(el=>{
     const ev = (el.tagName==='SELECT') ? 'change' : 'input';
     el.addEventListener(ev, ()=>{
       const k = el.dataset.k; cur[k] = el.value;
-      if(k==='tag'||k==='desc'||k==='tech'||k==='tdate'||k==='notes'){ refreshHeader(); if(k==='tag'||k==='desc') renderLoopHead(); return; }
+      if(['tag','desc','tech','tdate','notes','mfr','model','serial','code','fw','loc'].includes(k)){ refreshHeader(); if(k==='tag'||k==='desc') renderLoopHead(); if(k==='serial') renderPhotos('inst'); return; }
       if(k==='tol'||k==='readIn'){ renderLoop(); refreshHeader(); return; }
+      if(k==='hU'){ const f=cur.hU==='mm'?1000:0.001; ['hMin','hMax','hOff'].forEach(x=>{ const v=num(cur[x]); if(isFinite(v)) cur[x]=String(+(v*f).toPrecision(10)); }); loadInputs(); renderLevel(); refreshHeader(); return; }
       if(k==='hMin'||k==='hMax'||k==='hOff'||k==='hSg'){ renderLevel(); refreshHeader(); return; }
       renderAll();
     });
@@ -679,7 +1195,8 @@
   // ---------- level helper ----------
   let lvlRes = null;
   function renderLevel(){
-    const a=num(cur.hMin), b=num(cur.hMax), off=num(cur.hOff)||0, sg=num(cur.hSg);
+    const hu=cur.hU==='mm'?'mm':'m', hf=hu==='mm'?0.001:1; $('hMinL').textContent='Level at 0% ('+hu+')'; $('hMaxL').textContent='Level at 100% ('+hu+')'; $('hOffL').textContent='Sensor below level zero ('+hu+')';
+    const a=num(cur.hMin)*hf, b=num(cur.hMax)*hf, off=(num(cur.hOff)||0)*hf, sg=num(cur.hSg);
     const out=$('lvlOut'); out.innerHTML='';
     if(!(isFinite(a)&&isFinite(b)&&sg>0&&a!==b)){ lvlRes=null; out.innerHTML='<tr><td class="note">Enter both levels and SG.</td></tr>'; return; }
     const p0=(a+off)*sg*98.0665, p1=(b+off)*sg*98.0665;
@@ -826,6 +1343,7 @@
     if(!rangeOk()){ toast('Set a valid range first'); return; }
     const R=evalLoop(), rd=R.rd, s=sig();
     const L1=['LOOP CHECK\t'+(cur.tag||'Untitled'), 'Description\t'+(cur.desc||''), 'Type\t'+presetName(),
+      'Manufacturer\t'+(cur.mfr||''), 'Model\t'+(cur.model||''), 'Serial no.\t'+(cur.serial||''), 'Order code\t'+(cur.code||''), 'Firmware\t'+(cur.fw||''), 'Location\t'+(cur.loc||''),
       'Range\t'+rangeTxt(), 'Reading in\t'+rd.u, 'Tolerance\t±'+cur.tol+'% span', '',
       ['Point %','Expected '+s.u,'Expected '+cur.unit, 'Expected ('+rd.u+')','As found','Err %','As left','Err %'].join('\t')];
     R.pts.forEach((p,i)=>{ const f=p/100, a=R.af[i], l=R.al[i];
@@ -835,32 +1353,66 @@
   };
 
   // ---------- instruments ----------
+  let libKind='all'; try{ libKind=localStorage.getItem('cx-libkind')||'all'; }catch(e){}
+  document.querySelectorAll('#libKind button').forEach(b=>b.onclick=()=>{ libKind=b.dataset.v; try{localStorage.setItem('cx-libkind',libKind);}catch(e){} renderLib(); });
+  const byTag=(a,b)=>a.localeCompare(b,undefined,{numeric:true});
+  function motorLine(m){ const r=[]; if(m.P) r.push(m.P+' '+(m.Pu||'kW')); if(m.V) r.push(m.V+' V'); if(m.I) r.push(m.I+' A'); if(m.n) r.push(m.n+' rpm'); return r.join(' · ')||'No nameplate data'; }
+  const chkN=m=>Object.values(m.chk||{}).filter(Boolean).length;
   function renderLib(){
-    const q=($('instFilter').value||'').toLowerCase();
-    const keys=Object.keys(lib).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
-    $('instCount').textContent = keys.length?'('+keys.length+')':'';
+    document.querySelectorAll('#libKind button').forEach(b=>b.classList.toggle('on',b.dataset.v===libKind));
+    const q=($('instFilter').value||'').toLowerCase(), hit=(...xs)=>!q||xs.some(x=>String(x||'').toLowerCase().includes(q));
+    const ki=Object.keys(lib).sort(byTag), km=Object.keys(libM).sort(byTag), kv=Object.keys(libV).sort(byTag);
+    const pl=(n,w)=>n+' '+w+(n===1?'':'s'); $('instCount').textContent = (ki.length||km.length||kv.length)?'('+[pl(ki.length,'instrument'),pl(km.length,'motor'),pl(kv.length,'valve')].join(' · ')+')':'';
     const box=$('instList'); box.innerHTML='';
-    const shown=keys.filter(k=>!q || k.toLowerCase().includes(q) || (lib[k].desc||'').toLowerCase().includes(q));
-    if(!shown.length){ box.innerHTML='<div class="note">'+(keys.length?'No matches.':'Nothing saved yet. Set up an instrument on the Scale tab, give it a tag and tap Save.')+'</div>'; }
-    const saveCur=cur, saveF=F;
-    shown.forEach(k=>{
-      const it=lib[k]; cur=Object.assign(DEF(),it); const R=rangeOk()?evalLoop():{};
-      const rt=rangeTxt(), pn=presetName(); cur=saveCur;
-      const badge=(l,s)=> s ? '<span class="badge '+(s.pass?(s.n<s.of?'warn':'ok'):'bad')+'">'+l+' '+(s.pass?(s.n<s.of?'…':'✓'):'✗')+'</span>' : '';
+    const items=[];
+    if(libKind==='all'||libKind==='i') ki.forEach(k=>{ const it=lib[k]; if(hit(k,it.desc,it.serial,it.mfr,it.model,it.loc)) items.push(['i',k]); });
+    if(libKind==='all'||libKind==='m') km.forEach(k=>{ const it=libM[k]; if(hit(k,it.desc,it.serial,it.vfdSerial,it.make,it.model,it.loc)) items.push(['m',k]); });
+    if(libKind==='all'||libKind==='v') kv.forEach(k=>{ const it=libV[k]; if(hit(k,it.desc,it.serial,it.aSerial,it.pSerial,it.make,it.model,it.loc)) items.push(['v',k]); });
+    if(libKind==='all') items.sort((a,b)=>byTag(a[1],b[1]));
+    if(!items.length){ box.innerHTML='<div class="note">'+((ki.length||km.length||kv.length)?'No matches.':'Nothing saved yet. Give an instrument (Scale tab) or a motor or valve (Devices tab) a tag and tap Save.')+'</div>'; }
+    const saveCur=cur, saveF=F, curMt=M().tag, curVt=VX().tag, openBy={};
+    punch.forEach(p=>{ if(p.status==='open'&&p.tag) openBy[p.tag]=(openBy[p.tag]||0)+1; });
+    const pb=k=>openBy[k]?'<span class="badge bad">⚑ '+openBy[k]+' open</span>':'';
+    const badge=(l,s)=> s ? '<span class="badge '+(s.pass?(s.n<s.of?'warn':'ok'):'bad')+'">'+l+' '+(s.pass?(s.n<s.of?'…':'✓'):'✗')+'</span>' : '';
+    items.forEach(([kind,k])=>{
       const d=document.createElement('div'); d.className='inst';
-      d.innerHTML='<div class="t">'+esc(k)+(k===cur.tag?' <span class="note">(open)</span>':'')+'</div>'+
-        '<div class="d">'+esc(it.desc||pn)+'</div><div class="d">'+esc(rt)+'</div>'+
-        '<div class="a">'+badge('AF',R.saf)+badge('AL',R.sal)+'<span style="flex:1"></span>'+
-        '<button class="btn sm" data-open="'+esc(k)+'">Open</button><button class="btn sm danger" data-del="'+esc(k)+'">Delete</button></div>';
+      if(kind==='i'){
+        const it=lib[k]; cur=Object.assign(DEF(),it); const R=rangeOk()?evalLoop():{}; const rt=rangeTxt(), pn=presetName(); cur=saveCur;
+        d.innerHTML='<div class="t">'+esc(k)+(k===cur.tag?' <span class="note">(open)</span>':'')+'</div>'+
+          '<div class="d">'+esc(it.desc||pn)+(it.serial?' · S/N '+esc(it.serial):'')+'</div><div class="d">'+esc(rt)+'</div>'+
+          '<div class="a">'+pb(k)+badge('AF',R.saf)+badge('AL',R.sal)+'<span style="flex:1"></span>'+
+          '<button class="btn sm" data-open="'+esc(k)+'">Open</button><button class="btn sm danger" data-del="'+esc(k)+'">Delete</button></div>';
+      } else if(kind==='v'){
+        const it=normV(libV[k]), [n,tot]=vChkN(it);
+        d.innerHTML='<div class="t">⧓ '+esc(k)+(k===curVt?' <span class="note">(open)</span>':'')+'</div>'+
+          ((it.desc||it.serial)?'<div class="d">'+esc(it.desc||'')+(it.serial?(it.desc?' · ':'')+'S/N '+esc(it.serial):'')+'</div>':'')+'<div class="d">'+esc(VTYPE[it.type]+' · '+it.act+' · '+it.fail+(it.dn?' · DN'+it.dn:''))+'</div>'+
+          '<div class="a">'+pb(k)+'<span class="badge '+(n===tot?'ok':n?'warn':'')+'"'+(n?'':' style="color:var(--muted);border:1px solid var(--line)"')+'>Checklist '+n+'/'+tot+'</span><span style="flex:1"></span>'+
+          '<button class="btn sm" data-openv="'+esc(k)+'">Open</button><button class="btn sm danger" data-delv="'+esc(k)+'">Delete</button></div>';
+      } else {
+        const it=libM[k], n=chkN(it), tot=CHK.length;
+        d.innerHTML='<div class="t">⚙︎ '+esc(k)+(k===curMt?' <span class="note">(open)</span>':'')+'</div>'+
+          '<div class="d">'+esc(it.desc||'Motor')+(it.serial?' · S/N '+esc(it.serial):'')+'</div><div class="d">'+esc(motorLine(it))+(it.vfdModel?' · VFD '+esc(it.vfdModel):'')+'</div>'+
+          '<div class="a">'+pb(k)+'<span class="badge '+(n===tot?'ok':n?'warn':'')+'"'+(n?'':' style="color:var(--muted);border:1px solid var(--line)"')+'>Checklist '+n+'/'+tot+'</span><span style="flex:1"></span>'+
+          '<button class="btn sm" data-openm="'+esc(k)+'">Open</button><button class="btn sm danger" data-delm="'+esc(k)+'">Delete</button></div>';
+      }
       box.appendChild(d);
     });
     F=saveF;
     box.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openInst(b.dataset.open, b));
-    box.querySelectorAll('[data-del]').forEach(b=>b.onclick=function(){ const k=this.dataset.del; twoTap(this,()=>{ delete lib[k]; renderLib(); refreshHeader(); toast('Deleted '+k); }); });
-    $('curInfo').textContent = (cur.tag||'Untitled')+' · '+presetName()+' · '+rangeTxt()+(isSaved()?'':' · not saved');
+    box.querySelectorAll('[data-del]').forEach(b=>b.onclick=function(){ const k=this.dataset.del; twoTap(this,()=>{ delete lib[k]; renderLib(); refreshHeader(); pdbGc(); toast('Deleted '+k); }); });
+    box.querySelectorAll('[data-openm]').forEach(b=>b.onclick=function(){ const k=this.dataset.openm, go=()=>openMotor(k), m=M();
+      if(!isSavedM() && mHas(m) && m.tag!==k){ this.textContent='Unsaved changes!'; twoTap(this,go); return; } go(); });
+    box.querySelectorAll('[data-delm]').forEach(b=>b.onclick=function(){ const k=this.dataset.delm; twoTap(this,()=>{ delete libM[k]; renderLib(); renderMOpen(); refreshHeader(); pdbGc(); toast('Deleted '+k); }); });
+    box.querySelectorAll('[data-openv]').forEach(b=>b.onclick=function(){ const k=this.dataset.openv, go=()=>openValve(k), v=VX();
+      if(!isSavedV() && vHas(v) && v.tag!==k){ this.textContent='Unsaved changes!'; twoTap(this,go); return; } go(); });
+    box.querySelectorAll('[data-delv]').forEach(b=>b.onclick=function(){ const k=this.dataset.delv; twoTap(this,()=>{ delete libV[k]; renderLib(); renderXOpen(); refreshHeader(); pdbGc(); toast('Deleted '+k); }); });
+    renderRecInst();
+    { const v=VX(); $('curInfoV').textContent='Valve: '+(v.tag||'Untitled')+' · '+VTYPE[v.type]+' · '+v.fail+(isSavedV()?'':' · not saved'); }
+    $('curInfo').textContent = 'Instrument: '+(cur.tag||'Untitled')+' · '+presetName()+' · '+rangeTxt()+(isSaved()?'':' · not saved');
+    const m=M(); $('curInfoM').textContent = 'Motor: '+(m.tag||'Untitled')+' · '+motorLine(m)+(isSavedM()?'':' · not saved');
   }
   function openInst(k, btn){
-    const go=()=>{ cur=Object.assign(DEF(), JSON.parse(JSON.stringify(lib[k]))); F=.5; loadInputs(); renderAll(); location.hash='#scale'; toast('Opened '+k); };
+    const go=()=>{ cur=Object.assign(DEF(), JSON.parse(JSON.stringify(lib[k]))); F=.5; loadInputs(); renderAll(); location.hash='#scale'; usedTag(k); toast('Opened '+k); };
     if(!isSaved() && (cur.tag || cur.af.length || cur.al.length) && cur.tag!==k){ btn.textContent='Unsaved changes!'; twoTap(btn,go); return; }
     go();
   }
@@ -871,34 +1423,63 @@
   };
   $('copyReg').onclick=()=>{
     const keys=Object.keys(lib).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
-    if(!keys.length){ toast('Nothing saved yet'); return; }
-    const rows=[['Tag','Description','Type','LRV','URV','Units','Signal','Sqrt','PLC raw','As found','As left','Tested by','Date'].join('\t')];
+    if(!keys.length){ toast('No instruments saved yet'); return; }
+    const rows=[['Tag','Description','Type','Manufacturer','Model','Serial no.','Location','LRV','URV','Units','Signal','Sqrt','PLC raw','As found','As left','Tested by','Date'].join('\t')];
     const keep=cur;
     keys.forEach(k=>{ cur=Object.assign(DEF(),lib[k]); const R=rangeOk()?evalLoop():{};
-      const r=rawR(); rows.push([k,cur.desc,presetName(),cur.lrv,cur.urv,cur.unit,sig().n,cur.sqrt?'Y':'',r?r.min+'–'+r.max:'',resWord(R.saf),resWord(R.sal),cur.tech,cur.tdate].join('\t')); });
+      const r=rawR(); rows.push([k,cur.desc,presetName(),cur.mfr||'',cur.model||'',cur.serial||'',cur.loc||'',cur.lrv,cur.urv,cur.unit,sig().n,cur.sqrt?'Y':'',r?r.min+'–'+r.max:'',resWord(R.saf),resWord(R.sal),cur.tech,cur.tdate].join('\t')); });
     cur=keep; copyText(rows.join('\n'),'Register copied');
   };
-  $('copyBak').onclick=()=>copyText(JSON.stringify({app:'cx-instrument',v:1,lib}),'Backup copied');
-  $('impBtn').onclick=()=>{
-    try{
-      const o=JSON.parse($('impTxt').value); const src=o.lib||o; let n=0;
-      Object.keys(src).forEach(k=>{ if(src[k]&&typeof src[k]==='object'){ lib[k]=Object.assign(DEF(),src[k],{tag:k}); n++; } });
-      $('impMsg').textContent='Imported '+n+' instrument'+(n===1?'':'s')+'.'; $('impTxt').value='';
-      renderLib(); refreshHeader();
-    }catch(e){ $('impMsg').textContent='That doesn’t look like a backup.'; }
+  $('copyRegM').onclick=()=>{
+    const keys=Object.keys(libM).sort(byTag); if(!keys.length){ toast('No motors saved yet'); return; }
+    const keepM=curM, rows=[['Tag','Description','Location','Manufacturer','Model','Serial no.','Frame','IP','Power','Unit','Voltage (V)','Current (A)','Freq (Hz)','Speed (rpm)','pf','Eff (%)','Poles','Rated torque (N·m)','VFD','VFD serial no.','Min Hz','Max Hz','Accel (s)','Decel (s)','Checklist','Tested by','Date'].join('\t')];
+    keys.forEach(k=>{ curM=normM(libM[k]); const m=curM, r=motorCalc();
+      rows.push([k,m.desc,m.loc,m.make,m.model,m.serial,m.frame,m.ip,m.P,m.Pu,m.V,m.I,m.f,m.n,m.pf,m.eff,r.poles||'',r.T?fmt(r.T,1):'',m.vfdModel,m.vfdSerial,m.vMin,m.vMax,m.vAcc,m.vDec,chkN(m)+'/'+CHK.length,m.tech,m.tdate].map(x=>x==null?'':x).join('\t')); });
+    curM=keepM; copyText(rows.join('\n'),'Motor register copied');
   };
+  $('copyRegV').onclick=()=>{
+    const keys=Object.keys(libV).sort(byTag); if(!keys.length){ toast('No valves saved yet'); return; }
+    const rows=[['Tag','Description','Location','Type','Actuator','Fail','DN','Kv','Valve make','Valve model','Valve S/N','Actuator','Actuator S/N','Solenoid/positioner','S/N','Coil V','Coil W','Feedback','Open time (s)','Close time (s)','Max pos err %','Hysteresis %','Checklist','Tested by','Date'].join('\t')];
+    keys.forEach(k=>{ const v=normV(libV[k]), R=strokeEval(v), [n,N]=vChkN(v);
+      rows.push([k,v.desc,v.loc,VTYPE[v.type],v.act,v.fail,v.dn,v.kv,v.make,v.model,v.serial,v.aModel,v.aSerial,v.pModel,v.pSerial,vCoilOn(v)?v.coilV:'',vCoilOn(v)?v.coilW:'',v.fb,v.tOpen,v.tClose,
+        v.type==='ctl'&&R.mp!==null?fmt(R.mp,2):'',v.type==='ctl'&&R.hy!=null?fmt(R.hy,2):'',n+'/'+N,v.tech,v.tdate].map(x=>x==null?'':x).join('\t')); });
+    copyText(rows.join('\n'),'Valve register copied');
+  };
+  $('copyBak').onclick=()=>copyText(JSON.stringify({app:'cx-instrument',v:4,lib,libM,libV,punch,punchSeq}),'Backup copied');
+  $('impBtn').onclick=()=>{ if(importBackup($('impTxt').value)) $('impTxt').value=''; };
+  function importBackup(text){
+    try{
+      const o=JSON.parse(text); const src=o.lib||((o.libM||o.libV)?{}:o); let n=0, nm=0, nv=0;
+      Object.keys(src).forEach(k=>{ if(src[k]&&typeof src[k]==='object'){ const v=Object.assign(DEF(),src[k],{tag:k}); delete v.m; lib[k]=v; n++; } });
+      Object.keys(o.libM||{}).forEach(k=>{ const v=o.libM[k]; if(v&&typeof v==='object'){ libM[k]=Object.assign({},v,{tag:k}); nm++; } });
+      Object.keys(o.libV||{}).forEach(k=>{ const v=o.libV[k]; if(v&&typeof v==='object'){ libV[k]=Object.assign({},v,{tag:k}); nv++; } });
+      let np=0; (o.punch||[]).forEach(it=>{ if(!it||!it.id) return; const i=punch.findIndex(x=>x.id===it.id); if(i>=0) punch[i]=it; else punch.push(it); np++; });
+      punchSeq=Math.max(punchSeq, o.punchSeq||1, ...punch.map(x=>(x.no||0)+1));
+      let nph=0; Object.entries(o.photos||{}).forEach(([id,d])=>{ if(typeof d==='string'&&d.startsWith('data:image')){ pdbPut(id,d); nph++; } });
+      const msg='Imported '+n+' instrument'+(n===1?'':'s')+', '+nm+' motor'+(nm===1?'':'s')+', '+nv+' valve'+(nv===1?'':'s')+', '+np+' punch item'+(np===1?'':'s')+(nph?' and '+nph+' photos':'')+'.';
+      $('impMsg').textContent=msg; toast(msg);
+      renderLib(); renderMOpen(); renderXOpen(); renderPL(); refreshHeader(); store(); bakCache=null; prepareBackup();
+      return true;
+    }catch(e){ $('impMsg').textContent='That doesn’t look like a backup.'; toast('That doesn’t look like a backup file'); return false; }
+  }
 
   // ---------- units ----------
   const UCAT = {
+    Flow:{u:[['L/s',0.001],['L/min',1/60000],['L/h',1/3.6e6],['m³/h',1/3600],['m³/min',1/60],['m³/d',1/86400],['ML/d',1000/86400],['m³/s',1],
+      ['US gpm',0.0000630901964],['Imp gpm',0.0000757681667],['US MGD',0.0438126364],['Imp MGD',0.0526167],['ft³/s',0.0283168466],['ft³/min',0.000471947443]],
+      note:'Volumetric flow. m³/d is the same as kL/d.'},
     Pressure:{u:[['mbar',100],['mm H₂O',9.80665],['m H₂O',9806.65],['kPa',1000],['bar',100000],['psi',6894.757293],['in H₂O',249.08891],['mm Hg',133.322387],['MPa',1e6],['Pa',1]],
       note:'Water columns use the conventional 1 mm H₂O = 9.80665 Pa (water at 4 °C).'},
-    Flow:{u:[['L/s',0.001],['m³/h',1/3600],['m³/d',1/86400],['ML/d',1000/86400],['L/min',1/60000],['m³/s',1],['US gpm',0.0000630901964],['UK gpm',0.0000757681667]],
-      note:'Volumetric flow.'},
+    'Mass flow':{u:[['kg/h',1/3600],['kg/d',1/86400],['t/d',1000/86400],['g/min',1/60000],['g/h',1/3.6e6],['kg/min',1/60],['kg/s',1],['lb/h',0.45359237/3600],['lb/d',0.45359237/86400]],
+      note:'Mass flow, e.g. chemical or dry-solids load.'},
+    Concentration:{u:[['mg/L',0.001],['g/m³',0.001],['ppm (water)',0.001],['µg/L',1e-6],['g/L',1],['kg/m³',1],['% w/v',10]],
+      note:'ppm ≈ mg/L only for dilute water (SG 1). 1% w/v = 10 g/L.'},
+    Volume:{u:[['L',0.001],['mL',1e-6],['m³',1],['kL',1],['ML',1000],['US gal',0.003785411784],['Imp gal',0.00454609],['ft³',0.0283168466]],note:''},
     Temperature:{u:[['°C'],['°F'],['K']], note:'Absolute temperatures (not differences).'},
-    Length:{u:[['m',1],['mm',0.001],['cm',0.01],['ft',0.3048],['in',0.0254]], note:''}
+    Length:{u:[['m',1],['mm',0.001],['cm',0.01],['km',1000],['ft',0.3048],['in',0.0254]], note:''}
   };
-  let ucat='Pressure';
-  try{ const u=JSON.parse(localStorage.getItem('cx-units')||'null'); if(u){ ucat=u.c||ucat; $('uIn').value=u.v??'100'; $('uSg').value=u.sg??'1.0'; } }catch(e){}
+  let ucat='Flow';
+  try{ const u=JSON.parse(localStorage.getItem('cx-units')||'null'); if(u){ ucat=UCAT[u.c]?u.c:ucat; $('uIn').value=u.v??'100'; $('uSg').value=u.sg??'1.0'; } }catch(e){}
   function tK(v,u){ return u==='°C'?v+273.15: u==='°F'?(v-32)*5/9+273.15: v; }
   function fK(k,u){ return u==='°C'?k-273.15: u==='°F'?(k-273.15)*9/5+32: k; }
   function renderUChips(){
@@ -928,8 +1509,32 @@
 
   // ---------- motor ----------
   const MDEF=()=>({P:'',Pu:'kW',ph:'3',V:'',I:'',f:'50',n:'',pf:'',eff:'',conn:'',sf:'',ins:'',
-    vMin:'',vMax:'',vAcc:'',vDec:'',vCtl:'',vLoad:'',chk:{},photo:''});
-  const M=()=>{ cur.m=Object.assign(MDEF(), cur.m||{}); if(!cur.m.chk) cur.m.chk={}; return cur.m; };
+    vMin:'',vMax:'',vAcc:'',vDec:'',vCtl:'',vLoad:'',chk:{},photos:[],tag:'',desc:'',loc:'',tech:'',tdate:today()});
+  const normM=o=>Object.assign(MDEF(), o||{}, {chk:(o&&o.chk)||{}, photos:(o&&o.photos)||[], _n:1});
+  const M=()=>{ if(!curM||!curM._n) curM=normM(curM); return curM; };
+  const isSavedM=()=>{ const m=M(); return !!(m.tag && libM[m.tag] && snapshot(libM[m.tag])===snapshot(m)); };
+  const mHas=m=>!!(m.tag||m.P||m.V||m.I||m.n||m.serial||(m.photos&&m.photos.length));
+  function saveMotor(){
+    const m=M(), t=(m.tag||'').trim();
+    if(!t){ toast('Enter a motor tag first'); location.hash='#motor'; setTimeout(()=>$('mTag').focus(),150); return; }
+    m.tag=t; libM[t]=JSON.parse(snapshot(m)); usedTag('M:'+t); renderMOpen(); refreshHeader(); renderLib(); toast('Saved '+t);
+  }
+  function openMotor(k){ libM[k]=JSON.parse(snapshot(normM(libM[k]))); curM=normM(JSON.parse(JSON.stringify(libM[k]))); fop=NaN; renderMotor(); usedTag('M:'+k); location.hash='#motor'; refreshHeader(); toast('Opened '+k); }
+  function newMotor(){ curM=normM({}); fop=NaN; renderMotor(); location.hash='#motor'; refreshHeader(); setTimeout(()=>$('mTag').focus(),150); }
+  function renderMOpen(){
+    const ks=Object.keys(libM).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})), sel=$('mOpen');
+    sel.innerHTML='<option value="">'+(ks.length?'Open a saved motor…':'None saved yet')+'</option>'+ks.map(k=>'<option value="'+esc(k)+'">'+esc(k)+(libM[k].desc?' – '+esc(libM[k].desc):'')+'</option>').join('');
+    sel.value='';
+  }
+  let pendOpen=null;
+  setTimeout(()=>{ // bind after DOM helpers exist
+    $('mOpen').addEventListener('change',()=>{ const k=$('mOpen').value; if(!k) return;
+      const m=M(); if(!isSavedM() && mHas(m) && m.tag!==k && pendOpen!==k){ pendOpen=k; toast('Unsaved changes on this motor. Pick again to discard them.'); $('mOpen').value=''; return; }
+      pendOpen=null; openMotor(k); });
+    $('saveMotor').onclick=saveMotor; $('saveMotor2').onclick=saveMotor;
+    const nm=function(){ if(!isSavedM() && mHas(M())){ twoTap(this,newMotor); return; } newMotor(); };
+    $('newMotor').onclick=nm; $('newMotor2').onclick=nm;
+  },0);
   const CHK=[
     'Isolated and proved dead; LOTO in place',
     'Motor IR / PI tested (VFD output disconnected first)',
@@ -980,8 +1585,7 @@
     if(r.Ic&&r.I>0&&Math.abs(r.Ic/r.I-1)>0.15) w.push('Calculated current is '+fmt((r.Ic/r.I-1)*100,0)+'% off the nameplate FLA. Check the pf, efficiency, voltage and kW/hp values.');
     if(r.pf>1||r.e>1) w.push('Power factor and efficiency must be ≤ 1 (100%).');
     $('mWarn').innerHTML=w.map(esc).join('<br>'); $('mWarn').style.display=w.length?'block':'none';
-    // photo
-    $('mImg').src=m.photo||''; $('mImg').style.display=m.photo?'block':'none'; $('mPhotoDel').classList.toggle('hidden',!m.photo);
+    renderPhotos('motor'); renderMOpen();
     renderOp(); renderVfd(); renderChk();
   }
   let fop=NaN;
@@ -1042,30 +1646,18 @@
   document.querySelectorAll('[data-m]').forEach(el=>{
     el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>{ M()[el.dataset.m]=el.value; fop=NaN; renderMotor(); refreshHeader(); });
   });
-  $('mPhoto').addEventListener('change',e=>{
-    const file=e.target.files&&e.target.files[0]; if(!file) return;
-    const img=new Image(), url=URL.createObjectURL(file);
-    img.onload=()=>{
-      const s=Math.min(1,1100/Math.max(img.width,img.height)), c=document.createElement('canvas');
-      c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
-      c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
-      let q=.7, d=c.toDataURL('image/jpeg',q); while(d.length>350000&&q>.3){ q-=.1; d=c.toDataURL('image/jpeg',q); }
-      M().photo=d; renderMotor(); refreshHeader(); e.target.value='';
-    };
-    img.onerror=()=>toast('Could not read that image'); img.src=url;
-  });
-  $('mPhotoDel').onclick=function(){ twoTap(this,()=>{ M().photo=''; renderMotor(); refreshHeader(); }); };
   $('vCopy').onclick=()=>{
-    const m=M(), r=motorCalc(), L=['MOTOR / VFD SHEET\t'+(cur.tag||'Untitled'),'Description\t'+(cur.desc||''),'',
+    const m=M(), r=motorCalc(), L=['MOTOR / VFD SHEET\t'+(m.tag||'Untitled'),'Description\t'+(m.desc||''),'Location\t'+(m.loc||''),'',
       'Nameplate','Power\t'+(m.P||'')+' '+m.Pu,'Voltage\t'+(m.V||'')+' V','Current\t'+(m.I||'')+' A','Frequency\t'+(m.f||'')+' Hz',
       'Speed\t'+(m.n||'')+' rpm','Power factor\t'+(m.pf||''),'Efficiency\t'+(m.eff||'')+' %','Connection\t'+(m.conn||''),
-      'Service factor\t'+(m.sf||''),'Insulation class\t'+(m.ins||''),'','Calculated',
+      'Service factor\t'+(m.sf||''),'Insulation class\t'+(m.ins||''),'Manufacturer\t'+(m.make||''),'Model\t'+(m.model||''),'Serial no.\t'+(m.serial||''),
+      'Frame\t'+(m.frame||''),'IP rating\t'+(m.ip||''),'Duty\t'+(m.duty||''),'VFD\t'+(m.vfdModel||''),'VFD serial no.\t'+(m.vfdSerial||''),'','Calculated',
       'Poles\t'+(r.poles||''),'Sync speed\t'+(r.ns?fmt(r.ns,0):'')+' rpm','Slip\t'+(r.ns?fmt(r.slipPct,1)+' %':''),
       'Rated torque\t'+(r.T?fmt(r.T,1):'')+' N·m','Calculated FLC\t'+(r.Ic?fmt(r.Ic,1):'')+' A','',
       'VFD','Min freq\t'+(m.vMin||'')+' Hz','Max freq\t'+(m.vMax||'')+' Hz','Accel\t'+(m.vAcc||'')+' s','Decel\t'+(m.vDec||'')+' s',
       'Control mode\t'+(m.vCtl||''),'Load type\t'+(m.vLoad||''),'','Checklist'];
     CHK.forEach((t,i)=>L.push((m.chk[i]?'[x] ':'[ ] ')+t));
-    L.push('','Tested by\t'+(cur.tech||''),'Date\t'+(cur.tdate||''));
+    L.push('','Tested by\t'+(m.tech||''),'Date\t'+(m.tdate||''));
     copyText(L.join('\n'),'Motor sheet copied');
   };
   // P-T-n
@@ -1087,7 +1679,7 @@
   function renderTChips(){
     $('tChips').innerHTML='';
     Object.keys(TOOLS).forEach(k=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'+(k===tsel?' on':''); b.textContent=k;
-      b.onclick=()=>{ tsel=k; try{localStorage.setItem('cx-tool-sel',k);}catch(e){} renderTChips(); }; $('tChips').appendChild(b); });
+      b.onclick=()=>{ tsel=k; try{localStorage.setItem('cx-tool-sel',k);}catch(e){} renderTChips(); used('tool:'+k); }; $('tChips').appendChild(b); });
     Object.entries(TOOLS).forEach(([k,id])=>$(id).classList.toggle('hidden',k!==tsel));
   }
   const V$=id=>num($(id).value);
@@ -1149,21 +1741,565 @@
   document.querySelectorAll('#t-pump input').forEach(el=>el.addEventListener('input',calcPump));
   document.querySelectorAll('#t-flow input,#t-flow select').forEach(el=>el.addEventListener(el.tagName==='SELECT'?'change':'input',calcFlow));
 
+  // ---------- valves ----------
+  const VDEF=()=>({tag:'',desc:'',loc:'',type:'sol',act:'Direct solenoid',fail:'FC',dn:'',kv:'',make:'',model:'',serial:'',aModel:'',aSerial:'',pModel:'',pSerial:'',lsModel:'',
+    coilV:'24',coilW:'',psuV:'24',vtol:'10',cabL:'',cabA:'1.5',rMeas:'',vMeas:'',fb:'',dFac:'1.5',tOpen:'',tClose:'',
+    sigClosed:'4',fbClosed:'4',air:'',spring:'',cutoff:'',tol:'1',ptSet:'9',pos:[],fbm:[],qdp:'',qsg:'1.0',qopen:'100',qchar:'lin',
+    chk:{},tech:'',tdate:today(),notes:'',photos:[]});
+  const normV=o=>Object.assign(VDEF(),o||{},{chk:(o&&o.chk)||{},photos:(o&&o.photos)||[],pos:(o&&o.pos)||[],fbm:(o&&o.fbm)||[],_n:1});
+  const VX=()=>{ if(!curV||!curV._n) curV=normV(curV); return curV; };
+  const isSavedV=()=>{ const v=VX(); return !!(v.tag && libV[v.tag] && snapshot(libV[v.tag])===snapshot(v)); };
+  const vHas=v=>!!(v.tag||v.coilW||v.serial||v.tOpen||v.tClose||(v.pos||[]).some(x=>x!==''&&x!=null)||(v.photos&&v.photos.length));
+  const VTYPE={sol:'Solenoid valve',onoff:'On/off actuated valve',ctl:'Control valve'};
+  const VCHK=[
+    ['id','Tag, nameplate and flow direction checked against the P&ID','all'],
+    ['inst','Installed per drawing; isolation and bypass valves correct','all'],
+    ['air','Air supply on; filter-regulator set to required pressure','pn'],
+    ['coil','Coil voltage matches supply; suppression diode or varistor fitted','coil'],
+    ['coilR','Coil resistance measured and recorded','coil'],
+    ['vcoil','Voltage at coil measured while energised (at or above minimum)','coil'],
+    ['man','Manual override tested and returned to AUTO','onoff'],
+    ['zso','Command OPEN: valve opens; open feedback on, closed feedback off','onoff'],
+    ['zsc','Command CLOSE: valve closes; closed feedback on, open feedback off','onoff'],
+    ['times','Travel times recorded; fail-to-open/close timers set in PLC','onoff'],
+    ['disc','Fail-to-open and fail-to-close alarms tested','onoff'],
+    ['acal','Positioner auto-calibration (zero/span/stroke) done','ctl'],
+    ['dir','Action checked: correct position at 4 mA and 20 mA','ctl'],
+    ['stroke','Stroke test up and down within tolerance','ctl'],
+    ['fbk','Position feedback checked at PLC/SCADA','ctlfb'],
+    ['lim','End-position switches set and checked at PLC (if fitted)','ctl'],
+    ['sigl','Loss of signal: valve goes to the configured position','ctl'],
+    ['fail','Loss of air/power: valve goes to its fail position','all'],
+    ['leak','No leaks at body, gland, fittings and tubing','all'],
+    ['bkp','Positioner configuration recorded or backed up','ctl']
+  ];
+  const vCoilOn=v=>(v.type==='sol'||v.type==='onoff')&&v.act!=='Electric';
+  function vApplies(it,v){ const f=it[2];
+    return f==='all' || (f==='coil'&&vCoilOn(v)) || (f==='onoff'&&v.type!=='ctl') || (f==='ctl'&&v.type==='ctl') ||
+      (f==='ctlfb'&&v.type==='ctl'&&v.fbClosed!=='') || (f==='pn'&&(v.act||'').startsWith('Pneumatic')); }
+  const vChkList=v=>VCHK.filter(it=>vApplies(it,v));
+  const vChkN=v=>{ const L=vChkList(v); return [L.filter(it=>(v.chk||{})[it[0]]).length, L.length]; };
+
+  function vCoil(v){
+    const V=num(v.coilV), W=num(v.coilW), Vs=isFinite(num(v.psuV))?num(v.psuV):V, L=num(v.cabL), A=num(v.cabA), tol=isFinite(num(v.vtol))?num(v.vtol):10, rho=0.0175;
+    const r={V,W,Vs,Vmin:V>0?V*(1-tol/100):NaN};
+    if(V>0&&W>0){ r.I=W/V; r.Rexp=V*V/W; }
+    if(r.I&&L>0&&A>0){ r.Rl=2*L*rho/A; r.Vd=r.I*r.Rl; r.Vc=Vs-r.Vd; r.ok=r.Vc>=r.Vmin; r.Lmax=(Vs-r.Vmin)*A/(2*rho*r.I); }
+    const Rm=num(v.rMeas); if(r.Rexp&&Rm>0) r.dev=(Rm/r.Rexp-1)*100;
+    const Vm=num(v.vMeas); if(Vm>0&&isFinite(r.Vmin)){ r.Vm=Vm; r.vmOk=Vm>=r.Vmin; }
+    return r;
+  }
+  const bdg=(ok,t)=>'<span class="badge '+(ok?'ok':'bad')+'">'+t+'</span>';
+  function renderVCoil(){
+    const v=VX(), r=vCoil(v);
+    trows($('xCoil'),[
+      ['Coil current', r.I?fmt(r.I,3)+' A':'— enter coil power'],
+      ['Expected coil resistance', r.Rexp?fmt(r.Rexp,1)+' Ω (cold)':'—'],
+      ['Minimum coil voltage', isFinite(r.Vmin)?fmt(r.Vmin,1)+' V':'—'],
+      r.Rl!==undefined?['Cable loop resistance', fmt(r.Rl,3)+' Ω']:null,
+      r.Vd!==undefined?['Voltage drop', fmt(r.Vd,2)+' V ('+fmt(r.Vd/r.Vs*100,1)+'%)']:null,
+      r.Vc!==undefined?['Voltage at coil', fmt(r.Vc,2)+' V '+bdg(r.ok,r.ok?'OK':'LOW')]:null,
+      r.Lmax!==undefined?['Max cable length', (r.Lmax>0?fmt(r.Lmax,0)+' m':'0 m: supply below minimum')+' on '+v.cabA+' mm²']:null,
+      r.dev!==undefined?['Measured resistance', fmt(num(v.rMeas),1)+' Ω ('+(r.dev>=0?'+':'')+fmt(r.dev,1)+'%) '+(Math.abs(r.dev)<=10?bdg(true,'OK'):'<span class="badge warn">CHECK</span>')]:null,
+      r.Vm!==undefined?['Measured voltage', fmt(r.Vm,2)+' V '+bdg(r.vmOk,r.vmOk?'OK':'LOW')]:null
+    ]);
+  }
+  const FBNOTE={
+    'Mechanical limit switches':'Set the cams to switch just before the end of travel, so both switches are never on together.',
+    'Inductive prox (PNP 3-wire)':'PNP: the sensor switches +24 V to the PLC input. Check the sensor LED and the PLC input together.',
+    'Inductive prox (2-wire DC)':'2-wire DC: check the PLC input suits 2-wire sensors (leakage current when off, voltage drop when on).',
+    'NAMUR sensors':'NAMUR (EN 60947-5-6): switching thresholds about 1.2 mA and 2.1 mA. Use a NAMUR isolating amplifier or input card, and test line-fault detection (open and short circuit).',
+    'AS-i limit switch box':'AS-i: check the node address, and that the open/closed inputs and the solenoid output are mapped correctly in the PLC.',
+    'Position transmitter 4–20 mA':'Check the 4–20 mA position loop at both ends, e.g. on the Scale tab with Valve pos and %.'
+  };
+  function renderVFb(){
+    const v=VX(), f=num(v.dFac)||1.5, to=num(v.tOpen), tc=num(v.tClose), sug=t=>Math.ceil(Math.max(t*f,t+2));
+    trows($('xFbOut'),[
+      to>0?['Fail-to-open alarm','<b>'+sug(to)+' s</b> (travel '+fmt(to,1)+' s)']:['Fail-to-open alarm','— time the opening'],
+      tc>0?['Fail-to-close alarm','<b>'+sug(tc)+' s</b> (travel '+fmt(tc,1)+' s)']:['Fail-to-close alarm','— time the closing']
+    ]);
+    $('xFbNote').textContent=(FBNOTE[v.fb]||'Choose the feedback type for wiring notes.')+' Suggested timers are the travel time × '+f+' (at least travel + 2 s). Use the project spec where it sets them.';
+  }
+  const XPTS={'5':[0,25,50,75,100],'9':[0,25,50,75,100,75,50,25,0]};
+  const spMa=(sp,v)=>v.sigClosed==='20'?20-16*sp/100:4+16*sp/100;
+  const fbMa=(p,v)=>v.fbClosed==='20'?20-16*p/100:4+16*p/100;
+  const fbPct=(ma,v)=>v.fbClosed==='20'?(20-ma)/16*100:(ma-4)/16*100;
+  function renderStroke(){
+    const v=VX(), pts=XPTS[v.ptSet]||XPTS['9'], hasFb=v.fbClosed!=='', box=$('xPtsBox'); box.innerHTML='';
+    pts.forEach((sp,i)=>{ const d=document.createElement('div'); d.className='pt'; const dir=v.ptSet==='9'?(i<5?' ↑':' ↓'):'';
+      d.innerHTML='<div class="lbl"><b>'+sp+'%'+dir+'</b><div>'+fmt(spMa(sp,v),2)+' mA</div></div>'+
+        '<div><input inputmode="decimal" type="text" data-xp="'+i+'" placeholder="'+sp+'" value="'+esc(v.pos[i]??'')+'"><div class="err" id="xpe'+i+'"></div></div>'+
+        '<div>'+(hasFb?'<input inputmode="decimal" type="text" data-xf="'+i+'" placeholder="'+fmt(fbMa(sp,v),2)+'" value="'+esc(v.fbm[i]??'')+'"><div class="err" id="xfe'+i+'"></div>':'<div class="note" style="padding-top:10px">—</div>')+'</div>';
+      box.appendChild(d); });
+    box.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{ const v=VX();
+      if(inp.dataset.xp!==undefined) v.pos[+inp.dataset.xp]=inp.value; else v.fbm[+inp.dataset.xf]=inp.value; updStroke(); refreshHeader(); }));
+    updStroke();
+  }
+  function strokeEval(v){
+    const pts=XPTS[v.ptSet]||XPTS['9'], tol=Math.abs(num(v.tol))||1, R={pe:[],fe:[],tol};
+    pts.forEach((sp,i)=>{ const p=num(v.pos[i]); R.pe[i]=isFinite(p)?p-sp:null;
+      const f=num(v.fbm[i]); if(v.fbClosed!==''&&isFinite(f)){ R.fe[i]=fbPct(f,v)-(isFinite(p)?p:sp); } else R.fe[i]=null; });
+    const mx=a=>{ const x=a.filter(e=>e!==null); return x.length?x.reduce((m,e)=>Math.abs(e)>Math.abs(m)?e:m,0):null; };
+    R.mp=mx(R.pe); R.mf=mx(R.fe); R.np=R.pe.filter(e=>e!==null).length; R.n=pts.length;
+    if(v.ptSet==='9'){ const h=[[1,7],[2,6],[3,5]].map(([a,b])=>{ const x=num(v.pos[a]), y=num(v.pos[b]); return isFinite(x)&&isFinite(y)?Math.abs(x-y):null; }).filter(e=>e!==null); R.hy=h.length?Math.max(...h):null; }
+    return R;
+  }
+  function updStroke(){
+    const v=VX(), R=strokeEval(v), c=(el,e)=>{ if(!el) return; if(e===null){ el.textContent=''; return; } const ok=Math.abs(e)<=R.tol+1e-9;
+      el.textContent=(e>=0?'+':'')+fmt(e,2)+'% '+(ok?'✓':'✗'); el.style.color=ok?'var(--ok)':'var(--bad)'; };
+    R.pe.forEach((e,i)=>c($('xpe'+i),e)); R.fe.forEach((e,i)=>c($('xfe'+i),e));
+    const b=(l,e)=> e===null||e===undefined ? '<span class="badge" style="color:var(--muted);border:1px solid var(--line)">'+l+': —</span>'
+      : '<span class="badge '+(Math.abs(e)<=R.tol+1e-9?'ok':'bad')+'">'+l+': '+(Math.abs(e)<=R.tol+1e-9?'PASS':'FAIL')+' · '+(l==='Hysteresis'?'':'max ')+(e>=0&&l!=='Hysteresis'?'+':'')+fmt(e,2)+'%</span>';
+    $('xStRes').innerHTML=b('Position',R.mp)+(v.fbClosed!==''?b('Feedback',R.mf):'')+(v.ptSet==='9'?b('Hysteresis',R.hy):'');
+  }
+  function renderKv(){
+    const v=VX(), kv=num(v.kv), dp=num(v.qdp), sg=num(v.qsg)||1, o=num(v.qopen), x=Math.min(100,Math.max(0,isFinite(o)?o:100))/100;
+    if(!(kv>0)){ $('xQout').textContent='Enter Kv in the Type card above.'; return; }
+    const fx=v.qchar==='eq'?(x<=0?0:Math.pow(50,x-1)):v.qchar==='qo'?Math.sqrt(x):x;
+    let t='Cv = '+fmt(kv*1.156,2)+'. ';
+    if(dp>0){ const Q=kv*fx*Math.sqrt(dp/sg); t+='At '+fmt(x*100,0)+'% open: Kv ≈ '+fmt(kv*fx,2)+' → <b>'+fmt(Q,2)+' m³/h</b> ('+fmt(Q/3.6,2)+' L/s)'; }
+    else t+='Enter ΔP for flow.';
+    $('xQout').innerHTML=t;
+  }
+  function renderVChk(){
+    const v=VX(), box=$('xChk');
+    box.innerHTML=vChkList(v).map(it=>'<label class="toggle" style="padding:7px 0;align-items:flex-start"><input type="checkbox" data-xchk="'+it[0]+'"'+(v.chk[it[0]]?' checked':'')+'><span>'+esc(it[1])+'</span></label>').join('');
+    box.querySelectorAll('[data-xchk]').forEach(c=>c.onchange=()=>{ VX().chk[c.dataset.xchk]=c.checked; refreshHeader(); });
+  }
+  function renderValve(){
+    const v=VX();
+    document.querySelectorAll('[data-x]').forEach(el=>{ if(document.activeElement!==el) el.value=v[el.dataset.x]??''; });
+    document.querySelectorAll('#xType button').forEach(b=>b.classList.toggle('on',b.dataset.v===v.type));
+    $('xCoilCard').classList.toggle('hidden',!vCoilOn(v));
+    $('xStrokeCard').classList.toggle('hidden',v.type!=='ctl');
+    renderVCoil(); renderVFb(); renderStroke(); renderKv(); renderVChk(); renderPhotos('valve'); renderXOpen();
+  }
+  document.querySelectorAll('#xType button').forEach(b=>b.onclick=()=>{ const v=VX(); v.type=b.dataset.v;
+    if(v.type==='sol' && v.act!=='Direct solenoid' && !v.act.startsWith('Pneumatic')) v.act='Direct solenoid';
+    if(v.type!=='sol' && v.act==='Direct solenoid') v.act='Pneumatic spring-return';
+    renderValve(); refreshHeader(); });
+  document.querySelectorAll('[data-x]').forEach(el=>el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>{
+    const v=VX(), k=el.dataset.x; v[k]=el.value;
+    if(['tag','desc','loc','tech','tdate','notes','make','model','serial','aModel','aSerial','pModel','pSerial','lsModel','dn'].includes(k)){ refreshHeader(); return; }
+    if(k==='ptSet'){ v.pos=[]; v.fbm=[]; }
+    if(['coilV','coilW','psuV','vtol','cabL','cabA','rMeas','vMeas'].includes(k)){ renderVCoil(); refreshHeader(); return; }
+    if(['fb','dFac','tOpen','tClose'].includes(k)){ renderVFb(); refreshHeader(); return; }
+    if(['kv','qdp','qsg','qopen','qchar'].includes(k)){ renderKv(); refreshHeader(); return; }
+    if(k==='tol'){ updStroke(); refreshHeader(); return; }
+    renderValve(); refreshHeader(); }));
+  $('xChkClr').onclick=function(){ twoTap(this,()=>{ VX().chk={}; renderVChk(); refreshHeader(); }); };
+  function saveValve(){
+    const v=VX(), t=(v.tag||'').trim();
+    if(!t){ toast('Enter a valve tag first'); location.hash='#valve'; setTimeout(()=>$('xTag').focus(),150); return; }
+    v.tag=t; libV[t]=JSON.parse(snapshot(v)); usedTag('V:'+t); renderXOpen(); refreshHeader(); renderLib(); toast('Saved '+t);
+  }
+  function openValve(k){ libV[k]=JSON.parse(snapshot(normV(libV[k]))); curV=normV(JSON.parse(JSON.stringify(libV[k]))); renderValve(); usedTag('V:'+k); location.hash='#valve'; refreshHeader(); toast('Opened '+k); }
+  function newValve(){ curV=normV({}); renderValve(); location.hash='#valve'; refreshHeader(); setTimeout(()=>$('xTag').focus(),150); }
+  function renderXOpen(){
+    const ks=Object.keys(libV).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})), sel=$('xOpen');
+    sel.innerHTML='<option value="">'+(ks.length?'Open a saved valve…':'None saved yet')+'</option>'+ks.map(k=>'<option value="'+esc(k)+'">'+esc(k)+(libV[k].desc?' – '+esc(libV[k].desc):'')+'</option>').join('');
+    sel.value='';
+  }
+  let pendOpenV=null;
+  $('xOpen').addEventListener('change',()=>{ const k=$('xOpen').value; if(!k) return; const v=VX();
+    if(!isSavedV() && vHas(v) && v.tag!==k && pendOpenV!==k){ pendOpenV=k; toast('Unsaved changes on this valve. Pick again to discard them.'); $('xOpen').value=''; return; }
+    pendOpenV=null; openValve(k); });
+  $('saveValve').onclick=saveValve; $('saveValve2').onclick=saveValve;
+  const nv=function(){ if(!isSavedV() && vHas(VX())){ twoTap(this,newValve); return; } newValve(); };
+  $('newValve').onclick=nv; $('newValve2').onclick=nv;
+  function valveSheet(v){
+    const r=vCoil(v), R=strokeEval(v), pts=XPTS[v.ptSet]||XPTS['9'], [n,N]=vChkN(v);
+    const L=['VALVE SHEET\t'+(v.tag||'Untitled'),'Description\t'+(v.desc||''),'Location\t'+(v.loc||''),'Type\t'+VTYPE[v.type],'Actuator\t'+v.act,'Fail position\t'+v.fail,
+      'Size\tDN '+(v.dn||''),'Kv\t'+(v.kv||''),'Valve\t'+[v.make,v.model].filter(Boolean).join(' ')+'\tS/N '+(v.serial||''),
+      'Actuator\t'+(v.aModel||'')+'\tS/N '+(v.aSerial||''),'Solenoid / positioner\t'+(v.pModel||'')+'\tS/N '+(v.pSerial||''),'Limit switch box\t'+(v.lsModel||''),''];
+    if(vCoilOn(v)) L.push('Coil\t'+(v.coilV||'')+' V DC\t'+(v.coilW||'')+' W'+(r.I?'\t'+fmt(r.I,3)+' A':''),
+      'Cable\t'+(v.cabL||'')+' m one way\t'+v.cabA+' mm²'+(r.Vc!==undefined?'\tcalc. '+fmt(r.Vc,2)+' V at coil':''),
+      'Measured coil R\t'+(v.rMeas||'')+' Ω'+(r.Rexp?'\texpected '+fmt(r.Rexp,1)+' Ω':''),'Measured V at coil\t'+(v.vMeas||'')+' V','');
+    L.push('Feedback\t'+(v.fb||'None'),'Open time\t'+(v.tOpen||'')+' s','Close time\t'+(v.tClose||'')+' s','');
+    if(v.type==='ctl'){
+      L.push('Stroke test\tclosed at '+v.sigClosed+' mA\ttolerance ±'+R.tol+'%','Air supply\t'+(v.air||'')+' bar','Spring range\t'+(v.spring||''),'Tight shut-off\t'+(v.cutoff||''),
+        ['Setpoint %','Signal mA','Position %','Pos err %','Feedback mA','Fb err %'].join('\t'));
+      pts.forEach((sp,i)=>L.push([sp,fmt(spMa(sp,v),2),v.pos[i]||'',R.pe[i]!==null?fmt(R.pe[i],2):'',v.fbm[i]||'',R.fe[i]!==null&&R.fe[i]!==undefined?fmt(R.fe[i],2):''].join('\t')));
+      L.push('Max position error\t'+(R.mp!==null?fmt(R.mp,2)+'%':''),'Max feedback error\t'+(R.mf!==null?fmt(R.mf,2)+'%':''),'Hysteresis\t'+(R.hy!=null?fmt(R.hy,2)+'%':''),'');
+    }
+    L.push('Checklist\t'+n+'/'+N); vChkList(v).forEach(it=>L.push((v.chk[it[0]]?'[x] ':'[ ] ')+it[1]));
+    L.push('','Tested by\t'+(v.tech||''),'Date\t'+(v.tdate||''),'Notes\t'+(v.notes||'').replace(/\n/g,' '));
+    return L.join('\n');
+  }
+  $('xCopy').onclick=()=>copyText(valveSheet(VX()),'Valve sheet copied');
+
+  // ---------- punch list ----------
+  const CATNOTE={A:'Cat A: must be fixed before energisation or commissioning (safety or function).',
+    B:'Cat B: must be fixed before handover / practical completion.', C:'Cat C: minor; can be closed after handover.'};
+  const newPd=keep=>({id:null,no:null,tag:keep?keep.tag:'',desc:'',cat:keep?keep.cat:'B',owner:keep?keep.owner:'',due:'',loc:keep?keep.loc:'',
+    photos:[],status:'open',raised:today(),closed:'',closeNote:''});
+  const PD=()=>{ if(!pd) pd=newPd(); return pd; };
+  let plStat='open', plCatF='all';
+  try{ const ps=JSON.parse(localStorage.getItem('cx-plf')||'null'); if(ps){ plStat=ps.s||plStat; plCatF=ps.c||plCatF; } }catch(e){}
+  function loadPd(){
+    const d=PD(), ed=!!d.id;
+    $('pdTag').value=d.tag; $('pdOwner').value=d.owner; $('pdDesc').value=d.desc; $('pdDue').value=d.due; $('pdLoc').value=d.loc; $('pdCloseNote').value=d.closeNote||'';
+    document.querySelectorAll('#pdCat button').forEach(b=>b.classList.toggle('on',b.dataset.v===d.cat));
+    $('pdCatNote').textContent=CATNOTE[d.cat]+' Use your project’s definitions if they differ.';
+    $('pdTitle').textContent= ed ? 'Edit #'+d.no+(d.status==='closed'?' (closed '+d.closed+')':'') : 'New punch item';
+    $('pdSave').textContent= ed ? 'Save changes' : 'Add item';
+    $('pdDel').classList.toggle('hidden',!ed); $('pdToggle').classList.toggle('hidden',!ed);
+    $('pdToggle').textContent = d.status==='closed' ? 'Reopen' : 'Close item ✓';
+    $('pdCloseRow').classList.toggle('hidden',!ed);
+    renderPhotos('punch');
+  }
+  [['pdTag','tag'],['pdOwner','owner'],['pdDesc','desc'],['pdDue','due'],['pdLoc','loc'],['pdCloseNote','closeNote']].forEach(([id,k])=>
+    $(id).addEventListener('input',()=>{ PD()[k]=$(id).value; store(); }));
+  document.querySelectorAll('#pdCat button').forEach(b=>b.onclick=()=>{ PD().cat=b.dataset.v; loadPd(); store(); });
+  function commitPd(){
+    const d=PD(); d.tag=(d.tag||'').trim().toUpperCase(); d.desc=(d.desc||'').trim();
+    if(!d.desc){ toast('Add a description first'); $('pdDesc').focus(); return false; }
+    if(!d.id){ d.id='k'+Date.now().toString(36)+Math.random().toString(36).slice(2,5); d.no=punchSeq++; punch.push(JSON.parse(JSON.stringify(d))); toast('Added #'+d.no); }
+    else { const i=punch.findIndex(x=>x.id===d.id); if(i>=0) punch[i]=JSON.parse(JSON.stringify(d)); toast('Saved #'+d.no); }
+    return true;
+  }
+  $('pdSave').onclick=()=>{ const d=PD(), wasNew=!d.id; if(!commitPd()) return; pd = wasNew ? newPd(d) : newPd(); loadPd(); renderPL(); store(); if(wasNew) $('pdDesc').focus(); };
+  $('pdToggle').onclick=()=>{ const d=PD(); if(d.status==='closed'){ d.status='open'; d.closed=''; } else { d.status='closed'; d.closed=today(); }
+    if(!commitPd()) return; pd=newPd(); loadPd(); renderPL(); store(); };
+  $('pdDel').onclick=function(){ twoTap(this,()=>{ const d=PD(); punch=punch.filter(x=>x.id!==d.id); pd=newPd(); loadPd(); renderPL(); store(); pdbGc(); toast('Deleted #'+d.no); }); };
+  $('pdClear').onclick=()=>{ pd=newPd(); loadPd(); store(); };
+  function editPunch(id){ const it=punch.find(x=>x.id===id); if(!it) return; pd=JSON.parse(JSON.stringify(it)); loadPd(); store(); window.scrollTo({top:0,behavior:'smooth'}); }
+  function quickClose(id){ const it=punch.find(x=>x.id===id); if(!it) return; it.status='closed'; it.closed=today(); renderPL(); store(); toast('Closed #'+it.no); }
+  const catRank={A:0,B:1,C:2};
+  function plFiltered(){
+    const q=($('plQ').value||'').toLowerCase();
+    return punch.filter(p=>(plStat==='all'||p.status===plStat) && (plCatF==='all'||p.cat===plCatF) &&
+      (!q||[p.tag,p.desc,p.owner,p.loc,'#'+p.no].some(x=>String(x||'').toLowerCase().includes(q))))
+      .sort((a,b)=> (a.status===b.status?0:a.status==='open'?-1:1) || (a.status==='closed'? String(b.closed).localeCompare(String(a.closed)) : (catRank[a.cat]-catRank[b.cat])) || a.no-b.no);
+  }
+  function renderPL(){
+    document.querySelectorAll('#plStat button').forEach(b=>b.classList.toggle('on',b.dataset.v===plStat));
+    $('plCat').innerHTML=['all','A','B','C'].map(c=>'<button type="button" class="chip'+(c===plCatF?' on':'')+'" data-c="'+c+'">'+(c==='all'?'All categories':'Cat '+c)+'</button>').join('');
+    $('plCat').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{ plCatF=b.dataset.c; try{localStorage.setItem('cx-plf',JSON.stringify({s:plStat,c:plCatF}));}catch(e){} renderPL(); });
+    const open=punch.filter(p=>p.status==='open'), td=today(), od=open.filter(p=>p.due&&p.due<td).length;
+    $('plCount').textContent=punch.length?'('+open.length+' open · '+(punch.length-open.length)+' closed)':'';
+    $('plSum').innerHTML = open.length ? ['A','B','C'].map(c=>{ const n=open.filter(p=>p.cat===c).length; return n?'<span class="badge cat'+c+'">Open '+c+': '+n+'</span>':''; }).join('')+(od?'<span class="badge bad">Overdue: '+od+'</span>':'') : '';
+    const L=plFiltered(), box=$('plList'); box.innerHTML='';
+    if(!L.length) box.innerHTML='<div class="note">'+(punch.length?'Nothing matches these filters.':'No punch items yet. Add one above, or tap ⚑ at the top from any instrument, motor or valve.')+'</div>';
+    L.forEach(p=>{ const d=document.createElement('div'); d.className='inst pi'+(p.status==='closed'?' closed':'');
+      const over=p.status==='open'&&p.due&&p.due<td;
+      d.innerHTML='<div class="t"><span class="badge cat'+p.cat+'">'+p.cat+'</span> #'+p.no+(p.tag?' · '+esc(p.tag):'')+'</div>'+
+        '<div class="d" style="color:var(--text);margin-top:4px">'+esc(p.desc)+'</div>'+
+        '<div class="d">'+[p.owner?esc(p.owner):'', p.loc?esc(p.loc):'', p.due?'<span style="'+(over?'color:var(--bad);font-weight:700':'')+'">due '+p.due+(over?' (overdue)':'')+'</span>':'',
+          (p.photos&&p.photos.length)?'📷 '+p.photos.length:'', p.status==='closed'?'closed '+p.closed+(p.closeNote?': '+esc(p.closeNote):''):''].filter(Boolean).join(' · ')+'</div>'+
+        '<div class="a"><span style="flex:1"></span><button class="btn sm" data-pe="'+p.id+'">Edit</button>'+(p.status==='open'?'<button class="btn sm" data-pc="'+p.id+'">Close ✓</button>':'')+'</div>';
+      box.appendChild(d); });
+    box.querySelectorAll('[data-pe]').forEach(b=>b.onclick=()=>editPunch(b.dataset.pe));
+    box.querySelectorAll('[data-pc]').forEach(b=>b.onclick=()=>quickClose(b.dataset.pc));
+    const tags=new Set([...Object.keys(lib),...Object.keys(libM),...Object.keys(libV),...punch.map(p=>p.tag).filter(Boolean)]);
+    $('tagList').innerHTML=[...tags].sort(byTag).map(t=>'<option value="'+esc(t)+'">').join('');
+    $('ownerList').innerHTML=[...new Set(punch.map(p=>p.owner).filter(Boolean))].map(t=>'<option value="'+esc(t)+'">').join('');
+  }
+  document.querySelectorAll('#plStat button').forEach(b=>b.onclick=()=>{ plStat=b.dataset.v; try{localStorage.setItem('cx-plf',JSON.stringify({s:plStat,c:plCatF}));}catch(e){} renderPL(); });
+  $('plQ').addEventListener('input',renderPL);
+  $('plCopy').onclick=()=>{
+    const L=plFiltered(); if(!L.length){ toast('Nothing to copy with these filters'); return; }
+    const f=(plStat==='all'?'All':plStat==='open'?'Open':'Closed')+(plCatF==='all'?'':' · Cat '+plCatF);
+    const rows=['PUNCH LIST · '+f+' · '+today(),'',['No','Cat','Tag','Description','Action by','Location','Due','Status','Raised','Closed','Close-out note','Photos'].join('\t')];
+    L.forEach(p=>rows.push([p.no,p.cat,p.tag,(p.desc||'').replace(/\s*\n\s*/g,' '),p.owner,p.loc,p.due,p.status,p.raised,p.closed,p.closeNote,(p.photos||[]).length||''].map(x=>x==null?'':x).join('\t')));
+    copyText(rows.join('\n'),'Punch list copied');
+  };
+  function renderPunch(){ loadPd(); renderPL(); }
+  $('hdrPunch').onclick=()=>{
+    const tag = curView==='motor' ? M().tag : curView==='valve' ? VX().tag : curView==='punch' ? PD().tag : cur.tag;
+    const d=PD(); if(!d.id && !d.desc){ d.tag=tag||d.tag; } else { pd=newPd(); pd.tag=tag||''; }
+    location.hash='#punch'; setTimeout(()=>{ loadPd(); $('pdDesc').focus(); },120);
+  };
+
+  // ---------- backup file ----------
+  let bakCache=null, bakBusy=false;
+  async function buildBackup(withPhotos){
+    const o={app:'cx-instrument',v:4,saved:new Date().toISOString(),lib,libM,libV,punch,punchSeq};
+    if(withPhotos){ const ids=new Set(), add=x=>((x&&x.photos)||[]).forEach(p=>ids.add(p.id));
+      [lib,libM,libV].forEach(Lb=>Object.values(Lb).forEach(add)); punch.forEach(add); add(cur); add(curM); add(curV);
+      o.photos={}; for(const id of ids){ const d=await pdbGet(id); if(d) o.photos[id]=d; } }
+    return o;
+  }
+  async function prepareBackup(){
+    if(bakBusy) return; bakBusy=true;
+    try{ const withP=$('bakPh').checked, o=await buildBackup(withP), txt=JSON.stringify(o), name='cx-backup-'+today()+'.json';
+      const blob=new Blob([txt],{type:'application/json'}); let file=null; try{ file=new File([blob],name,{type:'application/json'}); }catch(e){}
+      bakCache={blob,file,name,at:Date.now()};
+      const np=o.photos?Object.keys(o.photos).length:0;
+      $('bakInfo').textContent='Backup ready: '+Object.keys(lib).length+' instruments, '+Object.keys(libM).length+' motors, '+Object.keys(libV).length+' valves, '+punch.length+' punch items'+(withP?', '+np+' photos':'')+' ('+fmt(blob.size/1048576,2)+' MB).';
+    }finally{ bakBusy=false; }
+  }
+  $('bakPh').addEventListener('change',()=>{ bakCache=null; prepareBackup(); });
+  $('bakFile').onclick=()=>{
+    if(!bakCache){ toast('Preparing backup… tap again in a moment'); prepareBackup(); return; }
+    const {blob,file,name}=bakCache;
+    const download=()=>{ try{ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },3000); toast('Backup file saved'); }catch(e){ toast('Saving files is blocked here. Use Copy backup text.'); } };
+    try{
+      if(file && navigator.canShare && navigator.canShare({files:[file]})){
+        navigator.share({files:[file],title:name}).then(()=>toast('Backup shared')).catch(e=>{ if(!e||e.name!=='AbortError') download(); });
+        return;
+      }
+    }catch(e){}
+    download();
+  };
+  $('bakIn').addEventListener('change',()=>{
+    const f=$('bakIn').files&&$('bakIn').files[0]; $('bakIn').value=''; if(!f) return;
+    const r=new FileReader(); r.onload=()=>importBackup(String(r.result)); r.onerror=()=>toast('Could not read that file'); r.readAsText(f);
+  });
+
+  // ---------- photos (IndexedDB) ----------
+  const PDB={db:null,mem:{}};
+  function pdbOpen(){ return new Promise(res=>{ try{ const r=indexedDB.open('cx-photos',1);
+    r.onupgradeneeded=()=>r.result.createObjectStore('p'); r.onsuccess=()=>{PDB.db=r.result;res();}; r.onerror=()=>res(); }catch(e){res();} }); }
+  function pdbPut(id,v){ PDB.mem[id]=v; return new Promise(res=>{ if(!PDB.db) return res(false);
+    try{ const t=PDB.db.transaction('p','readwrite'); t.objectStore('p').put(v,id); t.oncomplete=()=>res(true); t.onerror=()=>res(false); }catch(e){res(false);} }); }
+  function pdbGet(id){ if(PDB.mem[id]) return Promise.resolve(PDB.mem[id]); return new Promise(res=>{ if(!PDB.db) return res(null);
+    try{ const r=PDB.db.transaction('p').objectStore('p').get(id); r.onsuccess=()=>{ if(r.result) PDB.mem[id]=r.result; res(r.result||null); }; r.onerror=()=>res(null); }catch(e){res(null);} }); }
+  function pdbGc(){ if(!PDB.db) return; const keepIds=new Set(); const add=o=>{ ((o&&o.photos)||[]).forEach(p=>keepIds.add(p.id)); };
+    add(cur); add(curM); add(curV); add(pd); Object.values(lib).forEach(add); Object.values(libM).forEach(add); Object.values(libV).forEach(add); punch.forEach(add);
+    try{ const st=PDB.db.transaction('p','readwrite').objectStore('p'); const r=st.getAllKeys(); r.onsuccess=()=>r.result.forEach(k=>{ if(!keepIds.has(k)){ st.delete(k); delete PDB.mem[k]; } }); }catch(e){} }
+  const plist = which => which==='motor' ? (M().photos=M().photos||[]) : which==='valve' ? (VX().photos=VX().photos||[]) : which==='punch' ? (PD().photos=PD().photos||[]) : (cur.photos=cur.photos||[]);
+  function renderPhotos(which){
+    const box=$('ph-'+which); if(!box) return; const L=plist(which); box.innerHTML='';
+    L.forEach((p,i)=>{ const w=document.createElement('div'), im=document.createElement('img'); im.className='th'; im.alt=p.lbl;
+      pdbGet(p.id).then(d=>{ if(d) im.src=d; }); im.onclick=()=>openViewer(which,i);
+      const c=document.createElement('div'); c.className='cap'; c.textContent=p.lbl; w.appendChild(im); w.appendChild(c); box.appendChild(w); });
+    if(which==='inst') $('idSum').textContent=[cur.serial?'· S/N '+cur.serial:'', L.length?'· '+L.length+' photo'+(L.length>1?'s':''):''].filter(Boolean).join(' ');
+  }
+  function shrink(file){ return new Promise((res,rej)=>{ const url=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{ const s=Math.min(1,1800/Math.max(img.width,img.height)), c=document.createElement('canvas');
+      c.width=Math.round(img.width*s); c.height=Math.round(img.height*s); c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg',.82)); };
+    img.onerror=()=>{ URL.revokeObjectURL(url); rej(); }; img.src=url; }); }
+  document.querySelectorAll('[data-photo]').forEach(inp=>inp.addEventListener('change',async()=>{
+    const which=inp.dataset.photo, files=[...(inp.files||[])]; inp.value='';
+    for(const f of files){ try{ const d=await shrink(f), id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+        if(!(await pdbPut(id,d))) toast('Photo kept for this session only');
+        plist(which).push({id,lbl:plist(which).length?'Other':'Nameplate'}); }catch(e){ toast('Could not read that image'); } }
+    renderPhotos(which); refreshHeader(); if(files.length) toast(files.length+' photo'+(files.length>1?'s':'')+' added');
+  }));
+  let vw=null;
+  function openViewer(which,i){ vw={which,i}; const p=plist(which)[i]; $('vwLbl').value=p.lbl; $('viewer').classList.remove('zoom');
+    $('vwImg').src=''; pdbGet(p.id).then(d=>{ $('vwImg').src=d||''; }); $('viewer').style.display='flex'; }
+  $('vwClose').onclick=()=>{ $('viewer').style.display='none'; vw=null; };
+  $('vwZoom').onclick=()=>$('viewer').classList.toggle('zoom');
+  $('vwLbl').onchange=()=>{ if(!vw) return; plist(vw.which)[vw.i].lbl=$('vwLbl').value; renderPhotos(vw.which); refreshHeader(); };
+  $('vwDel').onclick=function(){ twoTap(this,()=>{ if(!vw) return; const w=vw.which; plist(w).splice(vw.i,1); $('viewer').style.display='none'; vw=null; renderPhotos(w); refreshHeader(); pdbGc(); }); };
+
+  // ---------- display ----------
+  let disp={theme:'dark',size:'1',prev:'dark'};
+  try{ Object.assign(disp, JSON.parse(localStorage.getItem('cx-disp')||'{}')); }catch(e){}
+  function applyDisp(){
+    document.body.classList.remove('light','sun'); if(disp.theme!=='dark') document.body.classList.add(disp.theme);
+    document.documentElement.style.setProperty('--z', disp.size);
+    document.querySelectorAll('#dTheme button').forEach(b=>b.classList.toggle('on',b.dataset.v===disp.theme));
+    document.querySelectorAll('#dSize button').forEach(b=>b.classList.toggle('on',b.dataset.v===String(disp.size)));
+    $('hdrSun').classList.toggle('pri', disp.theme==='sun');
+    const tc=document.querySelector('meta[name=theme-color]'); if(tc) tc.content=disp.theme==='dark'?'#0f1418':disp.theme==='light'?'#eef1f4':'#ffffff';
+    try{ localStorage.setItem('cx-disp',JSON.stringify(disp)); }catch(e){}
+  }
+  document.querySelectorAll('#dTheme button').forEach(b=>b.onclick=()=>{ disp.theme=b.dataset.v; if(b.dataset.v!=='sun') disp.prev=b.dataset.v; applyDisp(); });
+  document.querySelectorAll('#dSize button').forEach(b=>b.onclick=()=>{ disp.size=b.dataset.v; applyDisp(); });
+  $('hdrSun').onclick=()=>{ disp.theme = disp.theme==='sun' ? (disp.prev||'dark') : 'sun'; applyDisp(); };
+
+  // ---------- recently used ----------
+  let recent=[]; try{ recent=JSON.parse(localStorage.getItem('cx-recent')||'[]'); }catch(e){}
+  function used(key){ recent=[key].concat(recent.filter(k=>k!==key)).slice(0,6); try{ localStorage.setItem('cx-recent',JSON.stringify(recent)); }catch(e){} renderRecent(); }
+  function goRecent(key){ const i=key.indexOf(':'), t=key.slice(0,i), n=key.slice(i+1);
+    if(t==='proc'){ psel=n; try{localStorage.setItem('cx-proc-sel',n);}catch(e){} renderPChips(); location.hash='#process'; }
+    else { tsel=n; try{localStorage.setItem('cx-tool-sel',n);}catch(e){} renderTChips(); location.hash='#tools'; }
+    used(key); window.scrollTo(0,0); }
+  function renderRecent(){ ['rec-proc','rec-units'].forEach(id=>{ const el=$(id); const ks=recent.slice(0,5);
+    el.innerHTML=ks.length?'<span>Recent</span>':''; ks.forEach(k=>{ const b=document.createElement('button'); b.type='button'; b.className='chip';
+      b.textContent=k.slice(k.indexOf(':')+1); b.onclick=()=>goRecent(k); el.appendChild(b); }); }); }
+  let recTags=[]; try{ recTags=JSON.parse(localStorage.getItem('cx-rectags')||'[]'); }catch(e){}
+  function usedTag(t){ if(!t) return; recTags=[t].concat(recTags.filter(x=>x!==t)).slice(0,6); try{localStorage.setItem('cx-rectags',JSON.stringify(recTags));}catch(e){} }
+  function renderRecInst(){ const ks=recTags.filter(t=>t.startsWith('M:')?libM[t.slice(2)]:t.startsWith('V:')?libV[t.slice(2)]:lib[t]); $('recInstCard').classList.toggle('hidden',!ks.length); $('recInst').innerHTML='';
+    ks.forEach(t=>{ const isM=t.startsWith('M:'), isV=t.startsWith('V:'), k=(isM||isV)?t.slice(2):t, b=document.createElement('button'); b.className='chip'; b.type='button'; b.style.margin='0 6px 6px 0';
+      b.textContent=(isM?'⚙︎ ':isV?'⧓ ':'')+k;
+      b.onclick=isV ? function(){ const v=VX(); if(!isSavedV()&&vHas(v)&&v.tag!==k){ twoTap(this,()=>openValve(k)); return; } openValve(k); } : isM ? function(){ const m=M(); if(!isSavedM()&&mHas(m)&&m.tag!==k){ twoTap(this,()=>openMotor(k)); return; } openMotor(k); } : ()=>openInst(k,b);
+      $('recInst').appendChild(b); }); }
+
+  // ---------- process ----------
+  const PROCS={Dosing:'p-dose',Sludge:'p-sludge',Polymer:'p-poly','Jar test':'p-jar'};
+  let psel='Dosing'; try{ psel=localStorage.getItem('cx-proc-sel')||'Dosing'; if(!PROCS[psel]) psel='Dosing'; }catch(e){}
+  function renderPChips(){
+    $('pChips').innerHTML='';
+    Object.keys(PROCS).forEach(k=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'+(k===psel?' on':''); b.textContent=k;
+      b.onclick=()=>{ psel=k; try{localStorage.setItem('cx-proc-sel',k);}catch(e){} renderPChips(); used('proc:'+k); }; $('pChips').appendChild(b); });
+    Object.entries(PROCS).forEach(([k,id])=>$(id).classList.toggle('hidden',k!==psel));
+  }
+  const QU={'L/s':3.6,'m³/h':1,'m³/d':1/24,'ML/d':1000/24,'L/min':0.06};
+  document.querySelectorAll('.qunit').forEach(s=>{ s.innerHTML=Object.keys(QU).map(u=>'<option>'+u+'</option>').join(''); });
+  const CHEM=[['Custom',null],['Ferric chloride (~40%)',{s:40,u:'w',sg:1.42}],['Aluminium sulfate, liquid (~47%)',{s:47,u:'w',sg:1.32}],
+    ['Sodium hypochlorite (~125 g/L Cl₂)',{s:125,u:'gl',sg:1.2}],['Sodium hydroxide (~46%)',{s:46,u:'w',sg:1.48}],['Sulfuric acid (~98%)',{s:98,u:'w',sg:1.84}],
+    ['Citric acid (~50%)',{s:50,u:'w',sg:1.24}],['Sodium bisulfite (~38%)',{s:38,u:'w',sg:1.36}],['Magnesium hydroxide slurry (~60%)',{s:60,u:'w',sg:1.5}]];
+  $('cPre').innerHTML=CHEM.map((c,i)=>'<option value="'+i+'">'+c[0]+'</option>').join('');
+  function setVal(id,v){ const el=$(id); el.value=v; el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input')); }
+  $('cPre').addEventListener('change',()=>{ const c=CHEM[+$('cPre').value][1]; if(c){ setVal('cStr',c.s); setVal('cStrU',c.u); setVal('cSg',c.sg); } calcDose(); });
+  function doseCore(){
+    const Q=V$('cQ')*(QU[$('cQu').value]||1), dose=V$('cDose'), str=V$('cStr'), gl=$('cStrU').value==='gl', sg=V$('cSg');
+    if(!(Q>0&&dose>=0&&str>0)) return null;
+    const gm=Q*dose/1000; let act,pk,pl;
+    if($('cBasis').value==='prod'){ pk=gm; pl=sg>0?pk/sg:NaN; act=gl?pl*str/1000:pk*str/100; }
+    else { act=gm; if(gl){ pl=act*1000/str; pk=sg>0?pl*sg:NaN; } else { pk=act/(str/100); pl=sg>0?pk/sg:NaN; } }
+    return {Q,act,pk,pl,gl,str,sg,hrs:V$('cHrs')||24};
+  }
+  function calcDose(){
+    const r=doseCore(), pump=V$('cPump'), tank=V$('cTank');
+    if(!r){ $('cOut').innerHTML='<tr><td class="note">Enter flow, dose and strength.</td></tr>'; calcCal(); return; }
+    trows($('cOut'),[
+      ['Process flow', fmt(r.Q,2)+' m³/h · '+fmt(r.Q/3.6,2)+' L/s'],
+      ['Active chemical', fmt(r.act,3)+' kg/h · '+fmt(r.act*r.hrs,1)+' kg/d'],
+      ['Product (mass)', fmt(r.pk,3)+' kg/h'],
+      ['Product (volume)', '<b>'+fmt(r.pl,3)+' L/h</b> · '+fmt(r.pl*1000/60,1)+' mL/min'],
+      ['Product per day', fmt(r.pl*r.hrs,1)+' L/d'],
+      pump>0?['Dosing pump', fmt(r.pl/pump*100,1)+'% of max'+(r.pl/pump>0.9?' ⚠︎ near max':r.pl/pump<0.1?' ⚠︎ very low turndown':'')]:null,
+      tank>0?['Storage', fmt(tank/(r.pl*r.hrs),1)+' days']:null
+    ]);
+    $('cNote').textContent='Presets are typical strengths and SG only. Use the SDS or certificate of analysis for your actual supply.';
+    calcCal();
+  }
+  function calcCal(){
+    const v=V$('kVol'), t=V$('kT'), r=doseCore();
+    if(!(v>0&&t>0)){ $('kOut').innerHTML='<tr><td class="note">Time how long the pump takes to draw a volume from the column.</td></tr>'; return; }
+    const lh=v/t*3.6, rows=[['Pump output','<b>'+fmt(lh,3)+' L/h</b> · '+fmt(v/t*60,1)+' mL/min']];
+    if(r){ const act=r.gl?lh*r.str/1000:lh*r.sg*r.str/100;
+      rows.push(['Delivered dose', fmt(act*1000/r.Q,2)+' mg/L active · '+fmt(lh*r.sg*1000/r.Q,2)+' mg/L product'],
+                ['vs required', fmt(lh/r.pl*100,1)+'% ('+fmt(r.pl,3)+' L/h needed)']); }
+    trows($('kOut'),rows);
+  }
+  document.querySelectorAll('#p-dose input,#p-dose select').forEach(el=>{ if(el.id!=='cPre') el.addEventListener(el.tagName==='SELECT'?'change':'input',calcDose); });
+
+  let smode='press';
+  function setSMode(m,adj){ smode=m; document.querySelectorAll('#sMode button').forEach(b=>b.classList.toggle('on',b.dataset.v===m));
+    const th=m==='thick'; $('sOutL').textContent=(th?'Thickened':'Cake')+' solids (% DS)'; $('sRhoL').textContent=(th?'Thickened':'Cake')+' density (kg/m³)';
+    if(adj){ if(th&&V$('sOut')>10){ setVal('sOut','5'); setVal('sRho','1010'); } if(!th&&V$('sOut')<10){ setVal('sOut','18'); setVal('sRho','1050'); } }
+    try{ keep.sMode=m; localStorage.setItem('cx-keep',JSON.stringify(keep)); }catch(e){}
+    calcSludge(); }
+  document.querySelectorAll('#sMode button').forEach(b=>b.onclick=()=>setSMode(b.dataset.v,true));
+  function sludgeCore(){
+    const Q=V$('sQ'), ds=V$('sDs'), out=V$('sOut'), cap=(isFinite(V$('sCap'))?V$('sCap'):100)/100, rho=V$('sRho')||1000;
+    if(!(Q>0&&ds>0)) return null;
+    const r={Q,DSin:Q*ds*10,hrs:V$('sHrs')||24,days:V$('sDays')||7}; r.DSout=r.DSin*cap;
+    if(out>0){ r.wet=r.DSout/(out/100); r.vol=r.wet/rho; r.filt=Math.max(0,Q-r.wet/1000); r.fSS=r.filt>0?(r.DSin-r.DSout)/r.filt*1000:NaN; r.vr=(1-r.vol/Q)*100; }
+    const rate=V$('sRate'); if(rate>0) r.load=r.DSin/rate*100;
+    return r;
+  }
+  function calcSludge(){
+    const r=sludgeCore(), th=smode==='thick', nm=th?'Thickened sludge':'Cake';
+    if(!r){ $('sRes').innerHTML='<tr><td class="note">Enter feed flow and solids.</td></tr>'; return; }
+    trows($('sRes'),[
+      ['Solids load','<b>'+fmt(r.DSin,1)+' kg DS/h</b>'],
+      ['Per day / week',fmt(r.DSin*r.hrs,0)+' kg DS/d · '+fmt(r.DSin*r.hrs*r.days/1000,2)+' t DS/wk'],
+      r.load?['Machine loading',fmt(r.load,0)+'% of rating'+(r.load>100?' ⚠︎ over':'')]:null,
+      r.wet?[nm,fmt(r.wet,0)+' kg/h · '+fmt(r.vol,2)+' m³/h']:null,
+      r.wet?[nm+' per day / week',fmt(r.vol*r.hrs,1)+' m³/d · '+fmt(r.vol*r.hrs*r.days,1)+' m³/wk']:null,
+      r.wet?['Filtrate',fmt(r.filt,2)+' m³/h · ~'+fmt(r.fSS,0)+' mg/L SS']:null,
+      r.wet?['Volume reduction',fmt(r.vr,1)+'%']:null
+    ]);
+  }
+  document.querySelectorAll('#p-sludge input').forEach(el=>el.addEventListener('input',()=>{ calcSludge(); calcLab(); }));
+  function calcLab(){ const d=V$('lDish'), w=V$('lWet'), y=V$('lDry'); const v=(w>d&&y>=d)?(y-d)/(w-d)*100:NaN;
+    $('lOut').textContent=isFinite(v)?'Dry solids = '+fmt(v,2)+'% DS':'Weigh the dish, the dish + wet sample, then the dish + dried sample (105 °C).'; return v; }
+  $('lToFeed').onclick=()=>{ const v=calcLab(); if(isFinite(v)) setVal('sDs',fmt(v,2)); };
+  $('lToOut').onclick=()=>{ const v=calcLab(); if(isFinite(v)) setVal('sOut',fmt(v,2)); };
+
+  function polyCore(){
+    const ds=V$('yDs'), dose=V$('yDose'), act=(V$('yAct')||100)/100, sg=V$('ySg')||1, mk=V$('yMk'), dil=V$('yDil'), tank=V$('yTank'), pump=V$('yPump'), hrs=V$('yHrs')||24;
+    if(!(ds>0&&dose>0)) return null;
+    const base=ds*dose/1000, prod=$('yBasis').value==='prod'?base:base/act, r={prod,act:prod*act,prodL:prod/sg,hrs,mk,dil,emu:$('yType').value==='emu'};
+    if(mk>0) r.sol=prod/(mk/100);
+    if(r.sol&&dil>0&&dil<mk){ r.dilTot=prod/(dil/100); r.dilW=r.dilTot-r.sol; }
+    if(r.sol&&tank>0){ r.batch=tank*mk/100; r.batchH=tank/r.sol; r.bpd=r.sol*hrs/tank; }
+    if(r.sol&&pump>0) r.pump=r.sol/pump*100;
+    return r;
+  }
+  function calcPoly(){
+    const r=polyCore();
+    if(!r){ $('yOut').innerHTML='<tr><td class="note">Enter solids load and dose.</td></tr>'; calcPolyChk(); return; }
+    trows($('yOut'),[
+      ['Active polymer',fmt(r.act,3)+' kg/h'],
+      ['Neat product','<b>'+fmt(r.prod,3)+' kg/h</b>'+(r.emu?' · '+fmt(r.prodL,3)+' L/h':'')+' · '+fmt(r.prod*r.hrs,2)+' kg/d'],
+      r.sol?['Make-up solution','<b>'+fmt(r.sol,0)+' L/h</b> at '+r.mk+'%']:null,
+      r.dilW?['Dilution water',fmt(r.dilW,0)+' L/h → '+fmt(r.dilTot,0)+' L/h at '+r.dil+'%']:null,
+      r.batch?['Per batch',fmt(r.batch,2)+(r.emu?' kg ('+fmt(r.batch/(V$('ySg')||1),2)+' L)':' kg')+' product · lasts '+fmt(r.batchH,1)+' h']:null,
+      r.bpd?['Batches per day',fmt(r.bpd,1)]:null,
+      r.pump?['Polymer pump',fmt(r.pump,0)+'% of max'+(r.pump>90?' ⚠︎ near max':'')]:null
+    ]);
+    calcPolyChk();
+  }
+  function calcPolyChk(){
+    const m=V$('yMeas'), mk=V$('yMk'), ds=V$('yMeasDs')||V$('yDs'), act=(V$('yAct')||100)/100;
+    if(!(m>0&&mk>0&&ds>0)){ $('yChk').textContent='Measure the solution flow, e.g. with a calibration column or the flowmeter.'; return; }
+    const prod=m*mk/100; $('yChk').innerHTML='Actual dose <b>'+fmt(prod/(ds/1000),2)+' kg/t DS</b> as product · '+fmt(prod*act/(ds/1000),2)+' kg/t active';
+  }
+  $('yType').addEventListener('change',()=>{ const e=$('yType').value==='emu'; setVal('yAct',e?'40':'100'); setVal('ySg',e?'1.05':'1.0'); setVal('yMk',e?'0.5':'0.25'); calcPoly(); });
+  document.querySelectorAll('#p-poly input,#p-poly select').forEach(el=>{ if(el.id!=='yType') el.addEventListener(el.tagName==='SELECT'?'change':'input',calcPoly); });
+  $('yFromS').onclick=()=>{ const r=sludgeCore(); if(r){ setVal('yDs',fmt(r.DSin,1)); toast('Solids load '+fmt(r.DSin,1)+' kg DS/h'); } else toast('Fill in the Sludge calc first'); };
+
+  const list = s => String(s||'').split(/[,;\s]+/).map(num).filter(isFinite);
+  function calcJar(){
+    const str=V$('jStr'), sg=V$('jSg'), conc=V$('jConc'), vol=V$('jVol'), jar=V$('jJar');
+    if(str>0&&conc>0&&vol>0){ const ag=conc*vol/1000, pg=ag/(str/100);
+      $('jStock').innerHTML='Weigh <b>'+fmt(pg,3)+' g</b>'+(sg>0?' (= '+fmt(pg/sg,3)+' mL)':'')+' of product, then make up to '+fmt(vol,0)+' mL.'+(jar>0?' 1 mL in a '+fmt(jar,0)+' mL jar = '+fmt(conc*1000/jar,2)+' mg/L.':''); }
+    else $('jStock').textContent='Enter strength, stock strength and volume.';
+    $('jTbl').innerHTML = (conc>0&&jar>0) ? list($('jDoses').value).map((d,i)=>{ const ml=d*jar/1000/conc; return '<tr><td>'+(i+1)+'</td><td>'+fmt(d)+'</td><td><b>'+fmt(ml,2)+'</b></td><td>'+fmt(ml*1000,0)+'</td></tr>'; }).join('') : '';
+    const sl=V$('jSl'), sds=V$('jSlDs'), pst=V$('jPst');
+    $('jPt').innerHTML = (sl>0&&sds>0&&pst>0) ? list($('jPd').value).map((d,i)=>{ const dsKg=sl*sds/100/1000, g=dsKg*d, ml=g/(pst/100);
+      return '<tr><td>'+(i+1)+'</td><td>'+fmt(d)+'</td><td><b>'+fmt(ml,2)+'</b></td></tr>'; }).join('') : '';
+  }
+  document.querySelectorAll('#p-jar input').forEach(el=>el.addEventListener('input',calcJar));
+  $('jToDose').onclick=()=>{ const b=V$('jBest'); if(!(b>0)){ toast('Enter the best jar dose'); return; }
+    setVal('cPre','0'); setVal('cDose',fmt(b)); setVal('cBasis','act'); setVal('cStrU','w'); setVal('cStr',$('jStr').value); setVal('cSg',$('jSg').value);
+    psel='Dosing'; renderPChips(); used('proc:Dosing'); window.scrollTo(0,0); toast('Dose set to '+fmt(b)+' mg/L active'); };
+  $('jToPoly').onclick=()=>{ const b=V$('jPbest'); if(!(b>0)){ toast('Enter the best polymer dose'); return; }
+    setVal('yDose',fmt(b)); setVal('yBasis','prod'); psel='Polymer'; renderPChips(); used('proc:Polymer'); window.scrollTo(0,0); toast('Polymer dose '+fmt(b)+' kg/t'); };
+
+  // ---------- remember tool & process inputs ----------
+  let keep={}; try{ keep=JSON.parse(localStorage.getItem('cx-keep')||'{}'); }catch(e){}
+  document.querySelectorAll('#v-units input:not([type=file]), #v-units select, #v-proc input, #v-proc select').forEach(el=>{
+    if(!el.id || ['uIn','uSg','uFrom'].includes(el.id)) return;
+    if(keep[el.id]!==undefined) el.value=keep[el.id];
+    el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>{ keep[el.id]=el.value; try{ localStorage.setItem('cx-keep',JSON.stringify(keep)); }catch(e){} });
+  });
+
+  // ---------- hide-keyboard button ----------
+  const kb=$('kbDone'), isTyping=el=>el && ((el.tagName==='INPUT' && !['checkbox','radio','file','range','button'].includes(el.type)) || el.tagName==='TEXTAREA');
+  function placeKb(){ const vv=window.visualViewport; const gap=vv ? Math.max(0, window.innerHeight-(vv.height+vv.offsetTop)) : 0; kb.style.bottom=(gap+12)+'px'; }
+  document.addEventListener('focusin',e=>{ if(isTyping(e.target)){ kb.classList.add('on'); placeKb(); } });
+  document.addEventListener('focusout',()=>setTimeout(()=>{ if(!isTyping(document.activeElement)) kb.classList.remove('on'); },80));
+  if(window.visualViewport){ visualViewport.addEventListener('resize',placeKb); visualViewport.addEventListener('scroll',placeKb); }
+  const hideKb=e=>{ e.preventDefault(); const a=document.activeElement; if(a&&a.blur) a.blur(); kb.classList.remove('on'); };
+  kb.addEventListener('touchstart',hideKb,{passive:false}); kb.addEventListener('mousedown',hideKb);
+  // return key closes the keyboard on single-line fields
+  document.addEventListener('keydown',e=>{ if(e.key==='Enter' && e.target.tagName==='INPUT' && isTyping(e.target)){ e.preventDefault(); e.target.blur(); } });
+  document.querySelectorAll('input').forEach(i=>{ if(isTyping(i)) i.setAttribute('enterkeyhint','done'); });
+
   // ---------- routing ----------
-  const VIEWS={scale:'scale',loop:'loop',motor:'motor',tools:'units',units:'units',instruments:'inst'};
+  const VIEWS={scale:'scale',loop:'loop',motor:'motor',valve:'valve',punch:'punch',process:'proc',tools:'units',units:'units',instruments:'inst'};
   function route(){
-    const h=(location.hash||'#scale').slice(1); const v=VIEWS[h]||'scale';
+    const h=(location.hash||'#scale').slice(1); const v=VIEWS[h]||'scale'; curView=v; try{ if(VIEWS[h]) localStorage.setItem('cx-view',h); }catch(e){}
     document.querySelectorAll('.view').forEach(el=>el.classList.toggle('on', el.id==='v-'+v));
-    document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v));
-    if(v==='loop') renderLoop(); if(v==='inst') renderLib(); if(v==='motor') renderMotor();
+    document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v || (v==='valve'&&a.dataset.v==='motor')));
+    if(v==='loop') renderLoop(); if(v==='inst') renderLib(); if(v==='motor') renderMotor(); if(v==='valve') renderValve(); if(v==='punch') renderPunch(); if(v==='inst'){ bakCache=null; prepareBackup(); } refreshHeader();
     window.scrollTo(0,0);
   }
   window.addEventListener('hashchange',route);
 
-  function renderAll(){ renderChips(); renderWarn(); renderLevel(); renderConv(null); renderTable(); renderLoop(); renderMotor(); refreshHeader(); }
+  function renderAll(){ renderChips(); renderWarn(); renderLevel(); renderConv(null); renderTable(); renderLoop(); renderMotor(); renderValve(); renderPhotos('inst'); refreshHeader(); }
 
   loadInputs(); renderUChips(); buildUFrom(0); renderUnits(); renderAll();
-  renderTChips(); calcElec(); calcPump(); calcFlow(); calcRtd('t'); solvePTN(); route();
+  applyDisp(); renderTChips(); renderPChips(); renderRecent();
+  calcElec(); calcPump(); calcFlow(); calcRtd('t'); solvePTN(); setSMode(keep.sMode||'press',false); calcDose(); calcPoly(); calcJar(); calcLab();
+  if(!location.hash){ try{ const lv=localStorage.getItem('cx-view'); if(lv && VIEWS[lv]) history.replaceState(null,'','#'+lv); }catch(e){} }
+  route();
+  pdbOpen().then(()=>{
+    const mig=o=>{ if(o&&o.m&&o.m.photo){ const id='p'+Math.random().toString(36).slice(2,10); pdbPut(id,o.m.photo); o.m.photos=(o.m.photos||[]).concat([{id,lbl:'Nameplate'}]); delete o.m.photo; } };
+    const migM=o=>{ if(o&&o.photo){ const id='p'+Math.random().toString(36).slice(2,10); pdbPut(id,o.photo); o.photos=(o.photos||[]).concat([{id,lbl:'Nameplate'}]); delete o.photo; } };
+    migM(curM); Object.values(libM).forEach(migM); store(); renderPhotos('inst'); renderPhotos('motor');
+  });
 
   // offline install (works when hosted on your own https site; ignored inside the Claude viewer)
   try{ if('serviceWorker' in navigator && location.protocol==='https:' && !/claude|anthropic/.test(location.hostname)) navigator.serviceWorker.register('sw.js').catch(()=>{}); }catch(e){}
